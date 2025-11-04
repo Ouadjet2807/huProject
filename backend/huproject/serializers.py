@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import Caregiver, Recipient
+from .models import Caregiver, Recipient, Space
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -40,3 +40,11 @@ class RecipientSerializer(serializers.ModelSerializer):
         if caregivers is not None:
             instance.caregivers.set(caregivers)
         return instance
+
+class SpaceSerializer(serializers.ModelSerializer):
+    caregivers = CaregiverSerializer(many=True, read_only=True)
+    recipients = RecipientSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Space
+        fields = ['id', 'name', 'description', 'caregivers', 'recipients', 'created_at', 'updated_at']

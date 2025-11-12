@@ -1,7 +1,20 @@
 from django.contrib import admin
-from .models import Caregiver, Recipient, Space
+from django.contrib.auth.admin import UserAdmin
+from .models import *
+from .forms import CustomUserChangeForm, CustomUserCreationForm
 
 # Register your models here.
+
+@admin.register(AgendaItem)
+class AgendaItemAdmin(admin.ModelAdmin):
+    list_display = ('id', 'title', 'start_date', 'end_date', 'created_at', 'created_by', 'private')
+    search_fields = ('title', 'start_date', 'end_date', 'created_at', 'created_by', 'private')
+
+@admin.register(Agenda)
+class AgendaAdmin(admin.ModelAdmin):
+    list_display = ('id', 'space')
+    search_fields = ('space',)
+
 
 @admin.register(Caregiver)
 class CaregiverAdmin(admin.ModelAdmin):
@@ -12,9 +25,15 @@ class CaregiverAdmin(admin.ModelAdmin):
 
 @admin.register(Recipient)
 class RecipientAdmin(admin.ModelAdmin):
-    list_display = ('id', 'first_name', 'last_name')
+    list_display = ('id', 'space', 'first_name', 'last_name',)
     search_fields = ('first_name', 'last_name')
-    filter_horizontal = ('caregivers',)  # nice UX for ManyToMany
+    filter_horizontal = ('caregivers',)  
+
+@admin.register(CustomUser)
+class CustomAdminUser(UserAdmin):
+    add_form = CustomUserCreationForm
+    form = CustomUserChangeForm
+    model = CustomUser
 
 
 

@@ -1,13 +1,69 @@
 from rest_framework import viewsets, permissions, filters, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
+from rest_framework.generics import GenericAPIView, RetrieveAPIView
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework_simplejwt.tokens import RefreshToken
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.shortcuts import get_object_or_404
 from django.db.models import Prefetch
 from .models import Caregiver, Recipient, Space
-from .serializers import CaregiverSerializer, RecipientSerializer, SpaceSerializer
+from .serializers import *
 
-# Example: a simple permission that requires authentication
+
+class UserRegistrationAPIView(GenericAPIView):
+    permission_classes = (AllowAny,)
+    serializer_class = UserRegistrationSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        token = RefreshToken.for_user(user)
+        data = serializer.data
+        data["tokens"] = {"refresh": str(token),
+                          "access": str(token.access_token)}
+
+        return Response(data, status= status.HTTP_201_CREATED)
+
+
+class UserLoginAPIView(GenericAPIView):
+    permission_classes= (AllowAny,)
+    serializer_class = UserLoginSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data
+        serializer = CustomUserSerializer(user)
+        token = RefreshToken.for_user(user)
+        data = serializer.data
+        data["tokens"] = {"refresh": str(token),
+                          "access": str(token.access_token)}
+
+        return Response(data, status=status.HTTP_200_OK)
+
+
+class UserLogoutAPIView(GenericAPIView):
+    permission_classes = (AllowAny,)
+
+    def post(self, request, *args, **kwargs):
+        try:
+            refresh_token = request.data["refresh"]
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+            return Response(status=status.HTTP_205_RESET_CONTENT)
+        except Exception as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserInfoAPIView(RetrieveAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = CustomUserSerializer
+
+    def get_object(self):
+        return self.request.user
+
 class IsAuthenticatedCaregiver(permissions.BasePermission):
     def has_permission(self, request, view):
         return request.user and request.user.is_authenticated and hasattr(request.user, 'caregiver')
@@ -28,10 +84,17 @@ class CaregiverViewSet(viewsets.ModelViewSet):
     """
     queryset = Caregiver.objects.all().select_related('user')
     serializer_class = CaregiverSerializer
-    permission_classes = [permissions.IsAuthenticated]  # refine as needed
+    permission_classes = [permissions.IsAuthenticated] 
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['first_name', 'last_name', 'user__username']
     ordering_fields = ['first_name', 'last_name']
+
+    def get_queryset(self):
+        user = self.request.user
+        if not user or not hasattr(user, 'caregiver'):
+            return Caregiver.objects.none()
+        caregiver = user.caregiver
+        return Caregiver.objects.filter(space__in=caregiver.spaces.all()).select_related('space')
 
     # If you want caregivers to be created automatically from user signups, override perform_create:
     def perform_create(self, serializer):
@@ -42,72 +105,111 @@ class CaregiverViewSet(viewsets.ModelViewSet):
         serializer.save(user=self.request.user)
 
 
-class RecipientViewSet(viewsets.ModelViewSet):
+class IsCaregiverAndMember(permissions.BasePermission):
     """
-    CRUD endpoints for recipients. Queryset is filtered to recipients within spaces
-    the requesting caregiver belongs to.
+    Allow only authenticated users who have a Caregiver profile and are member of the space.
     """
-    serializer_class = RecipientSerializer
-    permission_classes = [IsAuthenticatedCaregiver]
-    lookup_field = 'id'  # UUIDField; DRF will accept uuid strings in URL
+    def has_permission(self, request, view):
+        return bool(request.user and request.user.is_authenticated and hasattr(request.user, 'caregiver'))
 
-    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
-    search_fields = ['first_name', 'last_name', 'medical_info']
-    ordering_fields = ['first_name', 'last_name']
+    def has_object_permission(self, request, view, obj):
+        # not used for list/create; used for detail operations if desired
+        caregiver = getattr(request.user, 'caregiver', None)
+        return caregiver and obj.space.caregivers.filter(pk=caregiver.pk).exists()
+
+class RecipientViewSet(viewsets.ModelViewSet):
+    queryset = Recipient.objects.all()
+    serializer_class = RecipientSerializer
+    permission_classes = [IsCaregiverAndMember]
+    lookup_field = 'id'
 
     def get_queryset(self):
-        """
-        Return recipients that belong to any Space the current caregiver user is a member of.
-        We prefetch caregivers and spaces to avoid N+1 queries.
-        """
         user = self.request.user
-        # if anonymous user, return empty queryset
-        if not user.is_authenticated or not hasattr(user, 'caregiver'):
+        if not user or not hasattr(user, 'caregiver'):
             return Recipient.objects.none()
-
         caregiver = user.caregiver
-        # get all spaces this caregiver is in
-        spaces_qs = caregiver.spaces.all()
+        return Recipient.objects.filter(space__in=caregiver.spaces.all()).select_related('space')
 
-        # Efficiently fetch recipients that belong to these spaces
-        qs = Recipient.objects.filter(spaces__in=spaces_qs).distinct()
-        # Prefetch caregivers and spaces for serialization efficiency
-        qs = qs.prefetch_related('caregivers', 'spaces')
-        return qs
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        # serializer.validate_space_id returned a Space instance
+        space = serializer.validated_data.pop('space_id')
+        caregiver = request.user.caregiver
+
+        # permission: the caregiver must be member of the space, OR be the creator of that space
+        if not space.caregivers.filter(pk=caregiver.pk).exists():
+            return Response({'detail': "You are not a member of that space."},
+                            status=status.HTTP_403_FORBIDDEN)
+
+        # create Recipient; we fill inherited Person fields via serializer
+        recipient = Recipient.objects.create(space=space, **serializer.validated_data)
+        recipient.caregivers.add(caregiver) if hasattr(recipient, 'caregivers') else None
+        out_serializer = self.get_serializer(recipient)
+        return Response(out_serializer.data, status=status.HTTP_201_CREATED)
+    
+class AgendaViewSet(viewsets.ModelViewSet):
+    queryset = Agenda.objects.all()
+    serializer_class = AgendaSerializer
+    permission_classes = [IsCaregiverAndMember] 
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['space']
+    ordering_fields = ['space']
+
+    def get_queryset(self):
+        user = self.request.user
+        if not user or not hasattr(user, "caregiver"):
+            return Agenda.objects.none()
+        caregiver = user.caregiver
+        return Agenda.objects.filter(space__caregivers=caregiver).select_related('space',)
 
     def perform_create(self, serializer):
-        """
-        When creating a recipient, optionally attach it to a Space
-        supplied in request.data['space_id'] (UUID) or default to first
-        space of the caregiver.
-        """
+        serializer.save() 
+
+
+class AgendaItemViewSet(viewsets.ModelViewSet):
+    serializer_class = AgendaItemSerializer
+    lookup_field = 'id'
+    queryset = AgendaItem.objects.all()
+    serializer_class = AgendaItemSerializer
+    permission_classes = [permissions.IsAuthenticated] 
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['agenda', 'title', 'start_date', 'end_date', 'created_by', 'participants', 'recipients']
+    ordering_fields = ['start_date', 'end_date']
+
+    def get_queryset(self):
         user = self.request.user
+
+        if not user or not hasattr(user, 'caregiver'):
+            return AgendaItem.objects.none()
+        
         caregiver = user.caregiver
-        space_id = self.request.data.get('space_id')
 
-        recipient = serializer.save()  # create recipient first
+        qs = AgendaItem.objects.filter(agenda__space__caregivers=caregiver)
 
-        # Attach recipient to a space
+        qs = qs.select_related('agenda', 'created_by').order_by('start_date')
+
+        space_id = self.request.query_params.get('space_id')
         if space_id:
-            space = get_object_or_404(Space, id=space_id)
-            # only allow if caregiver is member of that space
-            if not space.caregivers.filter(user=user).exists():
-                raise PermissionDenied("You are not allowed to add recipients to this space.")
-            space.recipients.add(recipient)
-        else:
-            # fallback: add to caregiver first space (if any)
-            first_space = caregiver.spaces.first()
-            if first_space:
-                first_space.aides.add(recipient)
+            qs = qs.filter(agenda__space__id=space_id)
 
-        # Optionally add the creating caregiver to recipient.caregivers M2M
-        recipient.caregivers.add(caregiver)
-        recipient.save()
+        agenda_id = self.request.query_params.get('agenda_id')
+        if agenda_id:
+            qs = qs.filter(agenda__id=agenda_id)
 
-class IsCaregiver(permissions.BasePermission):
-    """Simple permission: user must be authenticated and have a Caregiver profile."""
-    def has_permission(self, request, view):
-        return bool(request.user and request.user.is_authenticated and hasattr(request.user, "caregiver"))
+        start_after = self.request.query_params.get('start_after') 
+        start_before = self.request.query_params.get('start_before')
+        if start_after:
+            qs = qs.filter(start__gte=start_after)
+        if start_before:
+            qs = qs.filter(start__lte=start_before)
+
+        return qs.distinct()
+
+    def perform_create(self, serializer):
+        serializer.save() 
+
 
 
 class SpaceViewSet(viewsets.ModelViewSet):
@@ -118,7 +220,7 @@ class SpaceViewSet(viewsets.ModelViewSet):
     - custom actions to add/remove recipients, invite caregivers
     """
     serializer_class = SpaceSerializer
-    permission_classes = [IsCaregiver]
+    permission_classes = [IsCaregiverAndMember]
     lookup_field = "id"  # UUIDField; DRF accepts uuid string in URL
 
     # -------------------------
@@ -217,4 +319,5 @@ class SpaceViewSet(viewsets.ModelViewSet):
         # TODO: save Invitation(space=space, email=email, token=token, expires_at=...) and email token.
         return Response({"invite_token": token}, status=status.HTTP_201_CREATED)
     
-    
+
+

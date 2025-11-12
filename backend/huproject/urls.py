@@ -1,0 +1,21 @@
+from django.urls import path, include
+from .views import *
+from rest_framework import routers
+from rest_framework_simplejwt.views import TokenRefreshView
+
+router = routers.DefaultRouter()
+router.register(r'agenda_items', AgendaItemViewSet, 'agenda-item')
+router.register(r'agendas', AgendaViewSet, 'agenda')
+router.register(r'caregivers', CaregiverViewSet, 'caregiver')
+router.register(r'recipients', RecipientViewSet, 'recipient')
+router.register(r'spaces', SpaceViewSet, 'space')
+
+urlpatterns = [
+    path("register/", UserRegistrationAPIView.as_view(), name="register-user"),
+    path("login/", UserLoginAPIView.as_view(), name="login-user"),
+    path("logout/", UserLogoutAPIView.as_view(), name="logout-user"),
+    path("token/refresh/", TokenRefreshView.as_view(), name="token-refresh"),
+    path('user/', UserInfoAPIView.as_view(), name="user-info"),
+    path('', include(router.urls))
+]
+

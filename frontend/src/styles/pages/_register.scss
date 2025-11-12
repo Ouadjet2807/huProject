@@ -1,0 +1,72 @@
+#register {
+  width: max-content;
+  margin: 10vw auto;
+
+  h2 {
+    color: $charcoal;
+    margin-left: 5vw;
+  }
+
+  .validation {
+    padding: 15px 40px;
+    border-radius: 8px;
+    text-align: center;
+    border-width: 1px;
+    border-style: solid;
+    width: max-content;
+    margin: 20px auto;
+    color: $white;
+
+    &.error {
+      background: $error;
+    }
+
+    &.success {
+      background: $success;
+    }
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 50vw;
+    margin: auto;
+    align-items: center;
+
+    input[type=email],input[type=text], input[type=password] {
+        border-width: 1px;
+        border-color: $charcoal;
+        border-style: solid;
+        border-radius: 8px;
+        padding: 10px 15px;
+        width: 65%;
+
+        &::placeholder {
+            color: $green;
+            font-family: $font2;
+            text-transform: lowercase;
+        }
+
+    }
+
+    input[type=submit] {
+      background: $green;
+      color: $white;
+      font-family: $font1;
+      font-weight: 600;
+      width: max-content;
+      border-radius: 5px;
+      text-transform: uppercase;
+      border: none;
+      margin: 10px auto;
+      padding: 15px 40px;
+      cursor: pointer;
+      transition: 0.3s ease-in;
+
+      &:hover {
+        background: $darkGreen;
+      }
+    }
+  }
+}

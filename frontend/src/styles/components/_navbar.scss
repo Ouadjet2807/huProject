@@ -1,0 +1,41 @@
+nav {
+  display: flex;
+  justify-content: flex-end;
+  padding: 10px 20px;
+
+  ul {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    gap: 20px;
+
+    li {
+      list-style-type: none;
+      font-family: $font3;
+      font-weight: 600;
+      cursor: pointer;
+
+      &.active {
+
+        a {
+            color: $lightGreen;
+            font-weight: 800;
+        }
+      }
+
+      a,
+      span {
+        text-decoration: none;
+        color: $green;
+        transition: 0.3s ease-in;
+      }
+
+      &:hover {
+        a,
+        span {
+          color: $darkGreen;
+        }
+      }
+    }
+  }
+}

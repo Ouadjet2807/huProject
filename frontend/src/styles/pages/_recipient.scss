@@ -1,0 +1,76 @@
+#recipient {
+
+    .recipient-container {
+        display: flex;
+        flex-direction: column;
+        width: 60%;
+        margin: auto;
+
+        .age {
+            font-family: inherit;
+            font-style: italic;
+        }
+
+
+        
+        form {
+            display: flex;
+            flex-direction: column;
+            margin: auto;
+            gap: 15px;
+
+            input:not([type="checkbox"]), textarea, select {
+                border-radius: 5px;
+                border: 1px solid #a09898;
+                padding: 5px 8px;
+            }
+
+
+            .edit-sensible-info {
+                width: max-content;
+                margin: 5px auto;
+            }
+
+            label {
+                    margin: 15px 0 5px;
+                    font-weight: 800;
+            }
+            
+            .form-row {
+                display: grid;
+                grid-template-columns: 49% 49%;
+                gap: 0 10px;
+                
+                input {
+                    width: 100%;
+                }
+            }
+            
+            
+            .field {
+                display: flex;
+                flex-direction: column;
+                width: 100%;
+                
+                
+                
+                .deletable_field {
+                    display: flex;
+                    gap: 5px;
+                    margin: 0 0 10px;
+                    width: 100%;
+                    
+                    input {
+                        width: 100%;
+                    }
+                }
+            }
+            
+            .delete {
+                svg, path {
+                    pointer-events: none;
+                }
+            }
+        }
+    }
+}

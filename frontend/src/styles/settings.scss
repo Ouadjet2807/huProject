@@ -1,0 +1,34 @@
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+$error: #d9002d;
+$success: #009365;
+$white: #ebebeb;
+$lightGreen: rgb(0, 190, 149);
+$green: rgb(0, 162, 138);
+$darkGreen: rgb(0, 110, 93);
+$pearl: rgb(244, 248, 248);
+$charcoal: rgb(21, 22, 22);
+
+$font1: "Roboto";
+$font2: "Montserrat";
+$font3: "Merriweather";
+
+body {
+    background: $pearl !important;
+}
+
+  h1 {
+    font-family: $font3;
+  }
+
+  h2 {
+    font-family: $font3;
+  }
+
+  h3, h4 {
+    font-family: $font2;
+  }
+
+  p, span {
+    font-family: $font1;
+  }

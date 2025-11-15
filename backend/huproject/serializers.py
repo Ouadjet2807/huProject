@@ -70,7 +70,7 @@ class TreatmentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Treatment
-        fields = ('id','name','dosage','frequency','start_date','end_date','prescribed_by','prescribed_by_id','notes')
+        fields = ('id','name','dosage', 'medication_format', 'number_of_pills', 'frequency','start_date','end_date','prescribed_by','prescribed_by_id','notes', 'space')
 
 
 class RecipientSerializer(serializers.ModelSerializer):
@@ -155,5 +155,5 @@ class AgendaItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = AgendaItem
-        fields = ['id', 'agenda', 'item_type', 'private', 'title', 'description', 'created_at', 'start_date','end_date', 'created_by', 'agenda_id', 'participants', 'recipients']
+        fields = ['id', 'agenda', 'category', 'private', 'title', 'description', 'created_at', 'start_date','end_date', 'created_by', 'agenda_id', 'participants', 'recipients']
         read_only_fields = ['id', 'agenda', 'created_at']

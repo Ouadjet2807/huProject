@@ -2,7 +2,7 @@ import React, { use, useEffect, useState } from "react";
 import axios from "axios";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
-import ModalComponent from "./Modal";
+import ModalComponent from "./modals/Modal";
 import AddEvent from "./AddEvent";
 
 export default function Agenda({space}) {

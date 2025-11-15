@@ -14,13 +14,9 @@
     }
 
   .left-tab {
-   
-
-   
-
     .recipients {
         background: $green;
-        border-radius: 20px;
+        border-radius: $borderRadius;
         padding: 20px;
         width: 20vw;
         margin: 5vw 2vw3;

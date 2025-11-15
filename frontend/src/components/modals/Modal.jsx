@@ -1,5 +1,4 @@
 import React from "react";
-import { IoClose } from "react-icons/io5";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 

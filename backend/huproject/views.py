@@ -7,7 +7,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.shortcuts import get_object_or_404
 from django.db.models import Prefetch
-from .models import Caregiver, Recipient, Space
+from .models import *
 from .serializers import *
 
 
@@ -172,7 +172,6 @@ class AgendaItemViewSet(viewsets.ModelViewSet):
     serializer_class = AgendaItemSerializer
     lookup_field = 'id'
     queryset = AgendaItem.objects.all()
-    serializer_class = AgendaItemSerializer
     permission_classes = [permissions.IsAuthenticated] 
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['agenda', 'title', 'start_date', 'end_date', 'created_by', 'participants', 'recipients']
@@ -321,3 +320,48 @@ class SpaceViewSet(viewsets.ModelViewSet):
     
 
 
+class TreatmentViewSet(viewsets.ModelViewSet):
+    serializer_class = TreatmentSerializer
+    lookup_field = 'id'
+    queryset = Treatment.objects.all()
+    permission_classes = [permissions.IsAuthenticated] 
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['name', 'number_of_pills', 'medication_format', 'start_date', 'end_date']
+    ordering_fields = ['name', 'number_of_pills', 'medication_format', 'start_date', 'end_date']
+
+    def get_queryset(self):
+        user = self.request.user
+
+        if not user or not hasattr(user, 'caregiver'):
+            return Treatment.objects.none()
+        
+        caregiver = user.caregiver
+
+        return Treatment.objects.filter(space__in=caregiver.spaces.all()).select_related('space')
+
+    def perform_create(self, serializer):
+        serializer.save() 
+
+
+
+class HealthcareProfessionalViewSet(viewsets.ModelViewSet):
+    serializer_class = HealthcareProfessionalSerializer
+    lookup_field = 'id'
+    queryset = HealthcareProfessional.objects.all()
+    permission_classes = [permissions.IsAuthenticated] 
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['name', 'speciality']
+    ordering_fields = ['name', 'speciality']
+
+    def get_queryset(self):
+        user = self.request.user
+
+        if not user or not hasattr(user, 'caregiver'):
+            return HealthcareProfessional.objects.none()
+        
+        caregiver = user.caregiver
+
+        return HealthcareProfessional.objects.filter(space__in=caregiver.spaces.all()).select_related('space')
+
+    def perform_create(self, serializer):
+        serializer.save() 

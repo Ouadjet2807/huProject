@@ -8,14 +8,11 @@ import { SlUser } from "react-icons/sl";
 import { AiOutlineLoading } from "react-icons/ai";
 import Agenda from "../components/Agenda";
 
-export default function Home() {
-  const [userInfo, setUserInfo] = useState({});
+export default function Home({setRefreshRecipients, space}) {
+
   const [addRecipient, setAddRecipient] = useState(false);
-  const [refreshRecipients, setRefreshRecipients] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState();
-  const [space, setSpace] = useState({});
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState();
+
+
   const navigate = useNavigate();
 
   const { user, logout, loading } = useContext(AuthContext);
@@ -36,51 +33,17 @@ export default function Home() {
     }
   };
 
-  const fetchSpaces = async () => {
-    setIsLoading(true);
-    try {
-      const token = localStorage.getItem("accessToken");
-
-      if (token) {
-        const config = {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        };
-        const res = await axios.get(
-          "http://127.0.0.1:8000/api/spaces/",
-          config
-        );
-        setSpace(res.data[0]);
-      }
-    } catch (err) {
-      console.error(err);
-      if (err.response) {
-        setError(err.response.data);
-      } else {
-        setError({ detail: "Network error" });
-      }
-    } finally {
-      setIsLoading(false);
-      setRefreshRecipients(false);
-    }
-  };
-
 
   useEffect(() => {
     const checkUserLoggedIn = () => {
       if (!loading && !user) navigate("/login");
     };
-    fetchSpaces();
+   
     checkUserLoggedIn();
   }, [loading, user, navigate]);
 
-  useEffect(() => {
-    fetchSpaces();
-  }, [refreshRecipients]);
 
-  console.log(user);
-  console.log(space);
+
   console.log(Object.keys(space).includes("recipients"));
 
   return (

@@ -1,39 +1,84 @@
 #recipient {
+  height: 90%;
 
-    .recipient-container {
+  .recipient-container {
+    display: grid;
+    grid-template-columns: 30% 70%;
+    grid-template-rows: 10% 90%;
+    margin: auto;
+    padding: 2vw 5vw;
+    justify-content: center;
+
+    h2 {
+      grid-column: 1/3;
+    }
+
+    .recipient-left-tab {
+      background-color: $green;
+      border-radius: $borderRadius;
+      color: $white;
+      width: max-content;
+      padding: 20px;
+
+      ul {
+        padding: 5px !important;
         display: flex;
         flex-direction: column;
-        width: 60%;
-        margin: auto;
+        gap: 10px;
 
-        .age {
-            font-family: inherit;
-            font-style: italic;
+        li {
+          font-weight: 600;
+          padding: 15px 25px;
+          transition: 0.5s ease-in;
+          border-radius: 10px;
+          cursor: pointer;
+
+          &.active {
+            background: $pearl;
+            color: $green;
+          }
         }
+      }
+    }
 
+    .age {
+      font-family: inherit;
+      font-style: italic;
+    }
+    #generalSection {
 
-        
         form {
             display: flex;
             flex-direction: column;
             margin: auto;
             gap: 15px;
+            height: 38vw;
+            overflow-y: scroll;
 
-            input:not([type="checkbox"]), textarea, select {
+            &::-webkit-scrollbar {
+               
+            }
+            
+            &::-webkit-scrollbar-thumb {
+               fill: $green;
+            }
+            
+            input:not([type="checkbox"]),
+            textarea,
+            select {
                 border-radius: 5px;
                 border: 1px solid #a09898;
                 padding: 5px 8px;
             }
-
-
+            
             .edit-sensible-info {
                 width: max-content;
                 margin: 5px auto;
             }
-
+            
             label {
-                    margin: 15px 0 5px;
-                    font-weight: 800;
+                margin: 15px 0 5px;
+                font-weight: 800;
             }
             
             .form-row {
@@ -46,13 +91,10 @@
                 }
             }
             
-            
             .field {
                 display: flex;
                 flex-direction: column;
                 width: 100%;
-                
-                
                 
                 .deletable_field {
                     display: flex;
@@ -67,10 +109,12 @@
             }
             
             .delete {
-                svg, path {
+                svg,
+                path {
                     pointer-events: none;
                 }
             }
         }
     }
+  }
 }

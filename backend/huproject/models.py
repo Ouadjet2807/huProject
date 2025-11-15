@@ -51,37 +51,6 @@ class CustomUser(AbstractUser):
             self.username = candidate
         super().save(*args, **kwargs)
 
-class HealthcareProfessional(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name = models.CharField(max_length=150)
-    specialty = models.CharField(max_length=150, blank=True)
-    contact = models.JSONField(blank=True, null=True) 
-    notes = models.TextField(blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"{self.name} ({self.specialty})" if self.specialty else self.name
-    
-
-class Treatment(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name = models.CharField(max_length=150)
-    dosage = models.CharField(max_length=100, blank=True)
-    frequency = models.CharField(max_length=100, blank=True)
-    start_date = models.DateField(null=True, blank=True)
-    end_date = models.DateField(null=True, blank=True)
-    prescribed_by = models.ForeignKey(
-        HealthcareProfessional,
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='prescribed_treatments'
-    )
-    notes = models.TextField(blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return self.name
 
 class Person(models.Model):
     first_name = models.CharField(max_length=50)
@@ -107,37 +76,6 @@ class Space(models.Model):
 
     def __str__(self):
         return self.name
-    
-class Recipient(Person):
-    space = models.ForeignKey(Space, related_name='recipients', on_delete=models.CASCADE)
-    medical_info = models.JSONField(blank=True, null=True)
-    treatments = models.ManyToManyField(Treatment, blank=True, related_name='recipients')
-    healthcare_professionals = models.ManyToManyField(HealthcareProfessional, blank=True, related_name='recipients')
-    caregivers = models.ManyToManyField(Caregiver, related_name="care_for")
-
-
-class Agenda(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    space = models.ForeignKey('Space', on_delete=models.CASCADE, related_name='belongs_to')
-
-class AgendaItemCategory(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    agenda = models.ForeignKey(Agenda, on_delete=models.CASCADE, related_name='has')
-
-class AgendaItem(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    agenda = models.ForeignKey(Agenda, on_delete=models.CASCADE, related_name='contains')
-    private = models.BooleanField(default=False)
-    category = models.ForeignKey(AgendaItemCategory, on_delete=models.SET_NULL, null=True, blank=True, related_name="items")
-    title = models.CharField(max_length=50)
-    description = models.CharField()
-    created_at = models.DateField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    start_date = models.DateField()
-    end_date = models.DateField()
-    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='creates')
-    participants = models.ManyToManyField(Caregiver, related_name='participates')
-    recipients = models.ManyToManyField(Recipient, blank=True, related_name='participates')
 
 
 class SpaceInvite(models.Model):
@@ -162,3 +100,78 @@ class SpaceInvite(models.Model):
 
     def is_valid(self):
         return (not self.used) and (self.expires_at is None or timezone.now() < self.expires_at)
+
+class HealthcareProfessional(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=150)
+    specialty = models.CharField(max_length=150, blank=True)
+    contact = models.JSONField(blank=True, null=True) 
+    notes = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    space = models.ForeignKey(
+        Space,
+        on_delete=models.CASCADE,
+        related_name='hold'
+    )
+
+    def __str__(self):
+        return f"{self.name} ({self.specialty})" if self.specialty else self.name
+    
+
+class Treatment(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=150)
+    dosage = models.CharField(max_length=100, blank=True)
+    medication_format = models.CharField(max_length=100, blank=True)
+    number_of_pills = models.IntegerField()
+    frequency = models.CharField(max_length=100, blank=True)
+    start_date = models.DateField(null=True, blank=True)
+    end_date = models.DateField(null=True, blank=True)
+    prescribed_by = models.ForeignKey(
+        HealthcareProfessional,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='prescribed_treatments'
+    )
+    notes = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    space = models.ForeignKey(
+        Space,
+        on_delete=models.CASCADE,
+        related_name='contains'
+    )
+
+    def __str__(self):
+        return self.name
+
+class Recipient(Person):
+    space = models.ForeignKey(Space, related_name='recipients', on_delete=models.CASCADE)
+    medical_info = models.JSONField(blank=True, null=True)
+    treatments = models.ManyToManyField(Treatment, blank=True, related_name='recipients')
+    healthcare_professionals = models.ManyToManyField(HealthcareProfessional, blank=True, related_name='recipients')
+    caregivers = models.ManyToManyField(Caregiver, related_name="care_for")
+
+class Agenda(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    space = models.ForeignKey('Space', on_delete=models.CASCADE, related_name='belongs_to')
+
+class AgendaItemCategory(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    agenda = models.ForeignKey(Agenda, on_delete=models.CASCADE, related_name='has')
+
+class AgendaItem(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    agenda = models.ForeignKey(Agenda, on_delete=models.CASCADE, related_name='contains')
+    private = models.BooleanField(default=False)
+    category = models.ForeignKey(AgendaItemCategory, on_delete=models.SET_NULL, null=True, blank=True, related_name="items")
+    title = models.CharField(max_length=50)
+    description = models.CharField()
+    created_at = models.DateField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='creates')
+    participants = models.ManyToManyField(Caregiver, related_name='participates')
+    recipients = models.ManyToManyField(Recipient, blank=True, related_name='participates')
+

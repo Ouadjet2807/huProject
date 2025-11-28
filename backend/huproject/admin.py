@@ -5,10 +5,15 @@ from .forms import CustomUserChangeForm, CustomUserCreationForm
 
 # Register your models here.
 
+@admin.register(TodoList)
+class TodoListAdmin(admin.ModelAdmin):
+    list_display = ('id', 'title', 'frequency', 'completed', 'created_at')
+    search_fields = ('title', 'frequency', 'completed', 'created_at')
+
 @admin.register(Treatment)
 class TreatmentAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'number_of_pills', 'medication_format', 'start_date', 'end_date', 'dosage', 'frequency', 'created_at')
-    search_fields = ('name', 'number_of_pills', 'medication_format', 'start_date', 'end_date', 'dosage', 'frequency', 'created_at')
+    list_display = ('id', 'name', 'medication_format', 'start_date', 'end_date', 'dosage', 'frequency', 'created_at')
+    search_fields = ('name', 'medication_format', 'start_date', 'end_date', 'dosage', 'frequency', 'created_at')
 
 @admin.register(HealthcareProfessional)
 class HealthcareProfessionalAdmin(admin.ModelAdmin):

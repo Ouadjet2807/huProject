@@ -32,7 +32,6 @@ export default function Recipient({spaceId}) {
 
   const recipient_id = params.id;
 
-  console.log(params);
 
   const handleTab = (e) => {
     if (e.target.id) {
@@ -99,22 +98,6 @@ export default function Recipient({spaceId}) {
         }
       }
     };
-
-    const getMedsData = async () => {
-      const token = localStorage.getItem("accessToken");
-      if (token) {
-        try {
-          const response = await axios.get(
-            `https://medicaments-api.giygas.dev/medicament/sme`
-          );
-
-          console.log("Success", response.data);
-        } catch (error) {
-          console.log(error);
-        }
-      }
-    };
-    getMedsData();
     getRecipientData();
   }, []);
 

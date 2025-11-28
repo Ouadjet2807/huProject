@@ -2,10 +2,16 @@
 
 $error: #d9002d;
 $success: #009365;
-$white: #ebebeb;
-$lightGreen: rgb(0, 190, 149);
-$green: rgb(0, 162, 138);
-$darkGreen: rgb(0, 110, 93);
+$white: #ffffff;
+$whiteGreen: #e1e8e5;
+$aqua: #92cfbc75;
+$lightGreen: #B3C1B4;
+$lightGreen2: #88A590;
+$mediumGreen2: #638A75;
+$mediumGreen: #446E5F;
+$green: #2A534C;
+$darkGreen: #163737;
+$blackGreen: #08181C;
 $pearl: rgb(244, 248, 248);
 $charcoal: rgb(21, 22, 22);
 
@@ -13,16 +19,39 @@ $font1: "Roboto";
 $font2: "Montserrat";
 $font3: "Merriweather";
 
+$borderRadiusLight: 10px;
+$borderRadiusMedium: 15px;
 $borderRadius: 20px;
 
 html, body, #root, .app {
   height: 100%;
 }
 
+* {
+  margin: 0;
+  padding: 0;
+}
+
 body {
-    background: $pearl !important;
+    background: linear-gradient(180deg, $pearl, $lightGreen) !important;
     overflow: hidden;
 }
+
+.App {
+    grid-template-columns: 15% 85%;
+    display: grid;
+    height: 100%;
+    padding: 1vw;
+
+
+    > :not(.navigation) {
+      background: $white;
+      border-radius: 0 $borderRadius $borderRadius 0;
+
+    }
+
+}
+
 
   h1 {
     font-family: $font3;
@@ -47,3 +76,4 @@ body {
   li {
     list-style-type: none;
   }
+

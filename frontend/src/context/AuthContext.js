@@ -10,6 +10,10 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [message, setMessage] = useState({
+    status: "",
+    message: "",
+  });
   const [loading, setLoading] = useState(true);
   const [space, setSpace] = useState({});
   const [refreshSpace, setRefreshSpace] = useState(false);
@@ -47,8 +51,28 @@ export const AuthProvider = ({ children }) => {
       api.defaults.headers.common["Authorization"] = `Bearer ${access}`;
       const res = await api.get("http://127.0.0.1:8000/api/user/");
       setUser({ ...res.data, isAuthenticated: true });
+      setMessage({
+        status: "success",
+        message: "Login successfully",
+      });
     } catch (error) {
-      console.error("Login failed:", error);
+      console.log("Error", error.response.data);
+      if (error.response && error.response.data) {
+        Object.keys(error.response.data).forEach((field) => {
+          const errorMessages = error.response.data[field];
+          if (errorMessages && errorMessages.length > 0) {
+            setMessage({
+              status: "error",
+              message: errorMessages[0],
+            });
+          } else {
+            setMessage({
+              status: "error",
+              message: "An unknown error has occured, please try again later",
+            });
+          }
+        });
+      }
     }
 
     setLoading(false);
@@ -66,8 +90,28 @@ export const AuthProvider = ({ children }) => {
       api.defaults.headers.common["Authorization"] = `Bearer ${access}`;
       const res = await api.get("http://127.0.0.1:8000/api/user/");
       setUser({ ...res.data, isAuthenticated: true });
+      setMessage({
+        status: "success",
+        message: "Registered successfully",
+      });
     } catch (error) {
       console.error("Register failed:", error);
+      if (error.response && error.response.data) {
+        Object.keys(error.response.data).forEach((field) => {
+          const errorMessages = error.response.data[field];
+          if (errorMessages && errorMessages.length > 0) {
+            setMessage({
+              status: "error",
+              message: errorMessages[0],
+            });
+          } else {
+            setMessage({
+              status: "error",
+              message: "An unknown error has occured, please try again later",
+            });
+          }
+        });
+      }
     }
     setLoading(false);
   };
@@ -79,6 +123,10 @@ export const AuthProvider = ({ children }) => {
       localStorage.removeItem("refreshToken");
       delete api.defaults.headers.common["Authorization"];
       setUser(null);
+      setMessage({
+        status: "",
+        message: "",
+      });
     }
   };
 
@@ -115,6 +163,7 @@ export const AuthProvider = ({ children }) => {
     refreshSpace,
     setRefreshSpace,
     space,
+    message,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -6,11 +6,12 @@ from rest_framework_simplejwt.views import TokenRefreshView
 router = routers.DefaultRouter()
 router.register(r'treatments', TreatmentViewSet, 'treatment')
 router.register(r'healthcare_professional', HealthcareProfessionalViewSet, 'healthcare-professional')
-router.register(r'agenda_items', AgendaItemViewSet, 'agenda-item')
+router.register(r'agenda_items', AgendaItemViewSet, 'agenda-items')
 router.register(r'agendas', AgendaViewSet, 'agenda')
 router.register(r'caregivers', CaregiverViewSet, 'caregiver')
 router.register(r'recipients', RecipientViewSet, 'recipient')
 router.register(r'spaces', SpaceViewSet, 'space')
+router.register(r'todo_lists', TodoListViewSet, 'todo-lists')
 
 urlpatterns = [
     path("register/", UserRegistrationAPIView.as_view(), name="register-user"),

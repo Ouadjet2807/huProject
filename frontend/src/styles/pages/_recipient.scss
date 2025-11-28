@@ -1,5 +1,5 @@
 #recipient {
-  height: 90%;
+  height: 100%;
 
   .recipient-container {
     display: grid;
@@ -46,75 +46,305 @@
       font-style: italic;
     }
     #generalSection {
+      form {
+        display: flex;
+        flex-direction: column;
+        margin: auto;
+        gap: 15px;
+        height: 38vw;
+        overflow-y: scroll;
 
-        form {
-            display: flex;
-            flex-direction: column;
-            margin: auto;
-            gap: 15px;
-            height: 38vw;
-            overflow-y: scroll;
-
-            &::-webkit-scrollbar {
-               
-            }
-            
-            &::-webkit-scrollbar-thumb {
-               fill: $green;
-            }
-            
-            input:not([type="checkbox"]),
-            textarea,
-            select {
-                border-radius: 5px;
-                border: 1px solid #a09898;
-                padding: 5px 8px;
-            }
-            
-            .edit-sensible-info {
-                width: max-content;
-                margin: 5px auto;
-            }
-            
-            label {
-                margin: 15px 0 5px;
-                font-weight: 800;
-            }
-            
-            .form-row {
-                display: grid;
-                grid-template-columns: 49% 49%;
-                gap: 0 10px;
-                
-                input {
-                    width: 100%;
-                }
-            }
-            
-            .field {
-                display: flex;
-                flex-direction: column;
-                width: 100%;
-                
-                .deletable_field {
-                    display: flex;
-                    gap: 5px;
-                    margin: 0 0 10px;
-                    width: 100%;
-                    
-                    input {
-                        width: 100%;
-                    }
-                }
-            }
-            
-            .delete {
-                svg,
-                path {
-                    pointer-events: none;
-                }
-            }
+        &::-webkit-scrollbar {
         }
+
+        &::-webkit-scrollbar-thumb {
+          fill: $green;
+        }
+
+        input:not([type="checkbox"]),
+        textarea,
+        select {
+          border-radius: 5px;
+          border: 1px solid #a09898;
+          padding: 5px 8px;
+        }
+
+        .edit-sensible-info {
+          width: max-content;
+          margin: 5px auto;
+        }
+
+        label {
+          margin: 15px 0 5px;
+          font-weight: 800;
+        }
+
+        .form-row {
+          display: grid;
+          grid-template-columns: 49% 49%;
+          gap: 0 10px;
+
+          input {
+            width: 100%;
+          }
+        }
+
+        .field {
+          display: flex;
+          flex-direction: column;
+          width: 100%;
+
+          .deletable_field {
+            display: flex;
+            gap: 5px;
+            margin: 0 0 10px;
+            width: 100%;
+
+            input {
+              width: 100%;
+            }
+          }
+        }
+
+        .delete {
+          svg,
+          path {
+            pointer-events: none;
+          }
+        }
+      }
+    }
+
+    #recipientTreatments {
+      .treatments-list {
+        display: grid;
+        grid-template-columns: 33% 33% 33%;
+        gap: 10px;
+        height: 38vw;
+        overflow-y: scroll;
+
+        .treatment {
+          display: flex;
+          flex-direction: column;
+          padding: 20px;
+          border-radius: $borderRadius;
+          border: 3px solid $green;
+        }
+      }
+
+      .add-treatment-btn {
+        margin: 15px auto;
+      }
+    }
+  }
+}
+#medicationDetailsModal {
+  form {
+    padding: 0 20px;
+
+    label {
+      font-weight: 600;
+    }
+
+    .posology {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+
+      #freeTake {
+        width: max-content;
+        margin: auto;
+        display: flex;
+        gap: 15px;
+
+        input {
+          accent-color: $green;
+        }
+
+        label {
+          font-weight: 400;
+        }
+      }
+
+      .fields {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+        justify-content: center;
+
+        input[type="number"] {
+          text-align: center;
+          width: 3vw;
+        }
+
+        input,
+        select {
+          height: 2vw;
+        }
+
+        .field {
+          display: flex;
+          align-items: center;
+          position: relative;
+          gap: 10px;
+          justify-content: center;
+
+          &.dayTime {
+            width: 25%;
+            border-width: 1.5px;
+            border-style: solid;
+            border-color: $charcoal;
+            transition: 0.3s ease;
+            border-radius: 50px;
+            padding: 5px 10px;
+            color: $charcoal;
+            cursor: pointer;
+            background: white;
+            transition: 0.5s ease-in;
+
+            &::before {
+              content: "";
+              width: 100%;
+              height: 100%;
+              position: absolute;
+              background: white;
+              border-radius: 50px;
+              z-index: 4;
+              transition: 0.3s ease;
+              cursor: pointer;
+            }
+
+            &:hover {
+              &::before {
+                opacity: 0;
+              }
+            }
+
+            svg {
+              font-size: 1.5vw;
+              z-index: 6;
+              width: 2vw;
+            }
+
+            label {
+              z-index: 6;
+            }
+          }
+
+          &.selected {
+            &::before {
+              opacity: 0;
+            }
+          }
+
+          &.disabled {
+            background-image: none !important;
+            background-color: #e6e9e8 !important;
+            border-color: #696969;
+            color: #696969;
+            cursor: not-allowed;
+
+            &::before {
+              opacity: 0;
+            }
+          }
+
+          input[type="checkbox"] {
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            opacity: 0;
+            top: 0;
+            left: 0;
+            cursor: pointer;
+            z-index: 8;
+          }
+        }
+
+        #morning {
+          background-color: #ffb600;
+          background-image: linear-gradient(0deg, transparent 8%, #ffb600 68%);
+
+          &:hover {
+            background-color: #ff305dba;
+          }
+
+          &.selected {
+            background-image: linear-gradient(
+              0deg,
+              transparent 8%,
+              #ffb600 68%
+            );
+            background-color: #ff305dba;
+          }
+        }
+
+        #midday {
+          background-image: linear-gradient(0deg, transparent 8%, #7adeff 68%);
+          background-color: #7adeff;
+
+          &:hover {
+            background-color: #8a8aff;
+          }
+
+          &.selected {
+            background-image: linear-gradient(
+              0deg,
+              transparent 8%,
+              #7adeff 68%
+            );
+            background-color: #8a8aff;
+          }
+        }
+
+        #evening {
+          background-color: #9973ee;
+          background-image: linear-gradient(0deg, transparent 8%, #9973ee 68%);
+
+          &:hover {
+            background-color: #ff5d5d;
+          }
+
+          &.selected {
+            background-image: linear-gradient(
+              0deg,
+              transparent 8%,
+              #9973ee 68%
+            );
+            background-color: #ff5d5d;
+          }
+        }
+      }
+    }
+
+    .box-size {
+      margin: 3vw 0;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+
+      .size {
+        display: flex;
+        gap: 20px;
+        accent-color: $green;
+      }
+
+      .field {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+
+        input {
+          width: 3vw;
+          text-align: center;
+        }
+      }
+    }
+
+    .start-date {
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
   }
 }

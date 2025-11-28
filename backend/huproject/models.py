@@ -17,7 +17,7 @@ class CustomUser(AbstractUser):
 
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS=[]
+    REQUIRED_FIELDS=['']
 
     def __str__(self) -> str:
         return self.email
@@ -123,8 +123,8 @@ class Treatment(models.Model):
     name = models.CharField(max_length=150)
     dosage = models.CharField(max_length=100, blank=True)
     medication_format = models.CharField(max_length=100, blank=True)
-    number_of_pills = models.IntegerField()
-    frequency = models.CharField(max_length=100, blank=True)
+    quantity = models.JSONField(null=True, blank=True)
+    frequency = models.JSONField(null=True, blank=True)
     start_date = models.DateField(null=True, blank=True)
     end_date = models.DateField(null=True, blank=True)
     prescribed_by = models.ForeignKey(
@@ -167,11 +167,23 @@ class AgendaItem(models.Model):
     category = models.ForeignKey(AgendaItemCategory, on_delete=models.SET_NULL, null=True, blank=True, related_name="items")
     title = models.CharField(max_length=50)
     description = models.CharField()
-    created_at = models.DateField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    start_date = models.DateField()
-    end_date = models.DateField()
+    start_date = models.DateTimeField()
+    end_date = models.DateTimeField()
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='creates')
     participants = models.ManyToManyField(Caregiver, related_name='participates')
     recipients = models.ManyToManyField(Recipient, blank=True, related_name='participates')
+
+
+class TodoList(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    space = models.ForeignKey(Space, on_delete=models.CASCADE, related_name='todo')
+    frequency = models.CharField(default="punctual")
+    completed = models.BooleanField(default=False)
+    completed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='complete')
+    title = models.CharField(max_length=50)
+    created_at = models.DateField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='creates_todo')
 

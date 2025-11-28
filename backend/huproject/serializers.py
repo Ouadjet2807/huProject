@@ -70,7 +70,7 @@ class TreatmentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Treatment
-        fields = ('id','name','dosage', 'medication_format', 'number_of_pills', 'frequency','start_date','end_date','prescribed_by','prescribed_by_id','notes', 'space')
+        fields = ('id','name','dosage', 'medication_format', 'quantity', 'frequency','start_date','end_date','prescribed_by','prescribed_by_id','notes', 'space')
 
 
 class RecipientSerializer(serializers.ModelSerializer):
@@ -157,3 +157,12 @@ class AgendaItemSerializer(serializers.ModelSerializer):
         model = AgendaItem
         fields = ['id', 'agenda', 'category', 'private', 'title', 'description', 'created_at', 'start_date','end_date', 'created_by', 'agenda_id', 'participants', 'recipients']
         read_only_fields = ['id', 'agenda', 'created_at']
+
+
+class TodoListSerializer(serializers.ModelSerializer):
+    space = serializers.PrimaryKeyRelatedField(queryset=Space.objects.all())
+
+    class Meta:
+        model = TodoList
+        fields = ['id', 'space', 'frequency', 'completed', 'completed_by', 'title', 'updated_at', 'created_at', 'created_by']
+        read_only_fields = ['id', 'space', 'created_at']

@@ -1,28 +1,43 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useRef } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+import { RiAccountPinCircleLine } from "react-icons/ri";
+import { IoHome } from "react-icons/io5";
+import { LuLogOut } from "react-icons/lu";
+import { CiCalendar } from "react-icons/ci";
+
+gsap.registerPlugin(useGSAP); // register the hook to avoid React version discrepancies
 
 export default function Navbar() {
-
   const { user, logout } = useContext(AuthContext);
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
-  const location = useLocation()
+  const location = useLocation();
 
-  const [active, setActive] = useState()
+  const [activeNav, setActiveNav] = useState(true);
+
+  const navbar = useRef();
 
   const auth_routes = [
-     {
-      name: "Home",
+    {
+      name: "Accueil",
+      icon: <IoHome />,
       path: "/home",
     },
     {
-      name: "Logout",
-      path: "/logout",
+      name: "Agenda",
+      icon: <CiCalendar />,
+      path: "/calendar",
     },
-  ]
-
+    {
+      name: "Compte",
+      icon: <RiAccountPinCircleLine />,
+      path: "/account",
+    },
+  ];
 
   const no_auth_routes = [
     {
@@ -35,7 +50,14 @@ export default function Navbar() {
     },
   ];
 
-  
+  const handleNavAnimation = (e) => {
+    e.stopPropagation();
+    if (e.type === "mouseenter") {
+      setActiveNav(true);
+    } else {
+      setActiveNav(false);
+    }
+  };
 
   const handleLogout = async () => {
     try {
@@ -51,30 +73,97 @@ export default function Navbar() {
     }
   };
 
-  
+  useGSAP(() => {
+    if (activeNav) {
+      console.log("active");
+      
+      gsap.to(".App", {
+        gridTemplateColumns: "15% 85%",
+      });
+      gsap.to(".navigation", {
+        width: "100%",
+        padding: "5px",
+      });
+      gsap.to(".navigation ul", {
+        padding: "15px",
+      });
+      gsap.to(".navigation ul li", {
+        borderRadius: "20px",
+        width: "100%",
+        padding: "15px 20px",
+        textAlign: "left",
+        height: "max-content",
+        duration: 0.2
+      });
+      gsap.to(".navigation ul li a, .navigation ul li span", {
+        justifyContent: "flex-start",
+        duration: 0.2
+      });
+    } else {
+       gsap.to(".App", {
+        gridTemplateColumns: "5% 95%",
+      });
+      gsap.to(".navigation", {
+        width: "100%",
+      });
+      gsap.to(".navigation ul", {
+        padding: "10px 5px",
+        alignItems: "center",
+      });
+      gsap.to(".navigation ul li", {
+        transition: "0",
+        width: "3vw",
+        height: "3vw",
+        padding: "10px",
+        textAlign: "center",
+        borderRadius: "50%",
+      });
+       gsap.to(".navigation ul li a, .navigation ul li span", {
+        justifyContent: "center",
+        duration: 0.2
+      });
+    }
+  }, [activeNav]);
+
   return (
-
-      <nav className="navigation">
-        <ul className="nav-list">
-          {user ? (
-            auth_routes.map((item) => {
+    <nav
+      className={`navigation ${user ? "left-tab-nav" : ""}`}
+      onMouseEnter={(e) => handleNavAnimation(e)}
+      onMouseLeave={(e) => handleNavAnimation(e)}
+      ref={navbar}
+    >
+      <ul className="nav-list">
+        {user ? (
+          <>
+            {auth_routes.map((item) => {
               return (
-                <li className={`nav-item ${item.path === location.pathname ? 'active' : ''}`}>
-                  <a href={item.path}>{item.name}</a>
+                <li
+                  className={`nav-item ${
+                    item.path === location.pathname ? "active" : ""
+                  }`}
+                >
+                  <a href={item.path}>{activeNav ? <>{item.icon} {item.name}</> : item.icon}</a>
                 </li>
               );
-            })
-          ) : (
-            no_auth_routes.map((item) => {
-              return (
-                <li className={`nav-item ${item.path === location.pathname ? 'active' : ''}`}>
-                  <a href={item.path}>{item.name}</a>
-                </li>
-              );
-            })
-          )}
-        </ul>
-      </nav>
-
+            })}
+            <li className="nav-item" onClick={handleLogout}>
+              <span>{activeNav ? <><LuLogOut /> Déconnexion</>: <LuLogOut />}</span>
+            </li>
+          </>
+        ) : (
+          no_auth_routes.map((item) => {
+            return (
+              <li
+                className={`nav-item ${
+                  item.path === location.pathname ? "active" : ""
+                }`}
+              >
+                <a href={item.path}>{activeNav ? item.name : item.icon}</a>
+              </li>
+            );
+          })
+        )}
+      </ul>
+    </nav>
   );
 }

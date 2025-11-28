@@ -7,31 +7,17 @@ import { SlUserFemale } from "react-icons/sl";
 import { SlUser } from "react-icons/sl";
 import { AiOutlineLoading } from "react-icons/ai";
 import Agenda from "../components/Agenda";
+import TodoList from "../components/TodoList";
 
 export default function Home({setRefreshRecipients, space}) {
 
   const [addRecipient, setAddRecipient] = useState(false);
-
 
   const navigate = useNavigate();
 
   const { user, logout, loading } = useContext(AuthContext);
 
   console.log(loading);
-
-  const handleLogout = async () => {
-    try {
-      const refreshToken = localStorage.getItem("refreshToken");
-
-      logout(refreshToken);
-
-      console.log(refreshToken);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      navigate("/login");
-    }
-  };
 
 
   useEffect(() => {
@@ -48,12 +34,13 @@ export default function Home({setRefreshRecipients, space}) {
 
   return (
     <div id="home">
+      
       {!loading ? (
         <>
           <div className="left-tab">
           <h1>Hi {user && user.first_name}, welcome</h1>
 
-            <div className="recipients">
+            {/* <div className="recipients box">
             <h3>Your recipients</h3>
               {Object.keys(space).includes("recipients") &&
                 space.recipients.map((item) => {
@@ -72,7 +59,8 @@ export default function Home({setRefreshRecipients, space}) {
             <button onClick={() => setAddRecipient(true)}>
               Add a recipient
             </button>
-            </div>
+            </div> */}
+            <TodoList user={user} space={space}/>
           </div>
 
           {addRecipient && (
@@ -81,10 +69,10 @@ export default function Home({setRefreshRecipients, space}) {
               setRefreshRecipients={setRefreshRecipients}
             />
           )}
-          <div className="rightTab">
-            <Agenda space={space}/>
+          <div className="box">
+           
           </div>
-          <button onClick={handleLogout}>Logout</button>
+
         </>
       ) : (
         <div>Loading</div>

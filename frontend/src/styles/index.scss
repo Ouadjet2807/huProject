@@ -1,8 +1,9 @@
 @import './settings';
-@import './pages/login';
-@import './pages/register';
+@import './pages/sign';
 @import './pages/home';
+@import './pages/account';
 @import './pages/recipient';
+@import './components/todoList';
 @import './components/navbar';
 @import './components/modal';
 @import './components/agenda';

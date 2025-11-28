@@ -56,8 +56,8 @@ export default function SearchTreatmentsModal({ show, setShow, setSelectedMedica
         />
         <p>{debouncedValue}</p>
         <div className="search-results">
-          {searchResults.length > 0 ? (
-            searchResults.map((med) => {
+          {(searchResults && searchResults.length > 0) ? (
+            searchResults.filter(result => result.etatComercialisation !== "Non commercialisée").map((med) => {
               return (
                 <div className="medication" onClick={() => setSelectedMedication(med)}>{med.elementPharmaceutique}</div>
               );

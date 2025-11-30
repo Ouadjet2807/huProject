@@ -209,6 +209,40 @@ class AgendaItemViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save() 
 
+class AgendaItemCategoryViewSet(viewsets.ModelViewSet):
+    serializer_class = AgendaItemCategorySerializer
+    lookup_field = 'id'
+    queryset = AgendaItemCategory.objects.all()
+    permission_classes = [permissions.IsAuthenticated] 
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['agenda', 'name']
+    ordering_fields = ['name',]
+
+    def get_queryset(self):
+        user = self.request.user
+
+        if not user or not hasattr(user, 'caregiver'):
+            return AgendaItemCategory.objects.none()
+        
+        caregiver = user.caregiver
+
+        qs = AgendaItemCategory.objects.filter(agenda__space__caregivers=caregiver)
+
+        qs = qs.select_related('agenda').order_by('name')
+
+        space_id = self.request.query_params.get('space_id')
+        if space_id:
+            qs = qs.filter(agenda__space__id=space_id)
+
+        agenda_id = self.request.query_params.get('agenda_id')
+        if agenda_id:
+            qs = qs.filter(agenda__id=agenda_id)
+
+        return qs.distinct()
+
+    def perform_create(self, serializer):
+        serializer.save() 
+
 
 
 class SpaceViewSet(viewsets.ModelViewSet):

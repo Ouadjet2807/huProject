@@ -8,7 +8,7 @@ import { IoHome } from "react-icons/io5";
 import { LuLogOut } from "react-icons/lu";
 import { CiCalendar } from "react-icons/ci";
 
-gsap.registerPlugin(useGSAP); // register the hook to avoid React version discrepancies
+gsap.registerPlugin(useGSAP); 
 
 export default function Navbar() {
   const { user, logout } = useContext(AuthContext);
@@ -17,7 +17,7 @@ export default function Navbar() {
 
   const location = useLocation();
 
-  const [activeNav, setActiveNav] = useState(true);
+  const [activeNav, setActiveNav] = useState(false);
 
   const navbar = useRef();
 

@@ -159,6 +159,8 @@ class Agenda(models.Model):
 class AgendaItemCategory(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     agenda = models.ForeignKey(Agenda, on_delete=models.CASCADE, related_name='has')
+    name = models.CharField(max_length=50)
+    color = models.CharField(max_length=15)
 
 class AgendaItem(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

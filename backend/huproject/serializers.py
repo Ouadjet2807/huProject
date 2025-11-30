@@ -158,6 +158,15 @@ class AgendaItemSerializer(serializers.ModelSerializer):
         fields = ['id', 'agenda', 'category', 'private', 'title', 'description', 'created_at', 'start_date','end_date', 'created_by', 'agenda_id', 'participants', 'recipients']
         read_only_fields = ['id', 'agenda', 'created_at']
 
+class AgendaItemCategorySerializer(serializers.ModelSerializer):
+    agenda = AgendaSerializer(read_only=True)
+    agenda_id = serializers.PrimaryKeyRelatedField(queryset=Agenda.objects.all(), source='agenda', write_only=True)
+
+    class Meta:
+        model = AgendaItemCategory
+        fields = ['id', 'agenda', 'agenda_id', 'name', 'color']
+        read_only_fields = ['id', 'agenda']
+
 
 class TodoListSerializer(serializers.ModelSerializer):
     space = serializers.PrimaryKeyRelatedField(queryset=Space.objects.all())

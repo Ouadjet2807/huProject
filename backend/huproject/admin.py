@@ -20,6 +20,11 @@ class HealthcareProfessionalAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'specialty', 'created_at')
     search_fields = ('name', 'specialty', 'created_at')
 
+@admin.register(AgendaItemCategory)
+class AgendaItemCategoryAdmin(admin.ModelAdmin):
+    list_display = ('id', 'agenda', 'name')
+    search_fields = ('agenda', 'name')
+
 @admin.register(AgendaItem)
 class AgendaItemAdmin(admin.ModelAdmin):
     list_display = ('id', 'title', 'start_date', 'end_date', 'created_at', 'created_by', 'private')

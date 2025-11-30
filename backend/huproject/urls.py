@@ -6,6 +6,7 @@ from rest_framework_simplejwt.views import TokenRefreshView
 router = routers.DefaultRouter()
 router.register(r'treatments', TreatmentViewSet, 'treatment')
 router.register(r'healthcare_professional', HealthcareProfessionalViewSet, 'healthcare-professional')
+router.register(r'agenda_item_categories', AgendaItemCategoryViewSet, 'agenda-items-categories')
 router.register(r'agenda_items', AgendaItemViewSet, 'agenda-items')
 router.register(r'agendas', AgendaViewSet, 'agenda')
 router.register(r'caregivers', CaregiverViewSet, 'caregiver')

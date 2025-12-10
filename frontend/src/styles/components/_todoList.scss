@@ -1,18 +1,33 @@
 #todoList {
   .todo-category {
     display: flex;
-    gap: 5px;
+    background: white;
+    border-radius: $borderRadiusLight;
+    padding: 0;
 
     li {
-      border: 2px solid $lightGreen;
-      border-radius: $borderRadiusLight;
       padding: 5px 10px;
       transition: 0.3s ease-in;
       cursor: pointer;
+      border: 1px solid $white;
+
+      &:nth-child(1) {
+        border-radius: $borderRadiusLight 0 0 $borderRadiusLight;
+      }
+
+      &:last-child {
+        border-radius: 0 $borderRadiusLight $borderRadiusLight 0;
+      }
 
       &.activeCategory {
-        background: $lightGreen;
-        color: white;
+        background: $aqua;
+        border: 1px solid $green;
+        color: $green;
+      }
+
+      &:hover {
+        background: $aqua;
+        color: $green;
       }
     }
   }
@@ -21,6 +36,9 @@
     display: flex;
     flex-direction: column;
     gap: 15px;
+    background: $white;
+    border-radius: $borderRadiusMedium;
+    padding: 10px;
 
     .todo-item {
       display: grid;
@@ -29,8 +47,10 @@
       transition: 0.3s ease-in;
 
       input {
-        accent-color: $lightGreen2;
+        accent-color: $aqua;
         cursor: pointer;
+
+    
       }
 
       .delete {
@@ -53,7 +73,7 @@
     display: flex;
     flex-direction: column;
     gap: 20px;
-    border: 3px solid $lightGreen;
+    border: 3px solid $whiteGreen;
     padding: 15px;
     border-radius: $borderRadiusMedium;
     height: max-content;
@@ -73,9 +93,13 @@
     }
 
     button {
-      background: $lightGreen2;
+      background: $aqua;
+      color: $green;
+      border: 1px solid $green;
       margin: auto;
       transform-origin: center;
+      display: flex;
+      justify-content: center;
     }
   }
 }

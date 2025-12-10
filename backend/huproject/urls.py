@@ -12,6 +12,7 @@ router.register(r'agendas', AgendaViewSet, 'agenda')
 router.register(r'caregivers', CaregiverViewSet, 'caregiver')
 router.register(r'recipients', RecipientViewSet, 'recipient')
 router.register(r'spaces', SpaceViewSet, 'space')
+router.register(r'invitations', InvitationViewSet, 'invitation')
 router.register(r'todo_lists', TodoListViewSet, 'todo-lists')
 
 urlpatterns = [
@@ -20,6 +21,9 @@ urlpatterns = [
     path("logout/", UserLogoutAPIView.as_view(), name="logout-user"),
     path("token/refresh/", TokenRefreshView.as_view(), name="token-refresh"),
     path('user/', UserInfoAPIView.as_view(), name="user-info"),
+    path('user/<str:id>/', UserInfoAPIView.as_view()),
+    path('invitations/validate/', validate_invitation),
+    path('invitations/accept_invite/', accept_invitation),
     path('', include(router.urls))
 ]
 

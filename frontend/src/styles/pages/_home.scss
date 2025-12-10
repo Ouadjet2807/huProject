@@ -1,83 +1,86 @@
 #home {
-  padding: 3vw;
-  display: grid;
-  grid-template-columns: 40% 60%;
-  justify-items: center;
+  .home-container {
+    height: 100%;
+    padding: 2vw;
+    display: grid;
+    grid-template-columns: 40% 60%;
 
-  .box {
-    background: $lightGreen;
-    padding: 45px;
-    height: max-content;
-    width: max-content;
-    border-radius: $borderRadius;
-  }
-
-  .loading {
-    .loaderOne {
-      position: absolute;
-    }
-
-    .loaderTwo {
-      transform: rotateX(180deg) rotateY(-180deg);
-    }
-  }
-
-  .left-tab {
-    .recipients {
-      background: $green;
+    .right-tab {
+      background: $whiteGreen;
+      padding: 45px;
+      height: 100%;
+      width: max-content;
       border-radius: $borderRadius;
-      padding: 20px;
-      width: 20vw;
-      margin: 5vw 2vw3;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
+    }
 
-      h3 {
-        margin: 0;
-        color: $white;
+    .loading {
+      .loaderOne {
+        position: absolute;
       }
 
-      .recipient {
-        width: 90%;
-        height: 3vw;
-        background: $white;
-        border-radius: 13px;
-        color: $green;
-        padding: 5px 15px;
-        display: flex;
-        align-items: center;
+      .loaderTwo {
+        transform: rotateX(180deg) rotateY(-180deg);
+      }
+    }
 
-        h4 {
-          gap: 10px;
+    .left-tab {
+      padding: 0 2vw 0 0;
+
+      .recipients {
+        background: $green;
+        border-radius: $borderRadius;
+        padding: 20px;
+        margin: 5vw auto;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
+        h3 {
+          margin: 0;
+          color: $white;
+        }
+
+        .recipient {
+          width: 90%;
+          height: 3vw;
+          background: $white;
+          border-radius: 13px;
+          color: $green;
+          padding: 5px 15px;
           display: flex;
           align-items: center;
-          text-transform: capitalize;
 
-          .icon {
-            border: 2px solid $green;
-            border-radius: 50%;
-            padding: 5px 8px;
+          h4 {
+            gap: 10px;
+            display: flex;
+            align-items: center;
+            text-transform: capitalize;
+
+            .icon {
+              border: 2px solid $green;
+              border-radius: 50%;
+              padding: 5px 8px;
+            }
           }
         }
       }
-    }
 
-    button {
-      background: $lightGreen;
-      color: $green;
-      font-family: $font1;
-      font-weight: 600;
-      width: max-content;
-      border-radius: 5px;
-      text-transform: uppercase;
-      border: none;
-      margin: 10px auto;
-      padding: 15px 40px;
-      cursor: pointer;
+      button {
+        background: $lightGreen;
+        color: $green;
+        font-family: $font1;
+        font-weight: 600;
+        width: max-content;
+        border-radius: 5px;
+        text-transform: uppercase;
+        border: none;
+        margin: 10px auto;
+        padding: 15px 40px;
+        cursor: pointer;
 
-      &:hover {
-        background: $darkGreen;
+        &:hover {
+          background: $darkGreen;
+        }
       }
     }
   }

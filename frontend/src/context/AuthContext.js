@@ -53,9 +53,11 @@ export const AuthProvider = ({ children }) => {
       setUser({ ...res.data, isAuthenticated: true });
       setMessage({
         status: "success",
-        message: "Login successfully",
+        message: "Connexion réussie, bienvenue !",
       });
     } catch (error) {
+      console.log(error);
+      
       console.log("Error", error.response.data);
       if (error.response && error.response.data) {
         Object.keys(error.response.data).forEach((field) => {
@@ -68,7 +70,7 @@ export const AuthProvider = ({ children }) => {
           } else {
             setMessage({
               status: "error",
-              message: "An unknown error has occured, please try again later",
+              message: "Une erreur inconnue s'est produite, veuillez réessayer ultérieurement",
             });
           }
         });
@@ -89,12 +91,12 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem("refreshToken", response.data.tokens.refresh);
       api.defaults.headers.common["Authorization"] = `Bearer ${access}`;
       const res = await api.get("http://127.0.0.1:8000/api/user/");
-      setUser({ ...res.data, isAuthenticated: true });
-      setMessage({
-        status: "success",
-        message: "Registered successfully",
+        setUser({ ...res.data, isAuthenticated: true });
+        setMessage({
+          status: "success",
+          message: "Compte crée avec succès, bienvenue !",
       });
-    } catch (error) {
+      } catch (error) {
       console.error("Register failed:", error);
       if (error.response && error.response.data) {
         Object.keys(error.response.data).forEach((field) => {
@@ -107,7 +109,7 @@ export const AuthProvider = ({ children }) => {
           } else {
             setMessage({
               status: "error",
-              message: "An unknown error has occured, please try again later",
+              message: "Une erreur inconnue s'est produite, veuillez réessayer ultérieurement",
             });
           }
         });
@@ -130,8 +132,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  useEffect(() => {
-    const initAuth = async () => {
+      const initAuth = async () => {
       const token = localStorage.getItem("accessToken");
       if (token) {
         api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
@@ -142,10 +143,15 @@ export const AuthProvider = ({ children }) => {
           console.error("Failed to fetch user info", err);
           logout();
         }
-      }
+      } 
+      // else if(window.location.pathname !== "/login") {
+      //    window.location.assign("/login")
+      // }
 
       setLoading(false);
     };
+
+  useEffect(() => {
     initAuth();
     fetchSpaces();
   }, []);
@@ -153,6 +159,12 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     fetchSpaces();
   }, [refreshSpace]);
+
+  useEffect(() => {
+    if(!loading) {
+      initAuth();
+    }
+  }, [loading]);
 
   const value = {
     user,

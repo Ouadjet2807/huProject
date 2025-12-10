@@ -15,29 +15,33 @@ import { FaTag } from "react-icons/fa6";
 import { CiShoppingTag } from "react-icons/ci";
 import CreateCategory from "./CreateCategory";
 import { FaRegTrashAlt } from "react-icons/fa";
+import { ToastContext } from "../../context/ToastContext";
 
 export default function AddEvent({ agenda, show, setShow }) {
   moment.locale("fr");
   const { user, space } = useContext(AuthContext);
+
+  const { setShowToast, setMessage, setColor } = useContext(ToastContext);
 
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState();
   const [minDate, setMinDate] = useState();
   const [showCreateCategory, setShowCreateCategory] = useState(false);
 
-  let today = new Date();
+  let default_start_date = moment()
+    .minutes(0)
+    .seconds(0)
+    .seconds(0)
+    .local()
+    .format();
 
-  let default_start_date = `${moment().local().toISOString().slice(0, 10)} ${
-    moment().hours() < 10 ? `0${moment().hours()}:00` : `${moment().hours()}:00`
-  }`;
-
-  let default_end_date = `${moment().local().toISOString().slice(0, 10)} ${
-    moment().add(1, "hours").hours() < 10
-      ? `0${moment().add(1, "hours").hours()}:00`
-      : `${moment().add(1, "hours").hours()}:00`
-  }`;
-
-  console.log(default_start_date);
+  let default_end_date = moment()
+    .add(1, "hours")
+    .minutes(0)
+    .seconds(0)
+    .seconds(0)
+    .local()
+    .format();
 
   const [formData, setFormData] = useState({
     title: "",
@@ -53,7 +57,6 @@ export default function AddEvent({ agenda, show, setShow }) {
     recipients: [],
   });
 
-  console.log(formData);
   const fetchCategory = async () => {
     try {
       const res = await api.get(
@@ -100,10 +103,13 @@ export default function AddEvent({ agenda, show, setShow }) {
       }));
     } else if (e.target.type == "time" || e.target.type == "date") {
       let key = e.target.name.split("_")[0] + "_date";
-
+      let date =
+        e.target.type == "time"
+          ? `${formData[key].slice(0, 10)} ${e.target.value}`
+          : `${e.target.value} ${formData[key].slice(11, 16)}`;
       setFormData((prev) => ({
         ...prev,
-        [key]: { ...prev[key], [e.target.type]: e.target.value },
+        [key]: date,
       }));
     }
   };
@@ -127,9 +133,15 @@ export default function AddEvent({ agenda, show, setShow }) {
         "http://127.0.0.1:8000/api/agenda_items/",
         formData
       );
-      console.log("Success", response.data);
+      setShowToast(true)
+      setMessage("Événement crée avec succès")
+      setColor("success")
+      handleClose();
     } catch (error) {
       console.log(error);
+      setShowToast(true)
+      setMessage("Une erreur s'est produite lors de la création de l'événement")
+      setColor("danger")
     }
   };
 
@@ -151,6 +163,19 @@ export default function AddEvent({ agenda, show, setShow }) {
   };
 
   const handleClose = () => {
+    setFormData({
+      title: "",
+      item_type: "random category",
+      private: false,
+      category: "",
+      description: "",
+      start_date: default_start_date,
+      end_date: default_end_date,
+      created_by: "",
+      agenda_id: "",
+      participants: [],
+      recipients: [],
+    });
     setShow(false);
   };
 
@@ -170,7 +195,7 @@ export default function AddEvent({ agenda, show, setShow }) {
     }
     if (space && Object.keys(space).includes("caregivers")) {
       space.caregivers.forEach((element) => {
-        if (element.user == user.id) {
+        if (user && element.user == user.id) {
           setFormData((prev) => ({
             ...prev,
             participants: [element.id],
@@ -182,15 +207,13 @@ export default function AddEvent({ agenda, show, setShow }) {
 
   useEffect(() => {
     if (formData.start_date) {
-      let end_date = moment(formData.start_date.slice(0, 10)).local();
-      let end_time = moment(formData.start_date).add(1, "hours").hours();
-
-      setFormData((prev) => ({
-        ...prev,
-        end_date: `${end_date.toISOString().slice(0, 10)} ${
-          end_time < 10 ? `0${end_time}:00` : `${end_time}:00`
-        }`,
-      }));
+      let start_date = moment(formData.start_date)
+        
+        setFormData((prev) => ({
+          ...prev,
+          end_date: start_date.add(1, "hours").format(),
+        }));
+      
     }
   }, [formData.start_date]);
 
@@ -203,6 +226,8 @@ export default function AddEvent({ agenda, show, setShow }) {
       fetchCategory();
     }
   }, [showCreateCategory]);
+
+  console.log(formData);
 
   return (
     <>
@@ -239,8 +264,8 @@ export default function AddEvent({ agenda, show, setShow }) {
                   <>
                     <div className="label">
                       <CiShoppingTag
-                        style={{ color: selectedCategory.color }}
-                      />{" "}
+                        style={{ color: selectedCategory.color.text }}
+                      />
                       {selectedCategory.name}
                     </div>
                   </>
@@ -263,7 +288,7 @@ export default function AddEvent({ agenda, show, setShow }) {
                         }}
                       >
                         <div className="tag">
-                          <FaTag style={{ color: category.color }} />
+                          <FaTag style={{ color: category.color.background }} />
                           {category.name}
                         </div>
                         <div

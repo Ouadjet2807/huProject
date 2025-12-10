@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import axios from "axios";
+import { IoIosSearch } from "react-icons/io";
 
 export default function SearchTreatmentsModal({ show, setShow, setSelectedMedication }) {
   const [inputValue, setInputValue] = useState("");
@@ -26,6 +27,7 @@ export default function SearchTreatmentsModal({ show, setShow, setSelectedMedica
                 );
                 
                 console.log("Success", response.data);
+                console.log(response.headers);
                 setSearchResults(response.data);
             } catch (error) {
                 console.log(error);
@@ -42,19 +44,24 @@ export default function SearchTreatmentsModal({ show, setShow, setSelectedMedica
   console.log(searchResults);
 
   return (
-    <Modal show={show} onHide={handleClose}>
+    <Modal show={show} onHide={handleClose} id="searchTreatmentModal">
       <Modal.Header closeButton>
         <Modal.Title>Ajouter un traitement</Modal.Title>
       </Modal.Header>
       <Modal.Body>
+        <div className="search-bar">
+
         <input
           type="text"
-          name=""
+          name="search_treatment"
           id=""
           placeholder="Rechercher un traitement"
           onChange={(e) => setInputValue(e.target.value)}
-        />
-        <p>{debouncedValue}</p>
+          />
+          <div className="icon">
+          <IoIosSearch/>
+          </div>
+        </div>
         <div className="search-results">
           {(searchResults && searchResults.length > 0) ? (
             searchResults.filter(result => result.etatComercialisation !== "Non commercialisée").map((med) => {

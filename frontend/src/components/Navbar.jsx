@@ -76,7 +76,7 @@ export default function Navbar() {
   useGSAP(() => {
     if (activeNav) {
       console.log("active");
-      
+
       gsap.to(".App", {
         gridTemplateColumns: "15% 85%",
       });

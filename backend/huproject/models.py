@@ -11,47 +11,6 @@ import re
 
 # Create your models here.
 
-class CustomUser(AbstractUser):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    email = models.EmailField(unique=True)
-
-
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS=['']
-
-    def __str__(self) -> str:
-        return self.email
-    
-    def _generate_username_candidate(self):
-        """Build a base username from first/last name or email local-part."""
-        # prefer first initial + last name
-        first = (self.first_name or '').strip()
-        last = (self.last_name or '').strip()
-        if first and last:
-            base = f"{first[0].lower()}{last.lower()}"
-        else:
-            # fallback to email local part
-            base = (self.email.split('@')[0]).lower()
-            base = re.sub(r'[^a-z0-9._-]', '', base)  # sanitize
-            return base
-
-    def save(self, *args, **kwargs):
-        """
-        Auto-fill username if missing (ensures uniqueness).
-        """
-        User = get_user_model()
-        if not self.username:
-            base = self._generate_username_candidate()
-            candidate = base
-            suffix = 0
-            # ensure we don't collide with an existing username
-            while User.objects.filter(username=candidate).exclude(pk=self.pk).exists():
-                suffix += 1
-                candidate = f"{base}{suffix}"
-            self.username = candidate
-        super().save(*args, **kwargs)
-
-
 class Person(models.Model):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
@@ -76,30 +35,89 @@ class Space(models.Model):
 
     def __str__(self):
         return self.name
-
-
-class SpaceInvite(models.Model):
+    
+class CustomUser(AbstractUser):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    token = models.CharField(max_length=64, unique=True, db_index=True)
-    space = models.ForeignKey('Space', on_delete=models.CASCADE, related_name='invites')
-    email = models.EmailField()
-    invited_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
-    created_at = models.DateTimeField(auto_now_add=True)
-    expires_at = models.DateTimeField()
-    accepted_at = models.DateTimeField(null=True, blank=True)
-    accepted_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, related_name='accepted_invites', on_delete=models.SET_NULL)
-    used = models.BooleanField(default=False)
+    email = models.EmailField(unique=True)
+    invited = models.JSONField(null=False)
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS=['']
+
+    def __str__(self) -> str:
+        return self.email
+    
+    def _generate_username_candidate(self):
+        """Build a base username from first/last name or email local-part."""
+        # prefer first initial + last name
+        first = (self.first_name or '').strip()
+        last = (self.last_name or '').strip()
+        if first and last:
+            base = f"{first[0].lower()}{last.lower()}"
+        else:
+            # fallback to email local part
+            base = (self.email.split('@')[0]).lower()
+            base = re.sub(r'[^a-z0-9._-]', '', base)  # sanitize
+            return base
 
     def save(self, *args, **kwargs):
-        if not self.token:
-            import secrets
-            self.token = secrets.token_urlsafe(32)
-        if not self.expires_at:
-            self.expires_at = timezone.now() + timedelta(days=7)
+        """
+        Auto-fill username if missing (ensures uniqueness).
+        """
+
+        User = get_user_model()
+        if not self.username:
+            base = self._generate_username_candidate()
+            candidate = base
+            suffix = 0
+            # ensure we don't collide with an existing username
+            while User.objects.filter(username=candidate).exclude(pk=self.pk).exists():
+                suffix += 1
+                candidate = f"{base}{suffix}"
+            self.username = candidate
         super().save(*args, **kwargs)
 
+class Role(models.IntegerChoices):
+    OWNER = 1, 'owner'
+    ADMIN = 2, 'admin'
+    EDITOR = 3, 'editor'
+    READER = 4, 'reader'
+
+class SpaceMembership(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    space = models.ForeignKey(Space, on_delete=models.CASCADE)
+    role = models.IntegerField(choices=Role.choices, default=Role.ADMIN)
+
+
+class Invitation(models.Model):
+    email = models.EmailField()
+    space = models.ForeignKey(Space, on_delete=models.CASCADE)
+    role = models.PositiveSmallIntegerField(choices=Role.choices)
+    sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    token = models.CharField(max_length=64, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+
+    accepted = models.BooleanField(default=False)
+
     def is_valid(self):
-        return (not self.used) and (self.expires_at is None or timezone.now() < self.expires_at)
+        return (not self.accepted) and (self.expires_at > timezone.now())
+    
+
+class AcceptedInvitation(models.Model):
+    space = models.ForeignKey(Space, on_delete=models.CASCADE)
+    role = models.PositiveSmallIntegerField(choices=Role.choices)
+    sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    token = models.CharField(max_length=64, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+
+    accepted = models.BooleanField(default=False)
+
+    def is_valid(self):
+        return (not self.accepted) and (self.expires_at > timezone.now())
+    
 
 class HealthcareProfessional(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -160,7 +178,7 @@ class AgendaItemCategory(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     agenda = models.ForeignKey(Agenda, on_delete=models.CASCADE, related_name='has')
     name = models.CharField(max_length=50)
-    color = models.CharField(max_length=15)
+    color = models.JSONField()
 
 class AgendaItem(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -168,7 +186,7 @@ class AgendaItem(models.Model):
     private = models.BooleanField(default=False)
     category = models.ForeignKey(AgendaItemCategory, on_delete=models.SET_NULL, null=True, blank=True, related_name="items")
     title = models.CharField(max_length=50)
-    description = models.CharField()
+    description = models.CharField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     start_date = models.DateTimeField()
@@ -188,4 +206,3 @@ class TodoList(models.Model):
     created_at = models.DateField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='creates_todo')
-

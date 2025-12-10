@@ -4,16 +4,16 @@ import Modal from "react-bootstrap/Modal";
 import api from "../../api/api";
 export default function CreateCategory({ show, setShow, agenda }) {
   let colors = [
-    "#FFCABD",
-    "#ffc949ff",
-    "#ffed66ff",
-    "#8eff6fff",
-    "#7ffef2ff",
-    "#7eb6fbff",
-    "#C6BDFF",
-    "#F3BDFF",
-    "#FFBDD2",
-    "#C9B39B",
+    {background: "#ffcabde6", text:"#d49687ff"},
+    {background: "#ffdb87d7", text: "#bd9947ff"},
+    {background: "#fff395cf", text: "#a49837ff"},
+    {background: "#8eff6fae", text: "#4a9136ff"},
+    {background: "#92f0f9b7", text: "#2d787cff"},
+    {background: "#7eb6fbc7", text: "#3e6391ff"},
+    {background: "#c6bdffc5", text: "#564d94ff"},
+    {background: "#f3bdffc8", text: "#874397ff"},
+    {background: "#ffbdd2da", text: "#8a455bff"},
+    {background: "#ffd3a3d7", text: "#a0774bff"},
   ];
 
   const [newCategory, setNewCategory] = useState({
@@ -63,6 +63,7 @@ export default function CreateCategory({ show, setShow, agenda }) {
             type="text"
             name="category"
             id=""
+            placeholder="Ex : médical, administratif..."
             onChange={(e) =>
               setNewCategory((prev) => ({ ...prev, name: e.target.value.trim() }))
             }
@@ -73,13 +74,13 @@ export default function CreateCategory({ show, setShow, agenda }) {
               return (
                 <div
                   className={`color ${
-                    newCategory.color === color ? "selected" : ""
+                    newCategory.color.background === color.background ? "selected" : ""
                   }`}
                   onClick={() =>
                     setNewCategory((prev) => ({ ...prev, color: color }))
                   }
                 >
-                  <div className="center" style={{ background: color }}></div>
+                  <div className="center" style={{ background: color.background, border: `1px solid ${color.text}` }}></div>
                 </div>
               );
             })}

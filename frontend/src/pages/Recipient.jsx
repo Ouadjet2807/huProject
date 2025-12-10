@@ -5,6 +5,7 @@ import axios from "axios";
 import RecipientEditForm from "../components/RecipientEditForm";
 import RecipientTreatments from "../components/RecipientTreatments";
 import Specialists from "../components/Specialists";
+import Loader from "../components/Loader";
 
 export default function Recipient({spaceId}) {
   const [recipient, setRecipient] = useState({});
@@ -116,12 +117,12 @@ export default function Recipient({spaceId}) {
     <div id="recipient">
       {Object.keys(recipient).includes("first_name") ? (
         <div className="recipient-container">
+
+          <div className="recipient-left-tab">
           <h2>
             {recipient.first_name} {recipient.last_name} -{" "}
             <span className="age text-secondary">{getAge()} ans</span>
           </h2>
-
-          <div className="recipient-left-tab">
             <ul>
               <li id="general" className={activeTab === "general" ? "active" : ""} onClick={(e) => handleTab(e)}>
                 Information génerales
@@ -138,7 +139,7 @@ export default function Recipient({spaceId}) {
           {renderActiveTab()}
         </div>
       ) : (
-        "loading"
+        <Loader />
       )}
     </div>
   );

@@ -305,7 +305,7 @@ export default function MedicationDetailsModal({
         end_date: formattedEndDate,
       };
 
-      const post = await api.post(
+      await api.post(
         "http://127.0.0.1:8000/api/treatments/",
         data
       );
@@ -359,7 +359,7 @@ export default function MedicationDetailsModal({
     
   }, [formData.frequency.intake_number]);
 
-  console.log(formData);
+  console.log(medication);
 
   return (
     <Modal show={show} onHide={handleClose} id="medicationDetailsModal">
@@ -369,7 +369,7 @@ export default function MedicationDetailsModal({
       <Modal.Body>
         <form action="">
           <div className="posology">
-            <label htmlFor="">Posologie</label>
+            <label htmlFor="">Posologie :</label>
             <div className="field" id="freeTake">
               <input
                 type="checkbox"
@@ -499,7 +499,7 @@ export default function MedicationDetailsModal({
             </div>
           </div>
           <div className="box-size">
-            <label htmlFor="">Contenance</label>
+            <label htmlFor="">Contenance :</label>
             {Object.keys(medication).length > 0 &&
             medication.presentation.length > 0
               ? medication.presentation.map((item) => {
@@ -558,7 +558,7 @@ export default function MedicationDetailsModal({
             </div>
           </div>
           <div className="field start-date">
-            <label htmlFor="start_date">Début du traitement</label>
+            <label htmlFor="start_date">Début du traitement :</label>
             <input
               type="date"
               name="start_date"
@@ -573,7 +573,7 @@ export default function MedicationDetailsModal({
       </Modal.Body>
       <Modal.Footer>
         <Button variant="primary" onClick={handleSubmit}>
-          Retour
+          Ajouter
         </Button>
         <Button variant="secondary" onClick={handleClose}>
           Retour

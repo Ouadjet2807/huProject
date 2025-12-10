@@ -1,21 +1,24 @@
 from rest_framework import viewsets, permissions, filters, status
 from rest_framework.response import Response
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view
 from rest_framework.generics import GenericAPIView, RetrieveAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.exceptions import NotFound
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.shortcuts import get_object_or_404
 from django.db.models import Prefetch
 from .models import *
 from .serializers import *
 
-
 class UserRegistrationAPIView(GenericAPIView):
     permission_classes = (AllowAny,)
     serializer_class = UserRegistrationSerializer
 
     def post(self, request, *args, **kwargs):
+        result = request.data['invited']
+        print(result)
+        print(request.data)
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
@@ -60,9 +63,19 @@ class UserLogoutAPIView(GenericAPIView):
 class UserInfoAPIView(RetrieveAPIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = CustomUserSerializer
+    lookup_url_kwarg = 'id'
 
     def get_object(self):
-        return self.request.user
+
+        user_id = self.kwargs.get(self.lookup_url_kwarg)
+        if user_id is None:
+            return self.request.user
+
+        # If id provided → return that user
+        try:
+            return CustomUser.objects.get(id=user_id)
+        except CustomUser.DoesNotExist:
+            raise NotFound("User not found")
 
 class IsAuthenticatedCaregiver(permissions.BasePermission):
     def has_permission(self, request, view):
@@ -86,7 +99,7 @@ class CaregiverViewSet(viewsets.ModelViewSet):
     serializer_class = CaregiverSerializer
     permission_classes = [permissions.IsAuthenticated] 
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
-    search_fields = ['first_name', 'last_name', 'user__username']
+    search_fields = ['id', 'first_name', 'last_name', 'user__username']
     ordering_fields = ['first_name', 'last_name']
 
     def get_queryset(self):
@@ -94,7 +107,7 @@ class CaregiverViewSet(viewsets.ModelViewSet):
         if not user or not hasattr(user, 'caregiver'):
             return Caregiver.objects.none()
         caregiver = user.caregiver
-        return Caregiver.objects.filter(space__in=caregiver.spaces.all()).select_related('space')
+        return Caregiver.objects.all()
 
     # If you want caregivers to be created automatically from user signups, override perform_create:
     def perform_create(self, serializer):
@@ -265,6 +278,7 @@ class SpaceViewSet(viewsets.ModelViewSet):
         This prevents caregivers from seeing spaces they aren't members of.
         """
         user = self.request.user
+
         if not user or not hasattr(user, "caregiver"):
             return Space.objects.none()
         return user.caregiver.spaces.all().prefetch_related("recipients", "caregivers")
@@ -330,28 +344,45 @@ class SpaceViewSet(viewsets.ModelViewSet):
         space.recipients.remove(recipient)
         return Response({"detail": "recipient removed"}, status=status.HTTP_200_OK)
 
-    @action(detail=True, methods=["post"], url_path="invite-caregiver")
-    def invite_caregiver(self, request, id=None):
-        """
-        POST /spaces/{id}/invite-caregiver/
-        Body: {"email": "invitee@example.com"}
-        Creates a simple invitation flow: in a production app you'd email a token.
-        Here we'll just return a token-like UUID or simulate acceptance logic.
-        """
-        import uuid
-        space = self.get_object()
-        if not space.caregivers.filter(user=request.user).exists():
-            return Response({"detail": "Not allowed"}, status=status.HTTP_403_FORBIDDEN)
 
-        email = request.data.get("email")
-        if not email:
-            return Response({"detail": "email required"}, status=status.HTTP_400_BAD_REQUEST)
+@api_view(['GET'])
+def validate_invitation(request):
+    token = request.GET.get("token")
+    invite = get_object_or_404(Invitation, token=token)
 
-        # For now we simulate an invite token. In production: persist invite + send email.
-        token = str(uuid.uuid4())
-        # TODO: save Invitation(space=space, email=email, token=token, expires_at=...) and email token.
-        return Response({"invite_token": token}, status=status.HTTP_201_CREATED)
-    
+    if not invite.is_valid():
+        return Response({"valid": False}, status=400)
+
+    return Response({
+        "valid": True,
+        "email": invite.email,
+        "role": invite.role,
+        "sender": invite.sender.id,
+        "space": invite.space.id,
+        "expires_at": invite.expires_at,
+    })
+
+@api_view(['POST'])
+def accept_invitation(request):
+    token = request.POST.get("token")
+    invite = get_object_or_404(Invitation, token=token)
+
+    print(invite)
+    print(token)
+
+    if invite.is_valid():
+        return Response({"valid": True}, status=400)
+
+
+class InvitationViewSet(viewsets.ModelViewSet):
+    serializer_class = InvitationSerializer
+    lookup_field = 'token'
+
+    def get_queryset(self):
+        return Invitation.objects.all()
+
+    def perform_create(self, serializer):
+        serializer.save()
 
 
 class TreatmentViewSet(viewsets.ModelViewSet):

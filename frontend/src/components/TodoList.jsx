@@ -8,37 +8,38 @@ import { useGSAP } from "@gsap/react";
 gsap.registerPlugin(useGSAP);
 
 export default function TodoList({ user, space }) {
-  const [todoList, setTodoList] = useState([]);
-  const [filteredTodoList, setFilteredTodoList] = useState([]);
-  const [activeCategory, setActiveCategory] = useState();
-  const [newTask, setNewTask] = useState({});
-  const [formVisible, setFormVisible] = useState(false);
 
-  const todoCategory = [
+    const todoCategory = [
     {
       name: "Toutes",
       value: "all",
     },
     {
-      name: "Quotidienne",
+      name: "Quotidiennes",
       value: "daily",
     },
     {
-      name: "Hebdomadaire",
+      name: "Hebdomadaires",
       value: "weekly",
     },
     {
-      name: "Mensuelle",
+      name: "Mensuelles",
       value: "monthly",
     },
     {
-      name: "Ponctuelle",
+      name: "Ponctuelles",
       value: "punctual",
     },
   ];
 
+
+  const [todoList, setTodoList] = useState([]);
+  const [filteredTodoList, setFilteredTodoList] = useState([]);
+  const [activeCategory, setActiveCategory] = useState(todoCategory[0].value);
+  const [newTask, setNewTask] = useState({});
+
+
   const selectInputRef = useRef();
-  const addTaskFormRef = useRef();
 
   const handleChange = (e) => {
     setNewTask((prev) => ({
@@ -78,6 +79,7 @@ export default function TodoList({ user, space }) {
     todo.completed_by = user.id;
     todo.updated_at = new Date();
 
+    
     let filter = filteredTodoList.toSpliced(index, 1, todo);
 
     setFilteredTodoList(filter);
@@ -144,27 +146,9 @@ export default function TodoList({ user, space }) {
     }
   }, [activeCategory, todoList]);
 
-  useGSAP(() => {
-    let elemId = addTaskFormRef.current.id;
 
-    if (formVisible) {
-      gsap.to(`#${elemId} select, #${elemId} button`, {
-        height: "auto",
-        width: "100%",
-        position: "relative",
-        scale: 1,
-        display: "block",
-        duration: 0.2,
-      });
-    } else {
-      gsap.to(`#${elemId} select, #${elemId} button`, {
-        scale: 0,
-        width: "100%",
-        display: "none",
-        duration: 0.2,
-      });
-    }
-  }, [formVisible]);
+  console.log(activeCategory);
+  
 
   return (
     <div id="todoList">
@@ -203,10 +187,7 @@ export default function TodoList({ user, space }) {
           })}
         <form
           id="addTaskForm"
-          ref={addTaskFormRef}
           action=""
-          onMouseEnter={() => setFormVisible(true)}
-          onMouseLeave={() => setTimeout(() => {setFormVisible(false)}, 500)}
           onKeyDown={(e) => e.key === "Enter" && handleSubmit(e)}
         >
           <input

@@ -11,7 +11,13 @@
     }
 
     .todays-events {
-      margin: 5vw 0;
+      margin: 2vw 0 5vw;
+      height: 60vh;
+      overflow-y: scroll;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
 
       ul {
         display: flex;
@@ -21,13 +27,25 @@
 
         li {
           background: $pearl;
-          padding: 10px 20px;
           border-radius: $borderRadiusLight;
           display: flex;
-          align-items: center;
           gap: 15px;
+          cursor: pointer;
+          transition: 0.3s ease-in;
 
           .icon {
+            padding: 10px 20px;
+            border-left-width: 6px;
+            border-left-style: solid;
+            border-right-style: solid;
+            border-right-width: 1px;
+            border-radius: $borderRadiusLight 0 0 $borderRadiusLight;
+            border-left-color: $whiteGreen;
+            border-right-color: $whiteGreen;
+            display: flex;
+            position: relative;
+            align-items: center;
+
             svg {
               font-size: 2vw;
               color: $green;
@@ -37,6 +55,7 @@
           .event-info {
             display: flex;
             flex-direction: column;
+            padding: 10px;
 
             .time,
             span {
@@ -50,6 +69,10 @@
             .time {
               color: grey;
             }
+          }
+
+          &:hover {
+            background: $whiteGreen;
           }
         }
       }
@@ -72,125 +95,134 @@
     }
   }
 
-  .rbc-calendar {
+  .right-tab {
     background: $whiteGreen;
-    padding: 5vw 2vw;
     border-radius: 0 $borderRadius $borderRadius 0;
-    margin: auto;
 
-    .rbc-toolbar {
-      .rbc-toolbar-label {
-        font-family: $font3;
-        color: $lightGreen;
-        font-weight: 900;
-        font-size: 1.3vw;
-      }
-      .rbc-btn-group {
-        background: $pearl;
-        border-radius: 5px;
-
-        button {
-          border: none;
-          margin: 0;
-          transition: 0.3s ease-in;
-
-          &:not(.rbc-active, button:active) {
-            &:hover {
-              border: none;
-              background: $aqua;
+    .rbc-calendar {
+      padding: 5vw 2vw;
+      border-radius: 0 $borderRadius $borderRadius 0;
+      margin: auto;
+      
+      .rbc-toolbar {
+        .rbc-toolbar-label {
+          font-family: $font3;
+          color: $lightGreen;
+          font-weight: 900;
+          font-size: 1.3vw;
+        }
+        .rbc-btn-group {
+          background: $pearl;
+          border-radius: 5px;
+          
+          button {
+            border: none;
+            margin: 0;
+            transition: 0.3s ease-in;
+            display: inline-block !important;
+            
+            &:not(.rbc-active, button:active) {
+              &:hover {
+                border: none;
+                background: $aqua;
+              }
             }
           }
-        }
-
-        .rbc-active,
-        button:active {
-          background: $aqua;
-          color: $green;
-          border: 1px solid $green;
-          box-shadow: none;
-        }
-      }
-    }
-
-    .rbc-time-view,
-    .rbc-month-view,
-    .rbc-agenda-view {
-      border: none;
-      padding: 20px;
-      max-height: 80vh;
-
-      .rbc-event {
-        background: $aqua;
-        border: 1px solid $green;
-        color: $green;
-      }
-
-      .rbc-time-header {
-        margin-right: 0.4vw !important;
-      }
-      .rbc-time-content {
-        &::-webkit-scrollbar {
-          background: $lightGreen;
-          width: 0.5vw;
-        }
-        &::-webkit-scrollbar-thumb {
-          background: $pearl;
-          border-radius: 25px;
+          
+          .rbc-active,
+          button:active {
+            background: $aqua;
+            color: $green;
+            border: 1px solid $green;
+            box-shadow: none;
+          }
         }
       }
-    }
-
-    .rbc-time-view {
-      > div {
-        background: $white;
-      }
-
-      .rbc-time-header {
-        border-radius: $borderRadiusLight $borderRadiusLight 0 0;
-      }
-
-      .rbc-time-content {
-        border-radius: 0 0 $borderRadiusLight $borderRadiusLight;
-      }
-
-      .rbc-today {
-        background-color: $whiteGreen;
-      }
-    }
-
-    .rbc-month-view {
-      .rbc-date-cell {
-        padding: 0.2vw 0.5vw 0 0;
-      }
-      .rbc-row-segment {
-        padding: 0.1vw 0.5vw;
-      }
-
-      .rbc-today {
-        background-color: $lightGreen;
-      }
-
-      .rbc-header {
+      
+      .rbc-time-view,
+      .rbc-month-view,
+      .rbc-agenda-view {
         border: none;
+        padding: 20px;
+        max-height: 80vh;
+        
+        .rbc-event {
+          background: $aqua;
+          border: 1px solid $green;
+          color: $green;
+        }
+        
+        .rbc-time-header {
+          margin-right: 0.4vw !important;
+        }
+        .rbc-time-content {
+          &::-webkit-scrollbar {
+            background: $lightGreen;
+            width: 0.5vw;
+          }
+          &::-webkit-scrollbar-thumb {
+            background: $pearl;
+            border-radius: 25px;
+          }
+        }
       }
-
-      .rbc-day-bg {
-        border-radius: 10px;
-        margin: 0.2vw;
-        padding: 0.2vw;
-        border-left: none;
-
-        &:not(.rbc-today, .rbc-off-range-bg) {
+      
+      .rbc-time-view {
+        > div {
           background: $white;
         }
-
-        &.rbc-off-range-bg {
-          background: rgb(205, 206, 206) !important;
+        
+        .rbc-time-header {
+          border-radius: $borderRadiusLight $borderRadiusLight 0 0;
+        }
+        
+        .rbc-time-content {
+          border-radius: 0 0 $borderRadiusLight $borderRadiusLight;
+        }
+        
+        .rbc-today {
+          background-color: $whiteGreen;
         }
       }
-
-      .rbc-month-row {
-        border-top: none;
+      
+      .rbc-month-view {
+        .rbc-date-cell {
+          padding: 0.2vw 0.5vw 0 0;
+          
+          button {
+            display: inline-block !important;
+          }
+        }
+        .rbc-row-segment {
+          padding: 0.1vw 0.5vw;
+        }
+        
+        .rbc-today {
+          background-color: $lightGreen;
+        }
+        
+        .rbc-header {
+          border: none;
+        }
+        
+        .rbc-day-bg {
+          border-radius: 10px;
+          margin: 0.2vw;
+          padding: 0.2vw;
+          border-left: none;
+          
+          &:not(.rbc-today, .rbc-off-range-bg) {
+            background: $white;
+          }
+          
+          &.rbc-off-range-bg {
+            background: rgb(205, 206, 206) !important;
+          }
+        }
+        
+        .rbc-month-row {
+          border-top: none;
+        }
       }
     }
   }
@@ -208,16 +240,6 @@
       width: 100%;
     }
 
-    input[type="text"],
-    input[type="date"],
-    input[type="time"],
-    select,
-    textarea {
-      border-radius: 5px;
-      border: 1px solid #b1b7b8;
-      padding: 5px 8px;
-    }
-
     label {
       display: flex;
       align-items: center;
@@ -226,7 +248,7 @@
 
     .categories-dropdown {
       width: 100%;
-      
+
       button {
         width: 100%;
         text-align: left;
@@ -251,7 +273,7 @@
             display: flex;
             gap: 10px;
             align-items: center;
-            
+
             svg {
               transform: rotateY(180deg);
             }
@@ -296,9 +318,10 @@
       position: relative;
       width: max-content;
       padding: 5px 10px;
-      border: 1px solid $charcoal;
       color: $charcoal;
       border-radius: $borderRadiusSmall;
+      border-width: 1px;
+      border-style: solid;
       cursor: pointer;
       transition: 0.2s ease-in;
       background: transparent;
@@ -327,18 +350,15 @@
 
       &:hover,
       &.checked {
-        box-shadow: inset -2px 2px 0px 0px $lightGreen2;
-        border-color: $green;
-        background: $aqua;
-        color: $green;
+        border-color: $charcoal;
+        background: lightgray;
       }
 
       &.checked {
         &:hover {
           box-shadow: none;
           background: transparent;
-          border-color: $charcoal;
-          color: $charcoal;
+          border-color: transparent;
         }
       }
     }
@@ -428,7 +448,6 @@
           width: 100%;
           height: 100%;
           border-radius: 50%;
-          border: 1px solid;
           transition: 0.3s ease-in;
         }
 
@@ -446,6 +465,209 @@
           .center {
             transform: scale(0.8);
           }
+        }
+      }
+    }
+  }
+}
+
+.event-modal {
+  .info {
+    span {
+      color: gray;
+    }
+  }
+
+  .modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    > *:not(#private) {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 10% 90%;
+    }
+
+    > *:not(.participants) {
+      align-items: center;
+    }
+
+    .columns {
+      display: grid;
+      grid-template-columns: 45% 45%;
+      gap: 10px;
+
+      .column {
+        background: $pearl;
+        border-radius: $borderRadiusLight;
+        padding: 10px 20px;
+
+        span {
+          font-weight: 600;
+          text-align: center;
+          margin-bottom: 10px;
+          width: 100%;
+          display: block;
+        }
+
+        ul {
+          padding: 0;
+        }
+      }
+    }
+  }
+
+  form {
+    .modal-header {
+      align-items: flex-start;
+    }
+
+    .modal-body {
+      align-items: flex-end;
+
+      > *:not(.date, .categories) {
+        align-items: start !important;
+      }
+
+      .date-inputs {
+        display: flex;
+        gap: 20px;
+      }
+    }
+
+    .categories-dropdown {
+      width: 100%;
+
+      button {
+        width: 100%;
+        text-align: left;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: transparent;
+        border: 1px solid #b1b7b8;
+        color: $charcoal;
+      }
+
+      .dropdown-menu {
+        width: 100%;
+
+        .dropdown-item {
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+
+          .tag {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+
+            svg {
+              transform: rotateY(180deg);
+            }
+          }
+
+          .delete {
+            cursor: pointer;
+
+            svg {
+              color: lightgray;
+              transition: 0.3s ease-in;
+            }
+
+            &:hover {
+              svg {
+                color: gray;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    select {
+      background: none;
+      border: none;
+      overflow: hidden;
+      width: 100%;
+
+      option {
+        padding: 5px 10px;
+        border-radius: $borderRadiusSmall;
+        cursor: pointer;
+
+        &:checked,
+        &:focus,
+        &:active {
+          background: transparent !important;
+        }
+
+        &.selected {
+          background: $aqua !important;
+          border: 1px solid $green;
+          color: $green;
+        }
+      }
+
+      &:focus,
+      &:active {
+        border: none;
+        outline: none;
+
+        option {
+          background-color: transparent;
+        }
+      }
+    }
+
+    #private {
+      position: relative;
+      width: max-content;
+      padding: 5px 10px;
+      color: $charcoal;
+      border-radius: $borderRadiusSmall;
+      border-width: 1px;
+      border-color: transparent;
+      border-style: solid;
+      cursor: pointer;
+      transition: 0.2s ease-in;
+      background: transparent;
+
+      label {
+        display: grid;
+        grid-template-columns: 25% 75%;
+        align-items: center;
+        gap: 10px;
+        font-weight: 400;
+
+        svg {
+          font-size: 1.2vw;
+        }
+      }
+
+      input {
+        cursor: pointer;
+        position: absolute;
+        opacity: 0;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      &:hover,
+      &.checked {
+        border-color: $charcoal;
+        background: lightgray;
+      }
+
+      &.checked {
+        &:hover {
+          box-shadow: none;
+          background: transparent;
+          border-color: transparent;
         }
       }
     }

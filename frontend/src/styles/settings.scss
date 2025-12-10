@@ -1,17 +1,18 @@
-@import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
 
 $error: #d9002d;
 $success: #009365;
 $white: #ffffff;
 $whiteGreen: #e1e8e5;
 $aqua: #92cfbc75;
-$lightGreen: #B3C1B4;
-$lightGreen2: #88A590;
-$mediumGreen2: #638A75;
-$mediumGreen: #446E5F;
-$green: #2A534C;
+$greyGreen: #b1b7b8;
+$lightGreen: #b3c1b4;
+$lightGreen2: #88a590;
+$mediumGreen2: #638a75;
+$mediumGreen: #446e5f;
+$green: #2a534c;
 $darkGreen: #163737;
-$blackGreen: #08181C;
+$blackGreen: #08181c;
 $pearl: rgb(244, 248, 248);
 $charcoal: rgb(21, 22, 22);
 
@@ -24,7 +25,10 @@ $borderRadiusLight: 10px;
 $borderRadiusMedium: 15px;
 $borderRadius: 20px;
 
-html, body, #root, .app {
+html,
+body,
+#root,
+.app {
   height: 100%;
 }
 
@@ -34,47 +38,65 @@ html, body, #root, .app {
 }
 
 body {
-    background: linear-gradient(180deg, $pearl, $lightGreen) !important;
-    overflow: hidden;
+  background: linear-gradient(180deg, $pearl, $lightGreen) !important;
+  overflow: hidden;
+  font-family: $font1;
 }
 
 .App {
-    grid-template-columns: 15% 85%;
-    display: grid;
-    height: 100%;
-    padding: 1vw;
+  grid-template-columns: 15% 85%;
+  display: grid;
+  height: 100%;
+  padding: 1vw;
 
-
-    > :not(.navigation) {
-      background: $white;
-      border-radius: 0 $borderRadius $borderRadius 0;
-
-    }
-
+  > :not(.navigation, .toast-container) {
+    background: $white;
+    border-radius: 0 $borderRadius $borderRadius 0;
+  }
 }
 
+h1 {
+  font-family: $font3;
+}
 
-  h1 {
-    font-family: $font3;
-  }
+h2 {
+  font-family: $font3;
+}
 
-  h2 {
-    font-family: $font3;
-  }
+h3,
+h4 {
+  font-family: $font2;
+}
 
-  h3, h4 {
-    font-family: $font2;
-  }
+p,
+span {
+  font-family: $font1;
+}
 
-  p, span {
-    font-family: $font1;
-  }
+ol,
+ul {
+  padding-left: 0;
+}
 
-  ol, ul {
-    padding-left: 0;
-  }
+li {
+  list-style-type: none;
+}
 
-  li {
-    list-style-type: none;
-  }
+button {
+  display: flex !important;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
 
+input[type="email"],
+input[type="password"],
+input[type="text"],
+input[type="date"],
+input[type="time"],
+select,
+textarea {
+  border-radius: 5px;
+  border: 1px solid $greyGreen;
+  padding: 5px 8px;
+}

@@ -111,7 +111,7 @@ export default function RecipientEditForm({
         >
           {!editionMode ? (
             <>
-              Modifier les informations ci-dessus <CiEdit />
+             <CiEdit /> Modifier les informations ci-dessus
             </>
           ) : (
             <>Annuler</>

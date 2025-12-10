@@ -2,26 +2,22 @@
   height: 100%;
 
   .recipient-container {
+    height: 100%;
     display: grid;
-    grid-template-columns: 30% 70%;
-    grid-template-rows: 10% 90%;
+    grid-template-columns: 25% 75%;
     margin: auto;
-    padding: 2vw 5vw;
     justify-content: center;
 
-    h2 {
-      grid-column: 1/3;
-    }
-
     .recipient-left-tab {
-      background-color: $green;
-      border-radius: $borderRadius;
-      color: $white;
+      padding: 2vw;
       width: max-content;
-      padding: 20px;
 
       ul {
-        padding: 5px !important;
+        background-color: $green;
+        border-radius: $borderRadius;
+        color: $white;
+        padding: 10px !important;
+        height: 95%;
         display: flex;
         flex-direction: column;
         gap: 10px;
@@ -45,6 +41,16 @@
       font-family: inherit;
       font-style: italic;
     }
+
+    > *:not(.recipient-left-tab) {
+      padding: 2vw;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: stretch;
+      border-left: 1px solid $whiteGreen;
+    }
+
     #generalSection {
       form {
         display: flex;
@@ -52,6 +58,7 @@
         margin: auto;
         gap: 15px;
         height: 38vw;
+        width: 100%;
         overflow-y: scroll;
 
         &::-webkit-scrollbar {
@@ -118,17 +125,34 @@
     #recipientTreatments {
       .treatments-list {
         display: grid;
-        grid-template-columns: 33% 33% 33%;
+        grid-template-columns: 31% 31% 31%;
+        justify-items: center;
+        justify-content: center;
+        padding: 20px 0;
         gap: 10px;
         height: 38vw;
         overflow-y: scroll;
+        border-radius: $borderRadiusMedium;
+        background: $pearl;
 
         .treatment {
           display: flex;
           flex-direction: column;
-          padding: 20px;
-          border-radius: $borderRadius;
-          border: 3px solid $green;
+          gap: 10px;
+          background: $white;
+          box-shadow: 2px 4px 8px 2px $whiteGreen,
+            inset 10px 16px 8px 2px $white;
+          border-radius: $borderRadiusMedium;
+
+          .card-header {
+            color: $mediumGreen;
+            font-family: $font1;
+          }
+
+          .card-body {
+            display: flex;
+            flex-direction: column;
+          }
         }
       }
 
@@ -138,6 +162,70 @@
     }
   }
 }
+
+#searchTreatmentModal {
+  .search-bar {
+    display: flex;
+    align-items: center;
+
+    input {
+      width: 100%;
+    }
+
+    .icon {
+      position: absolute;
+      right: 5%;
+      display: flex;
+
+      svg {
+        color: $green;
+      }
+    }
+  }
+
+  .search-results {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 40vh;
+    overflow-y: scroll;
+    background: $pearl;
+    border-radius: $borderRadiusSmall;
+    margin: 20px 0;
+
+    &::-webkit-scrollbar {
+      background: $whiteGreen;
+      width: 0.5vw;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: $green;
+      border-radius: $borderRadius;
+    }
+
+    p {
+      text-align: center;
+      color: $green;
+      font-weight: 600;
+    }
+
+    .medication {
+      background: $white;
+      padding: 5px 10px;
+      border-radius: $borderRadiusSmall;
+      color: $green;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.3s ease-in;
+
+      &:hover {
+        background: $lightGreen;
+        color: $pearl;
+      }
+    }
+  }
+}
+
 #medicationDetailsModal {
   form {
     padding: 0 20px;
@@ -158,7 +246,7 @@
         gap: 15px;
 
         input {
-          accent-color: $green;
+          accent-color: $lightGreen;
         }
 
         label {
@@ -179,7 +267,7 @@
 
         input,
         select {
-          height: 2vw;
+          height: max-content;
         }
 
         .field {
@@ -326,7 +414,7 @@
       .size {
         display: flex;
         gap: 20px;
-        accent-color: $green;
+        accent-color: $lightGreen;
       }
 
       .field {
@@ -346,5 +434,32 @@
       align-items: center;
       gap: 10px;
     }
+  }
+}
+
+.create-recipient-modal {
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: flex-end;
+
+    > * {
+      width: 100%;
+    }
+
+    label {
+      font-weight: 600;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+  }
+
+  button {
+    width: max-content;
   }
 }

@@ -3,27 +3,24 @@ import axios from "axios";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import "moment/locale/fr";
-import ModalComponent from "./modals/Modal";
+import EventModal from "./modals/EventModal";
 import AddEvent from "./modals/AddEvent";
 import Button from "react-bootstrap/esm/Button";
 import { LuCalendarPlus } from "react-icons/lu";
 import { MdOutlinePermContactCalendar } from "react-icons/md";
 import { LuCalendarCheck2 } from "react-icons/lu";
+import api from "../api/api";
+import Loader from "./Loader";
 
 export default function Agenda({ space }) {
   const [agenda, setAgenda] = useState();
   const [agendaItems, setAgendaItems] = useState([]);
+  const [eventCategories, setEventCategories] = useState([]);
   const [todayAgendaItems, setTodayAgendaItems] = useState([]);
   const [error, setError] = useState();
   const [selectedEvent, setSelectedEvent] = useState({});
   const [showEvent, setShowEvent] = useState(false);
   const [showEventForm, setShowEventForm] = useState(false);
-  const [modalContent, setModalContent] = useState({
-    id: "",
-    title: "",
-    body: [],
-    footer: [],
-  });
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -53,107 +50,82 @@ export default function Agenda({ space }) {
     event: "Événement",
   };
 
+  const getCategoryColor = (id) => {
+    let category = eventCategories.find((item) => item.id == id);
+
+    if (category) {
+      return category.color;
+    } else {
+      return { background: "#92cfbc75", text: "#2A534C" };
+    }
+  };
+
   const handleSelectEvent = (event) => {
+    console.log("event", event);
+
     setSelectedEvent(event);
-    setModalContent({
-      id: "event-modal",
-      title: event.title,
-      body: [
-        event.definition,
-        event.start_date.toISOString(),
-        event.end_date.toISOString(),
-      ],
-      footer: ["cancel", "edit"],
-    });
     setShowEvent(true);
   };
 
+  const fetchAgenda = async () => {
+    setIsLoading(true);
+    try {
+      const res = await api.get("http://127.0.0.1:8000/api/agendas/");
+      setAgenda(res.data[0]);
+    } catch (err) {
+      console.error(err);
+      if (err.response) {
+        setError(err.response.data);
+      } else {
+        setError({ detail: "Network error" });
+      }
+    }
+  };
+
+  const fetchAgendaItems = async () => {
+    setIsLoading(true);
+    try {
+      const res = await api.get("http://127.0.0.1:8000/api/agenda_items/");
+      console.log(res);
+      
+      setAgendaItems(res.data);
+    } catch (err) {
+      console.error(err);
+      if (err.response) {
+        setError(err.response.data);
+      } else {
+        setError({ detail: "Network error" });
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const fetchCategories = async () => {
+    try {
+      const res = await api.get(
+        "http://127.0.0.1:8000/api/agenda_item_categories/"
+      );
+
+      setEventCategories(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
-    const fetchAgenda = async () => {
-      setIsLoading(true);
-      try {
-        const token = localStorage.getItem("accessToken");
-
-        if (token) {
-          const config = {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          };
-          const res = await axios.get(
-            "http://127.0.0.1:8000/api/agendas/",
-            config
-          );
-          setAgenda(res.data[0]);
-        }
-      } catch (err) {
-        console.error(err);
-        if (err.response) {
-          setError(err.response.data);
-        } else {
-          setError({ detail: "Network error" });
-        }
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    const fetchAgendaItems = async () => {
-      setIsLoading(true);
-      try {
-        const token = localStorage.getItem("accessToken");
-
-        if (token) {
-          const config = {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          };
-          const res = await axios.get(
-            "http://127.0.0.1:8000/api/agenda_items/",
-            config
-          );
-
-          res.data.forEach((data) => {
-            if (!agendaItems.some((e) => e.id === res.data())) {
-              setAgendaItems((prev) => [
-                ...prev,
-                {
-                  agenda: data.agenda,
-                  category: data.category,
-                  created_at: data.created_at,
-                  created_by: data.created_by,
-                  description: data.description,
-                  end_date: new Date(data.end_date),
-                  id: data.id,
-                  participants: data.participants,
-                  private: data.private,
-                  recipients: data.recipients,
-                  start_date: new Date(data.start_date),
-                  title: data.title,
-                },
-              ]);
-            }
-          });
-        }
-      } catch (err) {
-        console.error(err);
-        if (err.response) {
-          setError(err.response.data);
-        } else {
-          setError({ detail: "Network error" });
-        }
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
+    fetchCategories();
     fetchAgenda();
     fetchAgendaItems();
   }, []);
 
   useEffect(() => {
     if (agendaItems.length > 0) {
+      agendaItems.forEach((item) => {
+        item.start_date = new Date(item.start_date);
+        item.end_date = new Date(item.end_date);
+        item.agenda_id = item.agenda.id;
+      });
       let searchTodaysEvent = agendaItems.filter(
         (item) =>
           item.start_date.toLocaleDateString() == today.toLocaleDateString() ||
@@ -163,12 +135,23 @@ export default function Agenda({ space }) {
     }
   }, [agendaItems]);
 
+  useEffect(() => {
+    if (!showEvent || !showEventForm) {
+      fetchAgendaItems();
+    }
+  }, [showEvent, showEventForm]);
+
+  console.log(eventCategories);
+  console.log(agendaItems);
+
   return (
     <div id="agenda">
-      <ModalComponent
-        content={modalContent}
+      <EventModal
+        event={selectedEvent}
         setShow={setShowEvent}
         show={showEvent}
+        categories={eventCategories}
+        agenda={agenda}
       />
       <AddEvent
         agenda={agenda}
@@ -178,29 +161,39 @@ export default function Agenda({ space }) {
       />
       <div className="left-tab">
         <h3>Aujourd'hui</h3>
-        <div className="date">{today.toLocaleDateString("fr-Fr", date_options)}</div>
+        <div className="date">
+          {today.toLocaleDateString("fr-Fr", date_options)}
+        </div>
         <div className="todays-events">
           {todayAgendaItems.length > 0 ? (
             <ul>
               {todayAgendaItems.map((event) => {
                 return (
-                  <li>
-                    <div className="icon">
+                  <li onClick={() => setShowEvent(true)}>
+                    <div
+                      className="icon"
+                      style={{
+                        borderLeftColor: getCategoryColor(event.category)
+                          .background,
+                      }}
+                    >
                       <MdOutlinePermContactCalendar />
                     </div>
                     <div className="event-info">
-                    <div className="time">
-                      {event.start_date.toTimeString().slice(0, 5)}-
-                      {event.end_date.toTimeString().slice(0, 5)}
-                    </div>
-                    <span>{event.title}</span>
+                      <div className="time">
+                        {event.start_date.toTimeString().slice(0, 5)}-
+                        {event.end_date.toTimeString().slice(0, 5)}
+                      </div>
+                      <span>{event.title}</span>
                     </div>
                   </li>
                 );
               })}
             </ul>
           ) : (
-            <p className="no-events"><LuCalendarCheck2 /> Aucun événement aujourd'hui</p>
+            <p className="no-events">
+              <LuCalendarCheck2 /> Aucun événement aujourd'hui
+            </p>
           )}
         </div>
         <Button
@@ -210,16 +203,44 @@ export default function Agenda({ space }) {
           <LuCalendarPlus /> Ajouter un événement
         </Button>
       </div>
+      <div className="right-tab">
+        {!isLoading ? (
+          <Calendar
+            localizer={localizer}
+            events={agendaItems}
+            eventPropGetter={(event, start, end, isSelected) => {
+              let newStyle = {
+                backgroundColor: "#92cfbc75",
+                color: "#2A534C",
+                borderRadius: "5px",
+                border: "1px solid #2A534C",
+              };
 
-      <Calendar
-        localizer={localizer}
-        events={agendaItems}
-        startAccessor="start_date"
-        endAccessor="end_date"
-        onSelectEvent={handleSelectEvent}
-        style={{ height: "100%", width: "100%" }}
-        messages={messages}
-      />
+              if (event.category) {
+                newStyle.backgroundColor = `${
+                  getCategoryColor(event.category).background
+                }`;
+                newStyle.border = `1px solid ${
+                  getCategoryColor(event.category).text
+                }`;
+                newStyle.color = getCategoryColor(event.category).text;
+              }
+
+              return {
+                className: "",
+                style: newStyle,
+              };
+            }}
+            startAccessor="start_date"
+            endAccessor="end_date"
+            onSelectEvent={handleSelectEvent}
+            style={{ height: "100%", width: "100%" }}
+            messages={messages}
+          />
+        ) : (
+          <Loader />
+        )}
+      </div>
     </div>
   );
 }

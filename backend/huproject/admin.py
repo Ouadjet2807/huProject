@@ -51,10 +51,25 @@ class RecipientAdmin(admin.ModelAdmin):
 
 @admin.register(CustomUser)
 class CustomAdminUser(UserAdmin):
+    list_display = ('id', 'username', 'email', 'first_name', 'last_name', 'invited')
     add_form = CustomUserCreationForm
     form = CustomUserChangeForm
     model = CustomUser
 
 
+@admin.register(Space)
+class SpaceAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'created_by')
+    search_fields = ('id', 'space')
 
-admin.site.register(Space)
+@admin.register(SpaceMembership)
+class TodoListAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'space', 'role')
+    search_fields = ('user', 'space', 'role')
+
+
+@admin.register(Invitation)
+class TodoListAdmin(admin.ModelAdmin):
+    list_display = ('token', 'space', 'email', 'role', 'created_at', 'expires_at', 'sender')
+    search_fields = ('token', 'space', 'role')
+

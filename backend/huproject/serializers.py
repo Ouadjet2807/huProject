@@ -14,17 +14,17 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = CustomUser
-        fields = ('id', 'username', 'email', 'last_name', 'first_name', 'password', 'confirm_password')
+        fields = ('id', 'username', 'email', 'last_name', 'first_name', 'password', 'confirm_password', 'invited')
         extra_kwargs = {'password': {"write_only": True}}
 
     def validate(self, attrs):
         if attrs["password"] != attrs["confirm_password"]:
-            raise serializers.ValidationError("Password do not match")
+            raise serializers.ValidationError("Les mots de passes ne correspondent pas")
         
         password = attrs.get("password", "")
 
         if(len(password) < 8):
-            raise serializers.ValidationError("Your password must be at least 8 characters")
+            raise serializers.ValidationError("Le mot de passe doit contenir au moins 8 caractères")
         
         return attrs
 
@@ -43,7 +43,7 @@ class UserLoginSerializer(serializers.Serializer):
         user = authenticate(**data)
         if user and user.is_active:
             return user
-        raise serializers.ValidationError("Incorrect credentials")
+        raise serializers.ValidationError("Email/Mot de passe incorrect")
 
 
 class CaregiverSerializer(serializers.ModelSerializer):
@@ -52,7 +52,7 @@ class CaregiverSerializer(serializers.ModelSerializer):
     class Meta:
         model = Caregiver
         fields = ('id', 'gender', 'first_name', 'last_name', 'birth_date', 'user', 'access_level')
-
+        read_only_fields = ('id',)
 
 class HealthcareProfessionalSerializer(serializers.ModelSerializer):
     class Meta:
@@ -133,11 +133,12 @@ class SpaceSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'description', 'created_by', 'caregivers', 'recipients', 'created_at', 'updated_at']
 
 
-class SpaceInviteSerializer(serializers.ModelSerializer):
+class InvitationSerializer(serializers.ModelSerializer):
+    space =  serializers.PrimaryKeyRelatedField(queryset=Space.objects.all())
+
     class Meta:
-        model = SpaceInvite
-        fields = ['id','token','space','email','invited_by','created_at','expires_at','used']
-        read_only_fields = ['id','token','invited_by','created_at','used']
+        model = Invitation
+        fields = ['email', 'space', 'role', 'token', 'created_at', 'expires_at', 'accepted', 'sender']
 
 
 class AgendaSerializer(serializers.ModelSerializer):

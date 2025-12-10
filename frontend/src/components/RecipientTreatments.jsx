@@ -4,6 +4,7 @@ import ProgressBar from "react-bootstrap/ProgressBar";
 import SearchTreatmentsModal from "./modals/SearchTreatmentsModal";
 import MedicationDetailsModal from "./modals/MedicationDetailsModal";
 import api from "../api/api";
+import Card from "react-bootstrap/Card";
 
 export default function RecipientTreatments({ formData, space }) {
   const [addTreatment, setAddTreatment] = useState();
@@ -46,8 +47,8 @@ export default function RecipientTreatments({ formData, space }) {
   const getProgress = (item) => {
     if (!item.start_date || !item.end_date) return;
 
-    let start = new Date(item.start_date)
-    let end = new Date(item.end_date)
+    let start = new Date(item.start_date);
+    let end = new Date(item.end_date);
 
     const today = new Date();
 
@@ -55,7 +56,6 @@ export default function RecipientTreatments({ formData, space }) {
 
     const initialTime = new Date().setTime(end - start);
 
-    
     const currentTime = new Date().setTime(end - new Date().getTime());
 
     const result = (currentTime / initialTime) * 100;
@@ -164,24 +164,29 @@ export default function RecipientTreatments({ formData, space }) {
         {treatments.length > 0 ? (
           treatments.map((item) => {
             return (
-              <div className="treatment">
-                <h5>{item.name}</h5>
-                <span>
-                  {item.quantity.units_per_unit} {item.medication_format} -{" "}
-                  {item.frequency.intake_number} par
-                  {item.frequency.intake_frequency === "day"
-                    ? " jour"
-                    : item.frequency.intake_frequency === "week"
-                    ? " semaine"
-                    : item.frequency.intake_frequency === "month" && " mois"}
-                </span>
-                <span>
-                  traitement commencé le :
-                  {new Date(item.start_date).toLocaleDateString()}
-                </span>
-                {getRemainingUnits(item)} {item.medication_format}(s) restant(s)
-                {item.end_date && <ProgressBar now={getProgress(item)} />}
-              </div>
+              <Card className="treatment">
+                <Card.Header>{item.name}</Card.Header>
+                <Card.Body>
+                  <span>
+                    {item.quantity.units_per_unit} {item.medication_format} -{" "}
+                    {item.frequency.intake_number} par
+                    {item.frequency.intake_frequency === "day"
+                      ? " jour"
+                      : item.frequency.intake_frequency === "week"
+                      ? " semaine"
+                      : item.frequency.intake_frequency === "month" && " mois"}
+                  </span>
+                  <span>
+                    traitement commencé le :{" "}
+                    {new Date(item.start_date).toLocaleDateString()}
+                  </span>
+                  <span>
+                    {getRemainingUnits(item)} {item.medication_format}(s)
+                    restant(s)
+                    {item.end_date && <ProgressBar now={getProgress(item)} />}
+                  </span>
+                </Card.Body>
+              </Card>
             );
           })
         ) : (

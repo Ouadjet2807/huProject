@@ -6,19 +6,18 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.exceptions import NotFound
 from django.core.exceptions import PermissionDenied, ValidationError
+from django.db import IntegrityError
 from django.shortcuts import get_object_or_404
 from django.db.models import Prefetch
 from .models import *
 from .serializers import *
+import json
 
 class UserRegistrationAPIView(GenericAPIView):
     permission_classes = (AllowAny,)
     serializer_class = UserRegistrationSerializer
 
     def post(self, request, *args, **kwargs):
-        result = request.data['invited']
-        print(result)
-        print(request.data)
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
@@ -45,7 +44,29 @@ class UserLoginAPIView(GenericAPIView):
                           "access": str(token.access_token)}
 
         return Response(data, status=status.HTTP_200_OK)
+    
+class UserUpdateAPIView(GenericAPIView):
+    permission_classes= (IsAuthenticated,)
+    serializer_class = UserUpdateSerializer
 
+    def post(self, request, *args, **kwargs):
+       
+       if request.method=='POST':
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = CustomUser.objects.get(id = request.user.id)
+        user.first_name = request.data.get('first_name')
+        user.last_name = request.data.get('last_name')
+        user.username = request.data.get('username')
+        user.email = request.data.get('email')
+
+        try:
+            if serializer.is_valid():
+                user.save()
+                return Response(request.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response(e.args, status=status.HTTP_400_BAD_REQUEST)
+            
 
 class UserLogoutAPIView(GenericAPIView):
     permission_classes = (AllowAny,)
@@ -57,12 +78,12 @@ class UserLogoutAPIView(GenericAPIView):
             token.blacklist()
             return Response(status=status.HTTP_205_RESET_CONTENT)
         except Exception as e:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserInfoAPIView(RetrieveAPIView):
     permission_classes = (IsAuthenticated,)
-    serializer_class = CustomUserSerializer
+    serializer_class = UserRegistrationSerializer
     lookup_url_kwarg = 'id'
 
     def get_object(self):
@@ -104,10 +125,16 @@ class CaregiverViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
+
         if not user or not hasattr(user, 'caregiver'):
             return Caregiver.objects.none()
         caregiver = user.caregiver
-        return Caregiver.objects.all()
+        if self.request.GET.get("id"):
+            try:
+                return Caregiver.objects.filter(id=caregiver.id)
+            except Caregiver.DoesNotExist:
+                raise NotFound("Caregiver not found")
+        return Caregiver.objects.filter(spaces__in=caregiver.spaces.all())
 
     # If you want caregivers to be created automatically from user signups, override perform_create:
     def perform_create(self, serializer):
@@ -116,6 +143,11 @@ class CaregiverViewSet(viewsets.ModelViewSet):
             # prevent creating duplicate for same user
             raise ValidationError("Caregiver already exists for this user.")
         serializer.save(user=self.request.user)
+
+    def perform_update(self, serializer):
+        # optionally create caregiver linked to request.user
+        
+        serializer.save()
 
 
 class IsCaregiverAndMember(permissions.BasePermission):

@@ -20,12 +20,11 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         if attrs["password"] != attrs["confirm_password"]:
             raise serializers.ValidationError("Les mots de passes ne correspondent pas")
-        
         password = attrs.get("password", "")
 
         if(len(password) < 8):
             raise serializers.ValidationError("Le mot de passe doit contenir au moins 8 caractères")
-        
+
         return attrs
 
     def create(self, validated_data):
@@ -36,7 +35,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
 
 class UserLoginSerializer(serializers.Serializer):
-    email = serializers.CharField()
+    email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
 
     def validate(self, data):
@@ -45,6 +44,30 @@ class UserLoginSerializer(serializers.Serializer):
             return user
         raise serializers.ValidationError("Email/Mot de passe incorrect")
 
+class UserUpdateSerializer(serializers.Serializer):
+    email = serializers.EmailField() 
+    username = serializers.CharField()
+    first_name = serializers.CharField()
+    last_name = serializers.CharField()
+
+
+    class Meta:
+        model = CustomUser
+        fields = ('id', 'username', 'email', 'last_name', 'first_name')
+
+    def validate(self, attrs):
+        current_user = CustomUser.objects.get(id=self.initial_data['id'])
+    
+        if attrs["email"] != current_user.email and CustomUser.objects.filter(email=attrs["email"]):
+            raise serializers.ValidationError("Adresse email déjà utilisée, veuillez en choisir une autre")
+        if attrs["username"] != current_user.username and CustomUser.objects.filter(username=attrs["username"]):
+            raise serializers.ValidationError("Ce nom d'utilisateur n'est pas disponible")
+
+        return attrs
+
+    def update(self, instance): 
+            instance.update()
+            return instance
 
 class CaregiverSerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
@@ -53,6 +76,13 @@ class CaregiverSerializer(serializers.ModelSerializer):
         model = Caregiver
         fields = ('id', 'gender', 'first_name', 'last_name', 'birth_date', 'user', 'access_level')
         read_only_fields = ('id',)
+
+    def update(self, instance, validated_data):
+        instance = super().update(instance, validated_data)
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        return instance
 
 class HealthcareProfessionalSerializer(serializers.ModelSerializer):
     class Meta:

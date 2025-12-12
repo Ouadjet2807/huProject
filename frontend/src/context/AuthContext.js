@@ -144,9 +144,10 @@ export const AuthProvider = ({ children }) => {
           logout();
         }
       } 
-      // else if(window.location.pathname !== "/login") {
-      //    window.location.assign("/login")
-      // }
+      
+      else if((window.location.pathname !== "/login") && !window.location.pathname.includes("invite")) {
+         window.location.assign("/login")
+      }
 
       setLoading(false);
     };

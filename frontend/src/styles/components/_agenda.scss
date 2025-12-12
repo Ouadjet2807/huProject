@@ -103,7 +103,7 @@
       padding: 5vw 2vw;
       border-radius: 0 $borderRadius $borderRadius 0;
       margin: auto;
-      
+
       .rbc-toolbar {
         .rbc-toolbar-label {
           font-family: $font3;
@@ -114,13 +114,13 @@
         .rbc-btn-group {
           background: $pearl;
           border-radius: 5px;
-          
+
           button {
             border: none;
             margin: 0;
             transition: 0.3s ease-in;
             display: inline-block !important;
-            
+
             &:not(.rbc-active, button:active) {
               &:hover {
                 border: none;
@@ -128,7 +128,7 @@
               }
             }
           }
-          
+
           .rbc-active,
           button:active {
             background: $aqua;
@@ -138,20 +138,20 @@
           }
         }
       }
-      
+
       .rbc-time-view,
       .rbc-month-view,
       .rbc-agenda-view {
         border: none;
         padding: 20px;
-        max-height: 80vh;
-        
+        max-height: 70vh;
+
         .rbc-event {
           background: $aqua;
           border: 1px solid $green;
           color: $green;
         }
-        
+
         .rbc-time-header {
           margin-right: 0.4vw !important;
         }
@@ -166,29 +166,29 @@
           }
         }
       }
-      
+
       .rbc-time-view {
         > div {
           background: $white;
         }
-        
+
         .rbc-time-header {
           border-radius: $borderRadiusLight $borderRadiusLight 0 0;
         }
-        
+
         .rbc-time-content {
           border-radius: 0 0 $borderRadiusLight $borderRadiusLight;
         }
-        
+
         .rbc-today {
           background-color: $whiteGreen;
         }
       }
-      
+
       .rbc-month-view {
         .rbc-date-cell {
           padding: 0.2vw 0.5vw 0 0;
-          
+
           button {
             display: inline-block !important;
           }
@@ -196,478 +196,32 @@
         .rbc-row-segment {
           padding: 0.1vw 0.5vw;
         }
-        
+
         .rbc-today {
           background-color: $lightGreen;
         }
-        
+
         .rbc-header {
           border: none;
         }
-        
+
         .rbc-day-bg {
           border-radius: 10px;
           margin: 0.2vw;
           padding: 0.2vw;
           border-left: none;
-          
+
           &:not(.rbc-today, .rbc-off-range-bg) {
             background: $white;
           }
-          
+
           &.rbc-off-range-bg {
             background: rgb(205, 206, 206) !important;
           }
         }
-        
+
         .rbc-month-row {
           border-top: none;
-        }
-      }
-    }
-  }
-}
-.add-event-modal {
-  .add-event {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    align-items: flex-end;
-
-    input,
-    textarea,
-    label {
-      width: 100%;
-    }
-
-    label {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-
-    .categories-dropdown {
-      width: 100%;
-
-      button {
-        width: 100%;
-        text-align: left;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background: transparent;
-        border: 1px solid #b1b7b8;
-        color: $charcoal;
-      }
-
-      .dropdown-menu {
-        width: 100%;
-
-        .dropdown-item {
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-
-          .tag {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-
-            svg {
-              transform: rotateY(180deg);
-            }
-          }
-
-          .delete {
-            cursor: pointer;
-
-            svg {
-              color: lightgray;
-              transition: 0.3s ease-in;
-            }
-
-            &:hover {
-              svg {
-                color: gray;
-              }
-            }
-          }
-        }
-      }
-    }
-
-    .field {
-      display: flex;
-      flex-direction: column;
-
-      label {
-        font-weight: 600;
-        font-family: $font2;
-      }
-
-      &.dates {
-        display: grid;
-        grid-template-columns: 48% 48%;
-        gap: 20px;
-        width: 100%;
-      }
-    }
-
-    #private {
-      position: relative;
-      width: max-content;
-      padding: 5px 10px;
-      color: $charcoal;
-      border-radius: $borderRadiusSmall;
-      border-width: 1px;
-      border-style: solid;
-      cursor: pointer;
-      transition: 0.2s ease-in;
-      background: transparent;
-
-      label {
-        display: grid;
-        grid-template-columns: 25% 75%;
-        align-items: center;
-        gap: 10px;
-        font-weight: 400;
-
-        svg {
-          font-size: 1.2vw;
-        }
-      }
-
-      input {
-        cursor: pointer;
-        position: absolute;
-        opacity: 0;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-      }
-
-      &:hover,
-      &.checked {
-        border-color: $charcoal;
-        background: lightgray;
-      }
-
-      &.checked {
-        &:hover {
-          box-shadow: none;
-          background: transparent;
-          border-color: transparent;
-        }
-      }
-    }
-
-    .time-field {
-      display: grid;
-      grid-template-columns: 48% 48%;
-      gap: 10px;
-      align-items: end;
-    }
-
-    .participants {
-      display: grid;
-      grid-template-columns: 49% 49%;
-      gap: 10px;
-      margin: auto;
-      width: 100%;
-
-      select {
-        option {
-          padding: 5px 10px;
-          border-radius: $borderRadiusSmall;
-          cursor: pointer;
-
-          &:checked,
-          &:focus,
-          &:active {
-            background: transparent !important;
-          }
-
-          &.selected {
-            background: $aqua !important;
-            border: 1px solid $green;
-            color: $green;
-          }
-        }
-
-        &:focus,
-        &:active {
-          option {
-            background-color: transparent;
-          }
-        }
-      }
-    }
-  }
-
-  .add-event-btn {
-    display: block;
-    margin: 2vw auto;
-  }
-}
-
-.create-category-modal {
-  form {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-
-    input {
-      border-radius: 5px;
-      border: 1px solid #b1b7b8;
-      padding: 5px 8px;
-    }
-
-    label {
-      font-weight: 600;
-    }
-
-    .colors {
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-
-      .color {
-        width: 1.8vw;
-        height: 1.8vw;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 1px solid transparent;
-        cursor: pointer;
-        transition: 0.3s ease-in;
-
-        .center {
-          width: 100%;
-          height: 100%;
-          border-radius: 50%;
-          transition: 0.3s ease-in;
-        }
-
-        &:hover {
-          border: 1px solid rgb(187, 187, 187);
-
-          .center {
-            transform: scale(0.8);
-            border: 1px solid rgb(187, 187, 187);
-          }
-        }
-
-        &.selected {
-          border: 2px solid rgb(0, 72, 255);
-          .center {
-            transform: scale(0.8);
-          }
-        }
-      }
-    }
-  }
-}
-
-.event-modal {
-  .info {
-    span {
-      color: gray;
-    }
-  }
-
-  .modal-body {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-
-    > *:not(#private) {
-      width: 100%;
-      display: grid;
-      grid-template-columns: 10% 90%;
-    }
-
-    > *:not(.participants) {
-      align-items: center;
-    }
-
-    .columns {
-      display: grid;
-      grid-template-columns: 45% 45%;
-      gap: 10px;
-
-      .column {
-        background: $pearl;
-        border-radius: $borderRadiusLight;
-        padding: 10px 20px;
-
-        span {
-          font-weight: 600;
-          text-align: center;
-          margin-bottom: 10px;
-          width: 100%;
-          display: block;
-        }
-
-        ul {
-          padding: 0;
-        }
-      }
-    }
-  }
-
-  form {
-    .modal-header {
-      align-items: flex-start;
-    }
-
-    .modal-body {
-      align-items: flex-end;
-
-      > *:not(.date, .categories) {
-        align-items: start !important;
-      }
-
-      .date-inputs {
-        display: flex;
-        gap: 20px;
-      }
-    }
-
-    .categories-dropdown {
-      width: 100%;
-
-      button {
-        width: 100%;
-        text-align: left;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background: transparent;
-        border: 1px solid #b1b7b8;
-        color: $charcoal;
-      }
-
-      .dropdown-menu {
-        width: 100%;
-
-        .dropdown-item {
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-
-          .tag {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-
-            svg {
-              transform: rotateY(180deg);
-            }
-          }
-
-          .delete {
-            cursor: pointer;
-
-            svg {
-              color: lightgray;
-              transition: 0.3s ease-in;
-            }
-
-            &:hover {
-              svg {
-                color: gray;
-              }
-            }
-          }
-        }
-      }
-    }
-
-    select {
-      background: none;
-      border: none;
-      overflow: hidden;
-      width: 100%;
-
-      option {
-        padding: 5px 10px;
-        border-radius: $borderRadiusSmall;
-        cursor: pointer;
-
-        &:checked,
-        &:focus,
-        &:active {
-          background: transparent !important;
-        }
-
-        &.selected {
-          background: $aqua !important;
-          border: 1px solid $green;
-          color: $green;
-        }
-      }
-
-      &:focus,
-      &:active {
-        border: none;
-        outline: none;
-
-        option {
-          background-color: transparent;
-        }
-      }
-    }
-
-    #private {
-      position: relative;
-      width: max-content;
-      padding: 5px 10px;
-      color: $charcoal;
-      border-radius: $borderRadiusSmall;
-      border-width: 1px;
-      border-color: transparent;
-      border-style: solid;
-      cursor: pointer;
-      transition: 0.2s ease-in;
-      background: transparent;
-
-      label {
-        display: grid;
-        grid-template-columns: 25% 75%;
-        align-items: center;
-        gap: 10px;
-        font-weight: 400;
-
-        svg {
-          font-size: 1.2vw;
-        }
-      }
-
-      input {
-        cursor: pointer;
-        position: absolute;
-        opacity: 0;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-      }
-
-      &:hover,
-      &.checked {
-        border-color: $charcoal;
-        background: lightgray;
-      }
-
-      &.checked {
-        &:hover {
-          box-shadow: none;
-          background: transparent;
-          border-color: transparent;
         }
       }
     }

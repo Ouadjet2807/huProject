@@ -31,7 +31,7 @@ export default function InviteUserModal({ show, setShow }) {
         {"lecteur": 4},
     ]
 
-    const handleChange = (e) => {
+    const handleChange = (e) => {window.location.pathname.includes("invite")
         if(!e.target .value) return
 
         let value = e.target.type === "email" ? e.target.value : parseInt(e.target.value)
@@ -80,14 +80,16 @@ export default function InviteUserModal({ show, setShow }) {
   console.log(formData);
 
   return (
-    <Modal show={show} onHide={handleClose} id="searchTreatmentModal">
+    <Modal show={show} onHide={handleClose} id="inviteUserModal">
       <Modal.Header closeButton>
         <Modal.Title>Inviter une personne</Modal.Title>
       </Modal.Header>
       <Modal.Body>
+        <p>Saisissez l'adresse email de la personne que vous souhaitez inviter ainsi que son niveau d'accès</p>
        <form action="">
-        <input type="email" name="email" id="" onChange={(e) => handleChange(e)}/>
+        <input type="email" name="email" id="" onChange={(e) => handleChange(e)} placeholder="Email"/>
         <select name="access_level" id="" onChange={(e) => handleChange(e)}>
+            <option disabled>Choisissez un rôle</option>
             {roles.map(item => {
                 return <option value={Object.values(item)[0]}>{Object.keys(item)[0]}</option>
             })}
@@ -95,8 +97,8 @@ export default function InviteUserModal({ show, setShow }) {
        </form>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={handleSubmit}>
-          Envoyer
+        <Button variant="primary" onClick={handleSubmit}>
+          Envoyer une invitation
         </Button>
         <Button variant="secondary" onClick={handleClose}>
           Annuler

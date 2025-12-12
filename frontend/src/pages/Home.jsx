@@ -3,13 +3,12 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import CreateRecipient from "../components/modals/CreateRecipient";
-import { SlUserFemale } from "react-icons/sl";
-import { SlUser } from "react-icons/sl";
-import { AiOutlineLoading } from "react-icons/ai";
-import Agenda from "../components/Agenda";
 import TodoList from "../components/TodoList";
 import Loader from "../components/Loader";
 import InviteUserModal from "../components/modals/InviteUserModal";
+import { TbUsersPlus } from "react-icons/tb";
+import { FaUserCircle } from "react-icons/fa";
+
 
 export default function Home({ setRefreshRecipients, space }) {
   const [addRecipient, setAddRecipient] = useState(false);
@@ -28,6 +27,12 @@ export default function Home({ setRefreshRecipients, space }) {
 
   //   checkUserLoggedIn();
   // }, [loading, user, navigate]);
+
+  const isCreator = () => {
+    if(!user || !space) return false
+
+    if(space.created_by === user.id) return true 
+  }
 
   return (
     <div id="home">
@@ -49,7 +54,7 @@ export default function Home({ setRefreshRecipients, space }) {
                     >
                     <span>
                         <div className="icon">
-                          {item.gender === "F" ? <SlUserFemale /> : <SlUser />}
+                          <FaUserCircle/>
                         </div>
                         <strong>{item.first_name} {item.last_name}</strong>
                       </span>
@@ -73,17 +78,18 @@ export default function Home({ setRefreshRecipients, space }) {
                     >
                       <span>
                         <div className="icon">
-                          {item.gender === "F" ? <SlUserFemale /> : <SlUser />}
+                          <FaUserCircle/>
                         </div>
                         <strong>{item.first_name} {item.last_name}</strong>
                       </span>
                     </div>
                   );
                 })}
-
+              { isCreator() &&
               <button onClick={() => setShowInviteModal(true)}>
-                Inviter une personne
+                <TbUsersPlus /> Inviter une personne
               </button>
+              }
             </div>
           </div>
 

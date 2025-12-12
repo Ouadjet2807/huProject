@@ -6,7 +6,14 @@
 @import './components/todoList';
 @import './components/toast';
 @import './components/navbar';
-@import './components/modal';
+@import './components/modals/modal';
 @import './components/agenda';
 @import './components/loader';
+@import './components/modals/inviteUserModal';
+@import './components/modals/eventModal';
+@import './components/modals/createCategoryModal';
+@import './components/modals/addEventModal';
+@import './components/modals/createRecipientModal';
+@import './components/modals/medicationDetailsModal';
+@import './components/modals/searchTreatmentModal';
 @import 'react-big-calendar/lib/sass/styles';

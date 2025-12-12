@@ -79,6 +79,8 @@ export default function Agenda({ space }) {
       } else {
         setError({ detail: "Network error" });
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -86,8 +88,6 @@ export default function Agenda({ space }) {
     setIsLoading(true);
     try {
       const res = await api.get("http://127.0.0.1:8000/api/agenda_items/");
-      console.log(res);
-      
       setAgendaItems(res.data);
     } catch (err) {
       console.error(err);

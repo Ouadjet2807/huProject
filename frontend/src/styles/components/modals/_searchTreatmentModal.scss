@@ -1,0 +1,62 @@
+#searchTreatmentModal {
+  .search-bar {
+    display: flex;
+    align-items: center;
+
+    input {
+      width: 100%;
+    }
+
+    .icon {
+      position: absolute;
+      right: 5%;
+      display: flex;
+
+      svg {
+        color: $green;
+      }
+    }
+  }
+
+  .search-results {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 40vh;
+    overflow-y: scroll;
+    background: $pearl;
+    border-radius: $borderRadiusSmall;
+    margin: 20px 0;
+
+    &::-webkit-scrollbar {
+      background: $whiteGreen;
+      width: 0.5vw;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: $green;
+      border-radius: $borderRadius;
+    }
+
+    p {
+      text-align: center;
+      color: $green;
+      font-weight: 600;
+    }
+
+    .medication {
+      background: $white;
+      padding: 5px 10px;
+      border-radius: $borderRadiusSmall;
+      color: $green;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.3s ease-in;
+
+      &:hover {
+        background: $lightGreen;
+        color: $pearl;
+      }
+    }
+  }
+}

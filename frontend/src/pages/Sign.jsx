@@ -24,7 +24,7 @@ export default function Sign() {
         <li className={activeTab === "login" ? "active" : ""} onClick={() => setActiveTab("login")}><span>Login</span></li>
       </ul>
         {renderActiveTab()}
-        </div>
+      </div>
     </div>
   );
 }

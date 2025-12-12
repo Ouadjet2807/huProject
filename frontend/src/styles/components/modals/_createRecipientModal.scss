@@ -1,0 +1,26 @@
+.create-recipient-modal {
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: flex-end;
+
+    > * {
+      width: 100%;
+    }
+
+    label {
+      font-weight: 600;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+  }
+
+  button {
+    width: max-content;
+  }
+}

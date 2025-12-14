@@ -59,7 +59,9 @@ export default function Space({ editMode, setEditMode, roles }) {
 
     let caregiver = space.caregivers.find((e) => e.user === user);
 
-    if (caregiver.access_level < 2) return true;
+    console.log(caregiver.access_level);
+    if (caregiver.access_level < 3) return true;
+    
 
     return false;
   };

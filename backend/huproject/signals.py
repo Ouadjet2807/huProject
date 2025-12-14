@@ -120,15 +120,25 @@ def create_caregiver_space(sender, instance, created, **kwargs):
     except Exception as e:
         logger.exception(f"Failed to create Space/membership for caregiver {instance!s}: {e}")
 
+
+@receiver(pre_save, sender=Caregiver)
+def update_membership(sender, instance, **kwargs):
+    
+    membership = SpaceMembership.objects.get(user=instance.user)
+
+    try:
+        membership.role = instance.access_level
+        membership.save()
+    except Exception as e:
+        raise ValidationError("Couldn't edit the membership")
+
+
+
 @receiver(pre_save, sender=User)
 def update_caregiver_profile(sender, instance, **kwargs):
     """
-    Create a Caregiver when a new User is created.
-    We populate first_name/last_name from the user if available to avoid DB errors.
+    Update Caregiver object whenever the linked user is edited
     """
-    print(instance.last_name)
-    print(instance.first_name)
-
 
     caregiver = Caregiver.objects.get(user=instance)
 

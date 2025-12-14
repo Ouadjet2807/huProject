@@ -230,6 +230,28 @@
               align-items: center;
               justify-content: flex-end;
               gap: 10px;
+
+              .revoke {
+                width: max-content;
+
+                > * {
+                  flex: 1;
+                }
+                span {
+                  transform: scaleX(0);
+                  transform-origin: right;
+                  transition: 0.2s ease-in;
+                }
+
+                &:hover {
+                  
+                  span {
+                    transform: scaleX(1);
+                  }
+                }
+
+
+              }
             }
 
             > *:not(.actions) {

@@ -43,10 +43,12 @@ export default function CreateRecipient({
       );
       console.log("Success!", response.data);
       setRefreshRecipients(true);
+      handleClose()
     } catch (error) {
       console.log(error);
     }
   };
+
 
   console.log(formData);
 

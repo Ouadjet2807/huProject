@@ -14,7 +14,7 @@ export default function () {
     [3, "lecteur"],
   ];
 
-  const [activeTab, setActiveTab] = useState("profile");
+  const [activeTab, setActiveTab] = useState();
   const [editMode, setEditMode] = useState({
     active: false,
     target: "",
@@ -23,12 +23,37 @@ export default function () {
   const renderActiveTab = () => {
     switch (activeTab) {
       case "profile":
-        return <Profile editMode={editMode} setEditMode={setEditMode} roles={roles}/>;
+        return (
+          <Profile
+            editMode={editMode}
+            setEditMode={setEditMode}
+            roles={roles}
+          />
+        );
       case "space":
-        return <Space editMode={editMode} setEditMode={setEditMode} roles={roles}/>;
+        return (
+          <Space editMode={editMode} setEditMode={setEditMode} roles={roles} />
+        );
     }
   };
 
+  useEffect(() => {
+    if(!activeTab) return
+    sessionStorage.setItem("tab", activeTab);
+  }, [activeTab]);
+
+  useEffect(() => {
+    let storage = sessionStorage.getItem("tab");
+    
+    if (storage == "") {
+      setActiveTab("profile");
+      return;
+    }
+
+    setActiveTab(storage);
+
+  });
+  
   return (
     <div id="account">
       <div className="toolbar">

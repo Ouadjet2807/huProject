@@ -9,7 +9,7 @@ import Badge from "react-bootstrap/Badge";
 import api from "../api/api";
 import { FaUserMinus } from "react-icons/fa";
 import Modal from "react-bootstrap/Modal";
-import { TbUsersPlus } from "react-icons/tb";
+import { TbUsersMinus, TbUsersPlus } from "react-icons/tb";
 import InviteUserModal from "../components/modals/InviteUserModal";
 import CreateRecipient from "../components/modals/CreateRecipient";
 import { TiDelete } from "react-icons/ti";
@@ -19,8 +19,12 @@ export default function Space({ editMode, setEditMode, roles }) {
   const [spaceMemberships, setSpaceMemberships] = useState([]);
   const [deleteCaregiverModal, setDeleteCaregiverModal] = useState(false);
   const [selectedCaregiver, setSelectedCaregiver] = useState();
+  const [selectedRecipient, setSelectedRecipient] = useState();
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [addRecipient, setAddRecipient] = useState(false);
+  const [removeRecipient, setRemoveRecipient] = useState(false);
+  const [refreshSpace, setRefreshSpace] = useState(false);
+  const [validationField, setValidationField] = useState("");
 
   const handleEditMode = (e) => {
     if (!e.target) return;
@@ -40,13 +44,24 @@ export default function Space({ editMode, setEditMode, roles }) {
     }
   };
 
-  const handleDeleteModal = (caregiver) => {
-    setSelectedCaregiver(caregiver);
-    setDeleteCaregiverModal(true);
+  const handleDeleteModal = (e, item) => {
+    if (!e.target) return;
+
+    if (e.target.parentElement.parentElement.className === "caregiver") {
+      setSelectedCaregiver(item);
+      setDeleteCaregiverModal(true);
+    } else {
+      setSelectedRecipient(item);
+      setRemoveRecipient(true);
+    }
   };
 
-  const handleClose = () => {
-    setDeleteCaregiverModal(false);
+  const handleClose = (e) => {
+    if (deleteCaregiverModal) {
+      setDeleteCaregiverModal(false);
+    } else if (removeRecipient) {
+      setRemoveRecipient(false);
+    }
   };
 
   const isCreator = (user) => {
@@ -140,12 +155,31 @@ export default function Space({ editMode, setEditMode, roles }) {
     console.log(membership);
   };
 
+  const deleteRecipient = async (recipient) => {
+    
+    if(validationField.toUpperCase() !== "SUPPRIMER") return
+
+    try {
+      await api.delete(`http://127.0.0.1:8000/api/recipients/${recipient.id}/`)
+      handleClose()
+    } catch (error) {
+      console.log(error);
+      
+    }
+  }
+
   useEffect(() => {
     getSpaceMemberships();
   }, [space]);
 
-  console.log(space.caregivers);
-  console.log(spaceMemberships);
+  useEffect(() => {
+    if (refreshSpace) {
+      window.location.reload();
+    }
+  }, [refreshSpace]);
+
+  console.log(validationField);
+  console.log(selectedRecipient);
 
   return Object.keys(space).length > 0 && user ? (
     <div className="space-container">
@@ -155,8 +189,13 @@ export default function Space({ editMode, setEditMode, roles }) {
         show={addRecipient}
         setShow={setAddRecipient}
         space={space}
+        setRefreshRecipients={setRefreshSpace}
       />
-      <Modal show={deleteCaregiverModal} onHide={handleClose} id="revokeCaregiverModal">
+      <Modal
+        show={deleteCaregiverModal}
+        onHide={(e) => handleClose(e)}
+        id="revokeCaregiverModal"
+      >
         <Modal.Header closeButton>
           <Modal.Title>Révoquer l'accès</Modal.Title>
         </Modal.Header>
@@ -166,7 +205,8 @@ export default function Space({ editMode, setEditMode, roles }) {
           </p>
           {selectedCaregiver && (
             <strong>
-              <TiDelete /> {selectedCaregiver.first_name} {selectedCaregiver.last_name}
+              <TiDelete /> {selectedCaregiver.first_name}{" "}
+              {selectedCaregiver.last_name}
             </strong>
           )}
         </Modal.Body>
@@ -179,6 +219,45 @@ export default function Space({ editMode, setEditMode, roles }) {
           </Button>
 
           <Button variant="outline-secondary" onClick={handleClose}>
+            Annuler
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal
+        show={removeRecipient}
+        onHide={(e) => handleClose(e)}
+        id="removeRecipientModal"
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Supprimer un aidé</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>
+            Êtes-vous sûr(e) de vouloir supprimmer cette personne ?<br /> Toutes
+            ses donnée seront perdues
+          </p>
+          {selectedRecipient && (
+            <strong>
+              <TiDelete /> {selectedRecipient.first_name}{" "}
+              {selectedRecipient.last_name}
+            </strong>
+          )}
+          <div className="validation-field">
+            <label htmlFor="">SUPPRIMER</label>
+            <input type="text" name="validation" id="" onChange={(e) => setValidationField(e.target.value)}/>
+          </div>
+          <small>Ecrivez "supprimer" dans le champ ci-dessus puis cliquez sur continuer</small>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="outline-danger"
+            onClick={() => deleteRecipient(selectedRecipient)}
+          >
+            Continuer
+          </Button>
+
+          <Button variant="outline-secondary" onClick={(e) => handleClose(e)}>
             Annuler
           </Button>
         </Modal.Footer>
@@ -198,14 +277,14 @@ export default function Space({ editMode, setEditMode, roles }) {
             <Button
               className={`edit-button
                ${
-                 editMode.active && editMode.target === "personalInfo"
+                 editMode.active && editMode.target === "caregivers"
                    ? "active"
                    : ""
                }
               `}
               onClick={(e) => handleEditMode(e)}
             >
-              {editMode.active && editMode.target === "personalInfo" ? (
+              {editMode.active && editMode.target === "caregivers" ? (
                 <>
                   Enregistrer <LuSave />
                 </>
@@ -260,10 +339,10 @@ export default function Space({ editMode, setEditMode, roles }) {
                         <Button
                           variant="outline-danger"
                           className="revoke"
-                          onClick={() => handleDeleteModal(item)}
+                          onClick={(e) => handleDeleteModal(e, item)}
                           size="sm"
                         >
-                          <FaUserMinus /> 
+                          <FaUserMinus />
                         </Button>
                       </div>
                     ) : (
@@ -277,7 +356,10 @@ export default function Space({ editMode, setEditMode, roles }) {
             })}
         </ul>
         {isCreator(user.id) && (
-          <Button onClick={() => setShowInviteModal(true)} className="add-person">
+          <Button
+            onClick={() => setShowInviteModal(true)}
+            className="add-person"
+          >
             <TbUsersPlus /> Inviter un membre
           </Button>
         )}
@@ -289,13 +371,13 @@ export default function Space({ editMode, setEditMode, roles }) {
           {isCreator(user.id) && (
             <Button
               className={`edit-button ${
-                editMode.active && editMode.target === "personalInfo"
+                editMode.active && editMode.target === "recipients"
                   ? "active"
                   : ""
               }`}
               onClick={(e) => handleEditMode(e)}
             >
-              {editMode.active && editMode.target === "personalInfo" ? (
+              {editMode.active && editMode.target === "recipients" ? (
                 <>
                   Enregistrer <LuSave />
                 </>
@@ -308,11 +390,11 @@ export default function Space({ editMode, setEditMode, roles }) {
           )}
         </div>
         <ul>
-          {space.recipients.length > 1 ? (
+          {space.recipients.length > 0 ? (
             space.recipients.map((item) => {
               return (
                 <li
-                  className={`caregiver ${
+                  className={`recipient ${
                     item.user === user.id ? "current-user" : ""
                   }`}
                 >
@@ -320,16 +402,15 @@ export default function Space({ editMode, setEditMode, roles }) {
                     <p>
                       {item.first_name} {item.last_name}
                     </p>
-                    {/* <small>{new Date(getAccessDate(item))}</small> */}
-                    {/* {editMode.active && editMode.target === "caregivers" ?
-                  <select name="access_level" id="" onChange={(e) => handleChange(e, item.id)}>
-                    {roles.map(role => {
-                      return <option value={role[0]} selected={item.access_level == role[0]}>{role[1]}</option>
-                    })}
-                  </select>
-                :
-                <Badge>{getAccessLevel(item)}</Badge>
-              } */}
+                    {editMode.active && editMode.target === "recipients" && canEdit(user.id) && (
+                      <Button
+                        onClick={(e) => handleDeleteModal(e, item)}
+                        className="remove-person"
+                        variant="outline-danger"
+                      >
+                        <FaUserMinus />
+                      </Button>
+                    )}
                   </div>
                 </li>
               );

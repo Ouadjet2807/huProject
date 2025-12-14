@@ -61,7 +61,6 @@ export default function Space({ editMode, setEditMode, roles }) {
 
     console.log(caregiver.access_level);
     if (caregiver.access_level < 3) return true;
-    
 
     return false;
   };
@@ -147,7 +146,7 @@ export default function Space({ editMode, setEditMode, roles }) {
   console.log(space.caregivers);
   console.log(spaceMemberships);
 
-  return space && user ? (
+  return Object.keys(space).length > 0 && user ? (
     <div className="space-container">
       <InviteUserModal show={showInviteModal} setShow={setShowInviteModal} />
 
@@ -178,7 +177,9 @@ export default function Space({ editMode, setEditMode, roles }) {
             Continuer
           </Button>
 
-          <Button variant="outline-secondary">Annuler</Button>
+          <Button variant="outline-secondary" onClick={handleClose}>
+            Annuler
+          </Button>
         </Modal.Footer>
       </Modal>
       <h1>Votre espace</h1>
@@ -259,12 +260,15 @@ export default function Space({ editMode, setEditMode, roles }) {
                           variant="danger"
                           className="revoke"
                           onClick={() => handleDeleteModal(item)}
+                          size="sm"
                         >
                           <FaUserMinus /> Révoquer l'accès
                         </Button>
                       </div>
                     ) : (
-                      <Badge>{getAccessLevel(item)}</Badge>
+                      <Badge pill className="role-badge">
+                        {getAccessLevel(item)}
+                      </Badge>
                     )}
                   </div>
                 </li>
@@ -272,11 +276,12 @@ export default function Space({ editMode, setEditMode, roles }) {
             })}
         </ul>
         {isCreator(user.id) && (
-          <Button onClick={() => setShowInviteModal(true)}>
+          <Button onClick={() => setShowInviteModal(true)} className="add-person">
             <TbUsersPlus /> Inviter un membre
           </Button>
         )}
       </div>
+
       <div className="box" id="recipients">
         <div className="box-header">
           <strong>Membres</strong>
@@ -333,7 +338,7 @@ export default function Space({ editMode, setEditMode, roles }) {
           )}
         </ul>
         {canEdit(user.id) && (
-          <Button onClick={() => setAddRecipient(true)}>
+          <Button onClick={() => setAddRecipient(true)} className="add-person">
             <TbUsersPlus /> Ajouter un aidé
           </Button>
         )}

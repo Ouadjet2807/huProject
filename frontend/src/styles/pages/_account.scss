@@ -176,6 +176,9 @@
       padding: 20px;
       margin: 10px auto;
       border-radius: $borderRadiusSmall;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
 
       .box-header {
         grid-column: 1 / 3;
@@ -191,6 +194,7 @@
         gap: 10px;
         padding: 0;
         margin: 20px 0;
+        width: 100%;
 
         .caregiver {
           display: flex;
@@ -212,10 +216,14 @@
           }
 
           .info {
-            display: grid;
-            grid-template-columns: 25% 25% 50%;
+            display: flex;
+            justify-content: space-between;
             align-items: center;
             width: 100%;
+
+            .role-badge {
+              width: max-content;
+            }
 
             .actions {
               display: flex;
@@ -224,9 +232,9 @@
               gap: 10px;
             }
 
-            // > * {
-            //   width: 10vw;
-            // }
+            > *:not(.actions) {
+              width: 10vw;
+            }
 
             p {
               margin-bottom: 0;
@@ -243,6 +251,12 @@
             border: 1px solid $greyGreen;
           }
         }
+      }
+
+      .add-person {
+        background-color: $aqua;
+        color: $green;
+        border: 1px solid $green
       }
     }
   }

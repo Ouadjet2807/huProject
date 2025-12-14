@@ -12,6 +12,7 @@ import Modal from "react-bootstrap/Modal";
 import { TbUsersPlus } from "react-icons/tb";
 import InviteUserModal from "../components/modals/InviteUserModal";
 import CreateRecipient from "../components/modals/CreateRecipient";
+import { TiDelete } from "react-icons/ti";
 
 export default function Space({ editMode, setEditMode, roles }) {
   const { space, user } = useContext(AuthContext);
@@ -155,7 +156,7 @@ export default function Space({ editMode, setEditMode, roles }) {
         setShow={setAddRecipient}
         space={space}
       />
-      <Modal show={deleteCaregiverModal} onHide={handleClose}>
+      <Modal show={deleteCaregiverModal} onHide={handleClose} id="revokeCaregiverModal">
         <Modal.Header closeButton>
           <Modal.Title>Révoquer l'accès</Modal.Title>
         </Modal.Header>
@@ -165,13 +166,13 @@ export default function Space({ editMode, setEditMode, roles }) {
           </p>
           {selectedCaregiver && (
             <strong>
-              {selectedCaregiver.first_name} {selectedCaregiver.last_name}
+              <TiDelete /> {selectedCaregiver.first_name} {selectedCaregiver.last_name}
             </strong>
           )}
         </Modal.Body>
         <Modal.Footer>
           <Button
-            variant="danger"
+            variant="outline-danger"
             onClick={() => revokeAccess(selectedCaregiver)}
           >
             Continuer
@@ -257,12 +258,12 @@ export default function Space({ editMode, setEditMode, roles }) {
                         </select>
 
                         <Button
-                          variant="danger"
+                          variant="outline-danger"
                           className="revoke"
                           onClick={() => handleDeleteModal(item)}
                           size="sm"
                         >
-                          <FaUserMinus /> Révoquer l'accès
+                          <FaUserMinus /> 
                         </Button>
                       </div>
                     ) : (

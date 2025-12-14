@@ -156,11 +156,11 @@ export default function Space({ editMode, setEditMode, roles }) {
           <strong>Membres</strong>
           {space.created_by === user.id && (
             <Button
-              className={
-                editMode.active && editMode.target === "personalInfo"
+              className={`edit-button
+               ${editMode.active && editMode.target === "personalInfo"
                   ? "active"
-                  : ""
-              }
+                  : ""}
+              `}
               onClick={(e) => handleEditMode(e)}
             >
               {editMode.active && editMode.target === "personalInfo" ? (
@@ -230,17 +230,18 @@ export default function Space({ editMode, setEditMode, roles }) {
               );
             })}
         </ul>
+        <Button>Inviter un membre</Button>
       </div>
       <div className="box" id="recipients">
         <div className="box-header">
           <strong>Membres</strong>
           {space.created_by === user.id && (
             <Button
-              className={
+              className={`edit-button ${
                 editMode.active && editMode.target === "personalInfo"
                   ? "active"
                   : ""
-              }
+              }`}
               onClick={(e) => handleEditMode(e)}
             >
               {editMode.active && editMode.target === "personalInfo" ? (

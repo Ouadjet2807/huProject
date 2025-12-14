@@ -144,10 +144,10 @@ class CaregiverViewSet(viewsets.ModelViewSet):
             raise ValidationError("Caregiver already exists for this user.")
         serializer.save(user=self.request.user)
 
-    def perform_update(self, serializer):
-        # optionally create caregiver linked to request.user
+    # def perform_update(self, serializer):
+    #     # optionally create caregiver linked to request.user
         
-        serializer.save()
+    #     serializer.save()
 
 
 class IsCaregiverAndMember(permissions.BasePermission):
@@ -399,12 +399,26 @@ def accept_invitation(request):
     token = request.POST.get("token")
     invite = get_object_or_404(Invitation, token=token)
 
-    print(invite)
-    print(token)
-
     if invite.is_valid():
         return Response({"valid": True}, status=400)
 
+
+class SpaceMembershipViewSet(viewsets.ModelViewSet):
+    permission_classes = [permissions.IsAuthenticated] 
+    serializer_class = SpaceMembershipSerializer
+    filter_backends = [filters.SearchFilter,]
+    search_fields = ['id', 'space']
+    lookup_field = 'id'
+
+    def get_queryset(self):
+
+        print(self.request)
+        
+        if self.request.GET:
+            space = Space.objects.get(id=self.request.GET.get("space"))
+
+            return SpaceMembership.objects.filter(space=space)
+        return SpaceMembership.objects.all()
 
 class InvitationViewSet(viewsets.ModelViewSet):
     serializer_class = InvitationSerializer
@@ -453,7 +467,7 @@ class TodoListViewSet(viewsets.ModelViewSet):
 
         if not user or not hasattr(user, 'caregiver'):
             return TodoList.objects.none()
-        
+
         caregiver = user.caregiver
 
         return TodoList.objects.filter(space__in=caregiver.spaces.all()).select_related('space')

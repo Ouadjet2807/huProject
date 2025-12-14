@@ -1,3 +1,16 @@
+@keyframes zoomIn {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+
 #todoList {
   .todo-category {
     display: flex;
@@ -46,11 +59,27 @@
       gap: 15px;
       transition: 0.3s ease-in;
 
-      input {
-        accent-color: $aqua;
+      .field {
+        display: flex;
+        align-items: center;
+        position: relative;
         cursor: pointer;
 
-    
+        > * {
+          width: 100%;
+          height: 100%;
+        }
+
+        svg {
+          position: absolute;
+          color: $mediumGreen2;
+          border-radius: $borderRadiusSmall;
+        }
+
+        input {
+          opacity: 0;
+          cursor: pointer;
+        }
       }
 
       .delete {
@@ -65,6 +94,16 @@
         font-style: italic;
         text-decoration: line-through;
         color: $lightGreen2;
+
+        .field {
+
+
+        svg {
+          animation: zoomIn 0.3s ease-in 0s 1 alternate forwards;
+        }
+
+       
+      }
       }
     }
   }

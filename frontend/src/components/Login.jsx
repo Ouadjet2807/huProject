@@ -41,6 +41,9 @@ export default function Login() {
   };
 
   useEffect(() => {
+    console.log(message);
+    
+    if(message.message === '') return
     setMessage(message.message)
     if (message.status === "success") {
         setShowToast(true)

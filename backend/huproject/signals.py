@@ -1,9 +1,10 @@
 import logging
 from django.conf import settings
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_save, post_delete
 from django.dispatch import receiver
 from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
+from django.core.exceptions import ValidationError
 import time
 import json
 
@@ -51,6 +52,34 @@ def create_caregiver_agenda(sender, instance, created, **kwargs):
     except Exception as e:
         logger.exception(f"Failed to create Agenda for space {instance!s}: {e}")
 
+
+@receiver(post_delete, sender=SpaceMembership)
+def remove_caregiver_from_space(sender, instance, **kwargs):
+    """
+    Remove the caregiver from the space when its membership is deleted by the admin and create a new space
+    """
+
+    caregiver = Caregiver.objects.get(user=instance.user)
+    space = Space.objects.get(id=instance.space.id)
+
+    try:
+      space.caregivers.remove(caregiver)
+
+      new_space_name = f"{caregiver.first_name or caregiver.user.email}'s Space"
+      new_space = Space.objects.create(
+                name=new_space_name,
+                description="Personal space created automatically",
+                created_by=caregiver.user  # ensure created_by FK exists and allows null if needed
+            )
+      new_space.caregivers.add(caregiver)
+      membership = SpaceMembership.objects.create(
+        space=new_space,
+        user= caregiver.user,
+        role = caregiver.access_level
+        )
+    except Exception as e:
+        raise ValidationError("couldn't remove the caregiver")
+
 @receiver(post_save, sender=Caregiver)
 def create_caregiver_space(sender, instance, created, **kwargs):
     """
@@ -91,12 +120,39 @@ def create_caregiver_space(sender, instance, created, **kwargs):
     except Exception as e:
         logger.exception(f"Failed to create Space/membership for caregiver {instance!s}: {e}")
 
+@receiver(pre_save, sender=User)
+def update_caregiver_profile(sender, instance, **kwargs):
+    """
+    Create a Caregiver when a new User is created.
+    We populate first_name/last_name from the user if available to avoid DB errors.
+    """
+    print(instance.last_name)
+    print(instance.first_name)
+
+
+    caregiver = Caregiver.objects.get(user=instance)
+
+    if caregiver.last_name == instance.last_name and caregiver.first_name == instance.first_name:
+        return
+
+    if caregiver.last_name != instance.last_name:
+        caregiver.last_name = instance.last_name
+    if caregiver.first_name != instance.first_name:
+        caregiver.first_name = instance.first_name
+
+    try:
+        caregiver.save()
+    except Exception as e:
+        raise ValidationError("Echec de la modification de l'objet Caregiver")
+    
+
 @receiver(post_save, sender=User)
 def create_caregiver_profile(sender, instance, created, **kwargs):
     """
     Create a Caregiver when a new User is created.
     We populate first_name/last_name from the user if available to avoid DB errors.
     """
+
     if not created:
         return
 

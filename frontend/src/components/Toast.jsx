@@ -1,12 +1,22 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Toast from "react-bootstrap/Toast";
 import ToastContainer from "react-bootstrap/ToastContainer";
 import { BsFillPatchCheckFill } from "react-icons/bs";
 import { BsPatchPlusFill } from "react-icons/bs";
 export default function Toaster({ setShow, show, delay, message, color }) {
 
+  
+  console.log(message);
 
-    console.log(message);
+  useEffect(() => {
+    if(Object.keys(message).length > 0) {
+      if(message.message === 'Token is expired') {
+        window.location.reload()
+      }
+    }
+  }, [message])
+
+ 
     
   return (
     <ToastContainer className="p-3" position="top-end" style={{ zIndex: 1 }}>

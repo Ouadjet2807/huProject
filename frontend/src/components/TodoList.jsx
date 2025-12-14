@@ -4,6 +4,8 @@ import Button from "react-bootstrap/esm/Button";
 import { FaRegTrashAlt } from "react-icons/fa";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
+import { TbSquareCheck } from "react-icons/tb";
+import { TbSquareCheckFilled } from "react-icons/tb";
 
 gsap.registerPlugin(useGSAP);
 
@@ -37,7 +39,6 @@ export default function TodoList({ user, space }) {
   const [filteredTodoList, setFilteredTodoList] = useState([]);
   const [activeCategory, setActiveCategory] = useState(todoCategory[0].value);
   const [newTask, setNewTask] = useState({});
-
 
   const selectInputRef = useRef();
 
@@ -171,13 +172,16 @@ export default function TodoList({ user, space }) {
           filteredTodoList.map((todo, index) => {
             return (
               <div className={`todo-item ${todo.completed ? "completed" : ""}`}>
+                <div className="field">
+                {todo.completed ? <TbSquareCheckFilled /> : <TbSquareCheck />}
                 <input
                   type="checkbox"
                   name=""
                   id=""
                   checked={todo.completed}
                   onClick={() => updateTodo(index, todo)}
-                />
+                  />
+                  </div>
                 {todo.title}
                 <div className="delete" onClick={() => deleteTodo(index, todo)}>
                   <FaRegTrashAlt />

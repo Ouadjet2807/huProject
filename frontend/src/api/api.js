@@ -21,6 +21,8 @@ export const tokenStore = {
   }
 };
 
+
+
 // attach access on every request (reads from localStorage in case of reload)
 api.interceptors.request.use((config) => {
 
@@ -91,9 +93,12 @@ api.interceptors.response.use(
         return api(originalRequest);
       } catch (refreshError) {
         // refresh failed -> clear tokens and reject
+        console.log(refreshError);
+        
         isRefreshing = false;
         tokenStore.clear();
         onRefreshed(null);
+        window.location.reload()
         return Promise.reject(refreshError);
       }
     }

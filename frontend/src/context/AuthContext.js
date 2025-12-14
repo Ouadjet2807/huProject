@@ -120,15 +120,26 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async (refresh) => {
     if (refresh) {
-      await api.post("http://127.0.0.1:8000/api/logout/", { refresh: refresh });
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("refreshToken");
-      delete api.defaults.headers.common["Authorization"];
-      setUser(null);
-      setMessage({
-        status: "",
-        message: "",
-      });
+      try {
+
+        await api.post("http://127.0.0.1:8000/api/logout/", { refresh: refresh });
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        delete api.defaults.headers.common["Authorization"];
+        setUser(null);
+        setMessage({
+          status: "neutral",
+          message: "Déconnexion",
+        });
+      } catch (error) {
+         setMessage({
+          status: "error",
+          message: error.response.data,
+        });
+        
+      }
+
+      initAuth()
     }
   };
 

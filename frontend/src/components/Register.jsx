@@ -74,6 +74,8 @@ export default function Register({data, token}) {
   };
 
   useEffect(() => {
+
+    if(message.message === '') return
     setMessage(message.message)
     if (message.status === "success") {
       setShowToast(true);

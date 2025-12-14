@@ -10,5 +10,14 @@ export const ToastProvider = ({ children }) => {
 
     const value = {showToast, setShowToast, message, setMessage, color, setColor}
 
+     useEffect(() => {
+    if(!showToast) {
+      setMessage('')
+    }
+  }, [showToast])
+
+  console.log(message);
+  
+
     return <ToastContext.Provider value={value}>{children}</ToastContext.Provider>;
 }

@@ -34,8 +34,10 @@ export default function Home({ setRefreshRecipients, space }) {
     if(space.created_by === user.id) return true 
   }
 
+
   return (
     <div id="home">
+
       {!loading ? (
         <div className="home-container">
           <InviteUserModal show={showInviteModal} setShow={setShowInviteModal}/>

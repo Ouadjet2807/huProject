@@ -16,7 +16,7 @@ export default function InviteUserModal({ show, setShow }) {
 
     const [formData, setFormData] = useState({
         email: "",
-        role: 4,
+        role: 3,
         space: "",
         sender: "",
         token: "",
@@ -26,9 +26,9 @@ export default function InviteUserModal({ show, setShow }) {
     })
 
     const roles = [
-        {"administrateur": 2},
-        {"editeur": 3},
-        {"lecteur": 4},
+        {"administrateur": 1},
+        {"editeur": 2},
+        {"lecteur": 3},
     ]
 
     const handleChange = (e) => {window.location.pathname.includes("invite")
@@ -66,7 +66,7 @@ export default function InviteUserModal({ show, setShow }) {
     };
 
     useEffect(() => {
-
+      if(!user) return
         console.log(space);
         
         setFormData(prev => ({

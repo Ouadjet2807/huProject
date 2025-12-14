@@ -30,10 +30,10 @@
     }
   }
 
-  .account-container {
+  .profile-container {
     width: 70%;
     margin: 20px auto;
-    
+
     .box {
       border-width: 1px;
       border-style: solid;
@@ -41,23 +41,27 @@
       padding: 20px;
       margin: 10px auto;
       border-radius: $borderRadiusSmall;
-      
-      
+
       button {
         background: transparent;
         color: $greyGreen;
         border: 1px solid $whiteGreen;
         border-radius: $borderRadius;
-        font-family: $font1;
         padding: 5px 15px;
         font-size: 14px;
         transition: 0.3s ease-in;
-        
+        cursor: pointer;
+
         &:hover {
           box-shadow: 0px 1px 6px 1px rgb(177 183 184 / 17%);
         }
+
+        &.active {
+          background: $whiteGreen;
+          color: $darkGreen;
+        }
       }
-      
+
       .box-header {
         grid-column: 1 / 3;
         display: flex;
@@ -65,26 +69,26 @@
         justify-content: space-between;
         width: 100%;
       }
-      
+
       &#generalInfo {
         display: grid;
         grid-template-columns: 25% 75%;
-        
+
         .icon {
           display: flex;
           justify-content: center;
-          
+
           svg {
             font-size: 10vw;
             color: $whiteGreen;
           }
         }
-        
+
         .username-field {
           position: relative;
           display: flex;
           align-items: center;
-          
+
           svg {
             position: absolute;
             width: 1.8vw;
@@ -93,21 +97,21 @@
             height: 100%;
             border-right: 1px solid $whiteGreen;
           }
-          
+
           input {
             padding: 5px 35px;
           }
         }
-        
+
         .user-info {
           display: flex;
           align-items: flex-start;
           justify-content: space-between;
-          
+
           .text {
             display: flex;
             flex-direction: column;
-            
+
             span {
               text-transform: capitalize;
               color: $greyGreen;
@@ -115,24 +119,24 @@
           }
         }
       }
-      
+
       &#personalInfo {
         display: grid;
         grid-template-columns: 50% 50%;
         gap: 10px 0;
         justify-items: center;
-        
+
         .item {
           display: flex;
           flex-direction: column;
           margin-bottom: 1rem;
           width: 80%;
-          
+
           small,
           p {
             padding: 5px 8px;
           }
-          
+
           p {
             border-width: 1px;
             border-style: solid;
@@ -143,7 +147,7 @@
             color: $greyGreen;
             font-weight: 600;
           }
-          
+
           input {
             font-family: $font1;
           }
@@ -151,5 +155,111 @@
       }
     }
   }
-  
+
+  .space-container {
+    width: 70%;
+    margin: 20px auto;
+
+    .creation-info {
+      color: $greyGreen;
+      font-style: italic;
+    }
+
+    button:not(.revoke) {
+      background: transparent;
+      color: $greyGreen;
+      border: 1px solid $whiteGreen;
+      border-radius: $borderRadius;
+      padding: 5px 15px;
+      font-size: 14px;
+      transition: 0.3s ease-in;
+      cursor: pointer;
+
+      &:hover {
+        box-shadow: 0px 1px 6px 1px rgb(177 183 184 / 17%);
+      }
+
+      &.active {
+        background: $whiteGreen;
+        color: $darkGreen;
+      }
+    }
+
+    .box {
+      border-width: 1px;
+      border-style: solid;
+      border-color: $whiteGreen;
+      padding: 20px;
+      margin: 10px auto;
+      border-radius: $borderRadiusSmall;
+
+      .box-header {
+        grid-column: 1 / 3;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+      }
+
+      ul {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding: 0;
+        margin: 20px 0;
+
+        .caregiver {
+          display: flex;
+          align-items: center;
+          gap: 5px;
+          background: $pearl;
+          padding: 5px 10px;
+          border-radius: $borderRadiusLight;
+          border: 1px solid $greyGreen;
+
+          .status-badge {
+            width: 1.5vw;
+            display: flex;
+            align-items: center;
+
+            svg {
+              fill: $mediumGreen;
+            }
+          }
+
+          .info {
+            display: grid;
+            grid-template-columns: 25% 25% 50%;
+            align-items: center;
+            width: 100%;
+
+            .actions {
+              display: flex;
+              align-items: center;
+              justify-content: flex-end;
+              gap: 10px;
+            }
+
+            // > * {
+            //   width: 10vw;
+            // }
+
+            p {
+              margin-bottom: 0;
+            }
+
+            .badge {
+              border: 1px solid $greyGreen;
+              background: transparent !important;
+              color: $greyGreen;
+            }
+          }
+
+          &.current-user {
+            border: 1px solid $greyGreen;
+          }
+        }
+      }
+    }
+  }
 }

@@ -7,11 +7,13 @@ import { RiAccountPinCircleLine } from "react-icons/ri";
 import { IoHome } from "react-icons/io5";
 import { LuLogOut } from "react-icons/lu";
 import { CiCalendar } from "react-icons/ci";
+import { ToastContext } from "../context/ToastContext";
 
 gsap.registerPlugin(useGSAP); 
 
 export default function Navbar() {
-  const { user, logout } = useContext(AuthContext);
+  const { user, logout, message } = useContext(AuthContext);
+  const {setMessage, setShowToast, setColor} = useContext(ToastContext)
 
   const navigate = useNavigate();
 
@@ -124,6 +126,15 @@ export default function Navbar() {
       });
     }
   }, [activeNav]);
+
+  useEffect(() => {
+    if(message.message == '' || message.message === 'Connexion réussie, bienvenue !') return 
+    console.log(message);
+    
+    setMessage(message.message)
+    setShowToast(true)
+    setColor("neutral")
+  }, [message])
 
   return (
     <nav

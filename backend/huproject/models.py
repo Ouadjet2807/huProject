@@ -78,16 +78,16 @@ class CustomUser(AbstractUser):
         super().save(*args, **kwargs)
 
 class Role(models.IntegerChoices):
-    OWNER = 1, 'owner'
-    ADMIN = 2, 'admin'
-    EDITOR = 3, 'editor'
-    READER = 4, 'reader'
+    ADMIN = 1, 'admin'
+    EDITOR = 2, 'editor'
+    READER = 3, 'reader'
 
 class SpaceMembership(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     space = models.ForeignKey(Space, on_delete=models.CASCADE)
     role = models.IntegerField(choices=Role.choices, default=Role.ADMIN)
+    created_at = models.DateTimeField(auto_now_add=True)
 
 
 class Invitation(models.Model):

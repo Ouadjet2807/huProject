@@ -12,6 +12,7 @@ router.register(r'agendas', AgendaViewSet, 'agenda')
 router.register(r'caregivers', CaregiverViewSet, 'caregiver')
 router.register(r'recipients', RecipientViewSet, 'recipient')
 router.register(r'spaces', SpaceViewSet, 'space')
+router.register(r'space_memberships', SpaceMembershipViewSet, 'space-membership')
 router.register(r'invitations', InvitationViewSet, 'invitation')
 router.register(r'todo_lists', TodoListViewSet, 'todo-lists')
 

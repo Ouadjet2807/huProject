@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import authenticate
 from .models import *
-
+import json
 
 class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -75,13 +75,12 @@ class CaregiverSerializer(serializers.ModelSerializer):
     class Meta:
         model = Caregiver
         fields = ('id', 'gender', 'first_name', 'last_name', 'birth_date', 'user', 'access_level')
-        read_only_fields = ('id',)
+        read_only_fields = ('id', 'user')
 
     def update(self, instance, validated_data):
+
         instance = super().update(instance, validated_data)
-        for attr, value in validated_data.items():
-            setattr(instance, attr, value)
-        instance.save()
+        
         return instance
 
 class HealthcareProfessionalSerializer(serializers.ModelSerializer):
@@ -161,6 +160,14 @@ class SpaceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Space
         fields = ['id', 'name', 'description', 'created_by', 'caregivers', 'recipients', 'created_at', 'updated_at']
+
+class SpaceMembershipSerializer(serializers.ModelSerializer):
+    user = CustomUserSerializer(many=False, read_only=True)
+    space = SpaceSerializer(many=False, read_only=True)
+ 
+    class Meta:
+        model = SpaceMembership
+        fields = ['id', 'user', 'space', 'role', 'created_at']
 
 
 class InvitationSerializer(serializers.ModelSerializer):

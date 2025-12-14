@@ -159,11 +159,11 @@ export default function Profile({ editMode, setEditMode, roles }) {
             <span>{getAccessLevel()}</span>
           </div>
           <Button
-            className={
+            className={`edit-button ${
               editMode.active && editMode.target === "generalInfo"
                 ? "active"
                 : ""
-            }
+            }`}
             onClick={(e) => handleEditMode(e)}
           >
             {editMode.active && editMode.target === "generalInfo" ? (
@@ -183,11 +183,11 @@ export default function Profile({ editMode, setEditMode, roles }) {
         <div className="box-header">
           <strong>Informations personnelles</strong>
           <Button
-            className={
+            className={`edit-button ${
               editMode.active && editMode.target === "personalInfo"
                 ? "active"
                 : ""
-            }
+            }`}
             onClick={(e) => handleEditMode(e)}
           >
             {editMode.active && editMode.target === "personalInfo" ? (

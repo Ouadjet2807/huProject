@@ -16,21 +16,17 @@
     display: flex;
     background: white;
     border-radius: $borderRadiusLight;
+    margin-bottom: 20px;
     padding: 0;
 
-    li {
+    button {
       padding: 5px 10px;
+      background: transparent;
+      color: $blackGreen;
       transition: 0.3s ease-in;
       cursor: pointer;
       border: 1px solid $white;
 
-      &:nth-child(1) {
-        border-radius: $borderRadiusLight 0 0 $borderRadiusLight;
-      }
-
-      &:last-child {
-        border-radius: 0 $borderRadiusLight $borderRadiusLight 0;
-      }
 
       &.activeCategory {
         background: $aqua;

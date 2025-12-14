@@ -6,7 +6,7 @@ import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { TbSquareCheck } from "react-icons/tb";
 import { TbSquareCheckFilled } from "react-icons/tb";
-
+import ButtonGroup from 'react-bootstrap/ButtonGroup';
 gsap.registerPlugin(useGSAP);
 
 export default function TodoList({ user, space }) {
@@ -153,20 +153,20 @@ export default function TodoList({ user, space }) {
 
   return (
     <div id="todoList">
-      <ul className="todo-category">
+      <ButtonGroup className="todo-category">
         {todoCategory.map((category) => {
           return (
-            <li
+            <Button
               className={`${
                 activeCategory === category.value ? "activeCategory" : ""
               } `}
               onClick={() => setActiveCategory(category.value)}
             >
               {category.name}
-            </li>
+            </Button>
           );
         })}
-      </ul>
+      </ButtonGroup>
       <div className="todo-list-items">
         {filteredTodoList.length > 0 &&
           filteredTodoList.map((todo, index) => {

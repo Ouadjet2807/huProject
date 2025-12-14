@@ -9,12 +9,17 @@ import Badge from "react-bootstrap/Badge";
 import api from "../api/api";
 import { FaUserMinus } from "react-icons/fa";
 import Modal from "react-bootstrap/Modal";
+import { TbUsersPlus } from "react-icons/tb";
+import InviteUserModal from "../components/modals/InviteUserModal";
+import CreateRecipient from "../components/modals/CreateRecipient";
 
 export default function Space({ editMode, setEditMode, roles }) {
   const { space, user } = useContext(AuthContext);
   const [spaceMemberships, setSpaceMemberships] = useState([]);
   const [deleteCaregiverModal, setDeleteCaregiverModal] = useState(false);
   const [selectedCaregiver, setSelectedCaregiver] = useState();
+  const [showInviteModal, setShowInviteModal] = useState(false);
+  const [addRecipient, setAddRecipient] = useState(false);
 
   const handleEditMode = (e) => {
     if (!e.target) return;
@@ -41,6 +46,22 @@ export default function Space({ editMode, setEditMode, roles }) {
 
   const handleClose = () => {
     setDeleteCaregiverModal(false);
+  };
+
+  const isCreator = (user) => {
+    if (!user) return;
+    if (space.created_by === user) return true;
+    return false;
+  };
+
+  const canEdit = (user) => {
+    if (!user) return;
+
+    let caregiver = space.caregivers.find((e) => e.user === user);
+
+    if (caregiver.access_level < 2) return true;
+
+    return false;
   };
 
   const getSpaceMemberships = async () => {
@@ -104,15 +125,18 @@ export default function Space({ editMode, setEditMode, roles }) {
   };
 
   const revokeAccess = async (caregiver) => {
-    const membership = spaceMemberships.find(e => e.user.id == caregiver.user)
+    const membership = spaceMemberships.find(
+      (e) => e.user.id == caregiver.user
+    );
     try {
-      let res = await api.delete(`http://127.0.0.1:8000/api/space_memberships/${membership.id}/`)
+      let res = await api.delete(
+        `http://127.0.0.1:8000/api/space_memberships/${membership.id}/`
+      );
     } catch (error) {
       console.log(error);
     }
     console.log(membership);
-    
-  }
+  };
 
   useEffect(() => {
     getSpaceMemberships();
@@ -123,6 +147,13 @@ export default function Space({ editMode, setEditMode, roles }) {
 
   return space && user ? (
     <div className="space-container">
+      <InviteUserModal show={showInviteModal} setShow={setShowInviteModal} />
+
+      <CreateRecipient
+        show={addRecipient}
+        setShow={setAddRecipient}
+        space={space}
+      />
       <Modal show={deleteCaregiverModal} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>Révoquer l'accès</Modal.Title>
@@ -138,9 +169,14 @@ export default function Space({ editMode, setEditMode, roles }) {
           )}
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="danger" onClick={() => revokeAccess(selectedCaregiver)}>Continuer</Button>
-     
-          <Button variant="outline-secondary" >Annuler</Button>
+          <Button
+            variant="danger"
+            onClick={() => revokeAccess(selectedCaregiver)}
+          >
+            Continuer
+          </Button>
+
+          <Button variant="outline-secondary">Annuler</Button>
         </Modal.Footer>
       </Modal>
       <h1>Votre espace</h1>
@@ -154,12 +190,14 @@ export default function Space({ editMode, setEditMode, roles }) {
       <div className="box" id="caregivers">
         <div className="box-header">
           <strong>Membres</strong>
-          {space.created_by === user.id && (
+          {isCreator(user.id) && (
             <Button
               className={`edit-button
-               ${editMode.active && editMode.target === "personalInfo"
-                  ? "active"
-                  : ""}
+               ${
+                 editMode.active && editMode.target === "personalInfo"
+                   ? "active"
+                   : ""
+               }
               `}
               onClick={(e) => handleEditMode(e)}
             >
@@ -185,7 +223,7 @@ export default function Space({ editMode, setEditMode, roles }) {
                   }`}
                 >
                   <div className="status-badge">
-                    {space.created_by === item.user && <PiCrownSimpleDuotone />}
+                    {isCreator(item.user) && <PiCrownSimpleDuotone />}
                   </div>
                   <div className="info">
                     <p>
@@ -194,7 +232,9 @@ export default function Space({ editMode, setEditMode, roles }) {
                     <small>
                       {new Date(getAccessDate(item)).toLocaleDateString()}
                     </small>
-                    {editMode.active && editMode.target === "caregivers" && item.user !== user.id ? (
+                    {editMode.active &&
+                    editMode.target === "caregivers" &&
+                    item.user !== user.id ? (
                       <div className="actions">
                         <select
                           name="access_level"
@@ -214,13 +254,12 @@ export default function Space({ editMode, setEditMode, roles }) {
                         </select>
 
                         <Button
-                        variant="danger"
-                        className="revoke"
-                        onClick={() => handleDeleteModal(item)}
+                          variant="danger"
+                          className="revoke"
+                          onClick={() => handleDeleteModal(item)}
                         >
                           <FaUserMinus /> Révoquer l'accès
                         </Button>
-                        
                       </div>
                     ) : (
                       <Badge>{getAccessLevel(item)}</Badge>
@@ -230,12 +269,16 @@ export default function Space({ editMode, setEditMode, roles }) {
               );
             })}
         </ul>
-        <Button>Inviter un membre</Button>
+        {isCreator(user.id) && (
+          <Button onClick={() => setShowInviteModal(true)}>
+            <TbUsersPlus /> Inviter un membre
+          </Button>
+        )}
       </div>
       <div className="box" id="recipients">
         <div className="box-header">
           <strong>Membres</strong>
-          {space.created_by === user.id && (
+          {isCreator(user.id) && (
             <Button
               className={`edit-button ${
                 editMode.active && editMode.target === "personalInfo"
@@ -257,7 +300,7 @@ export default function Space({ editMode, setEditMode, roles }) {
           )}
         </div>
         <ul>
-          {space.recipients.length > 1 ?
+          {space.recipients.length > 1 ? (
             space.recipients.map((item) => {
               return (
                 <li
@@ -283,12 +326,15 @@ export default function Space({ editMode, setEditMode, roles }) {
                 </li>
               );
             })
-          :
-
-          <small style={{textAlign: 'center'}}>Aucun aidé</small>
-          
-          }
+          ) : (
+            <small style={{ textAlign: "center" }}>Aucun aidé</small>
+          )}
         </ul>
+        {canEdit(user.id) && (
+          <Button onClick={() => setAddRecipient(true)}>
+            <TbUsersPlus /> Ajouter un aidé
+          </Button>
+        )}
       </div>
     </div>
   ) : (

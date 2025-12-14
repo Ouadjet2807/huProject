@@ -9,7 +9,6 @@ import InviteUserModal from "../components/modals/InviteUserModal";
 import { TbUsersPlus } from "react-icons/tb";
 import { FaUserCircle } from "react-icons/fa";
 
-
 export default function Home({ setRefreshRecipients, space }) {
   const [addRecipient, setAddRecipient] = useState(false);
   const [showInviteModal, setShowInviteModal] = useState(false);
@@ -29,18 +28,19 @@ export default function Home({ setRefreshRecipients, space }) {
   // }, [loading, user, navigate]);
 
   const isCreator = () => {
-    if(!user || !space) return false
+    if (!user || !space) return false;
 
-    if(space.created_by === user.id) return true 
-  }
-
+    if (space.created_by === user.id) return true;
+  };
 
   return (
     <div id="home">
-
       {!loading ? (
         <div className="home-container">
-          <InviteUserModal show={showInviteModal} setShow={setShowInviteModal}/>
+          <InviteUserModal
+            show={showInviteModal}
+            setShow={setShowInviteModal}
+          />
           <div className="left-tab">
             <h1>Hi {user && user.first_name}, welcome</h1>
 
@@ -54,11 +54,13 @@ export default function Home({ setRefreshRecipients, space }) {
                       className="recipient"
                       onClick={() => navigate(`/recipient/${item.id}`)}
                     >
-                    <span>
+                      <span>
                         <div className="icon">
-                          <FaUserCircle/>
+                          <FaUserCircle />
                         </div>
-                        <strong>{item.first_name} {item.last_name}</strong>
+                        <strong>
+                          {item.first_name} {item.last_name}
+                        </strong>
                       </span>
                     </div>
                   );
@@ -80,29 +82,30 @@ export default function Home({ setRefreshRecipients, space }) {
                     >
                       <span>
                         <div className="icon">
-                          <FaUserCircle/>
+                          <FaUserCircle />
                         </div>
-                        <strong>{item.first_name} {item.last_name}</strong>
+                        <strong>
+                          {item.first_name} {item.last_name}
+                        </strong>
                       </span>
                     </div>
                   );
                 })}
-              { isCreator() &&
-              <button onClick={() => setShowInviteModal(true)}>
-                <TbUsersPlus /> Inviter une personne
-              </button>
-              }
+              {isCreator() && (
+                <button onClick={() => setShowInviteModal(true)}>
+                  <TbUsersPlus /> Inviter une personne
+                </button>
+              )}
             </div>
           </div>
 
-          {addRecipient && (
-            <CreateRecipient
-              show={addRecipient}
-              setShow={setAddRecipient}
-              space={space}
-              setRefreshRecipients={setRefreshRecipients}
-            />
-          )}
+          <CreateRecipient
+            show={addRecipient}
+            setShow={setAddRecipient}
+            space={space}
+            setRefreshRecipients={setRefreshRecipients}
+          />
+
           <div className="right-tab">
             <TodoList user={user} space={space} />
           </div>

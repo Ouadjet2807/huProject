@@ -77,8 +77,6 @@ export default function Navbar() {
 
   useGSAP(() => {
     if (activeNav) {
-      console.log("active");
-
       gsap.to(".App", {
         gridTemplateColumns: "15% 85%",
       });
@@ -129,13 +127,14 @@ export default function Navbar() {
 
   useEffect(() => {
     if(message.message == '' || message.message === 'Connexion réussie, bienvenue !') return 
-    console.log(message);
-    
+
     setMessage(message.message)
     setShowToast(true)
     setColor("neutral")
   }, [message])
 
+  console.log(activeNav);
+  
   return (
     <nav
       className={`navigation ${user ? "left-tab-nav" : ""}`}

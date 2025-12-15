@@ -367,8 +367,8 @@ export default function Space({ editMode, setEditMode, roles }) {
 
       <div className="box" id="recipients">
         <div className="box-header">
-          <strong>Membres</strong>
-          {isCreator(user.id) && (
+          <strong>Aidés</strong>
+          {canEdit(user.id) && (
             <Button
               className={`edit-button ${
                 editMode.active && editMode.target === "recipients"

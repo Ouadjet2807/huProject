@@ -17,17 +17,18 @@ export default function MedicationDetailsModal({
   const { space } = useContext(AuthContext);
 
   const [dayTime, setDayTime] = useState([]);
+  const [presentation, setPresentation] = useState([]);
   const [freeTake, setFreeTake] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     dosage: "",
     medication_format: "",
-    quantity: {
-      number_of_boxes: 1,
-      unit_number: 1,
+    number_of_boxes: 1,
+    quantity_per_box: {
       unit_type: "",
-      units_per_unit: 1,
+      unit_number: 1,
       units_form: "",
+      units_per_unit: 1,
     },
     end_date: null,
     start_date: new Date().toISOString().split("T")[0],
@@ -39,6 +40,10 @@ export default function MedicationDetailsModal({
     notes: "",
     space: "",
   });
+
+  const formatPresentation = (str) => {
+    console.log(str.split(""));
+  };
 
   const handleClose = () => {
     setShow(false);
@@ -80,16 +85,21 @@ export default function MedicationDetailsModal({
       "sachets",
       "récipient",
       "récipients",
+      "rÃ©cipient",
+      "rÃ©cipients",
       "tube",
       "tubes",
       "patch",
       "patchs",
       "gélule",
+      "gÃ©lule",
+      "gÃ©lules",
       "gélules",
       "gelule",
       "gelules",
       "comprime",
       "comprimes",
+      "comprimÃ©",
       "comprimé",
       "comprimés",
       "suppositoire",
@@ -141,7 +151,6 @@ export default function MedicationDetailsModal({
     let s = normalizeForRegexes(str);
 
     console.log(s);
-    
 
     const matches = [];
     const push = (type, m, value, index = m.index) =>
@@ -161,7 +170,7 @@ export default function MedicationDetailsModal({
     }
     // countable units (pills, patches)
     for (const m of s.matchAll(
-      /([0-9]+(?:\.[0-9]+)?)\s*(comprime|comprimes|gelule|gelules|patch|patchs|pastille|pastilles|pansement|pansements|bande|bandes?|ml|l|g|mg|μg)/g
+      /([0-9]+(?:\.[0-9]+)?)\s*(comprime|comprima©|comprima©s|comprimÃ©|comprimÃ©s|comprimes|gelule|gelules|patch|patchs|pastille|pastilles|pansement|pansements|bande|bandes?|ml|l|g|mg|μg)/g
     )) {
       push("countUnit", m, { n: parseFloat(m[1]), form: m[2] }, m.index);
     }
@@ -180,28 +189,17 @@ export default function MedicationDetailsModal({
   };
 
   const handleQuantity = (str) => {
-    let matches = getMatches(str);
+    // let matches = getMatches(str);
 
-    matches.forEach((match) => {
-      setFormData((prev) => ({
-        ...prev,
-        quantity: {
-          number_of_boxes: prev.quantity.number_of_boxes,
-          unit_number:
-            match.type === "pack" ? match.value.n : prev.quantity.unit_number,
-          unit_type:
-            match.type === "pack" ? match.value.type : prev.quantity.unit_type,
-          units_per_unit:
-            match.type === "countUnit"
-              ? match.value.n
-              : prev.quantity.units_per_unit,
-          units_form:
-            match.type === "countUnit"
-              ? match.value.form
-              : prev.quantity.units_form,
-        },
-      }));
-    });
+    setFormData((prev) => ({
+      ...prev,
+      quantity_per_box: {
+        unit_type: str.unit_type,
+        unit_number: str.unit_number,
+        units_form: str.units_form,
+        units_per_unit: str.units_per_unit,
+      },
+    }));
   };
 
   const getEstimatedEndDate = (quantity, frequency, startDateISO) => {
@@ -209,7 +207,7 @@ export default function MedicationDetailsModal({
       return null;
     }
 
-    const quantityReg = /(ml|l|g|mg|μg)$/i
+    const quantityReg = /(ml|l|g|mg|μg)$/i;
 
     const startDate = new Date(startDateISO);
     if (Number.isNaN(startDate.getTime())) return null;
@@ -218,19 +216,15 @@ export default function MedicationDetailsModal({
     const pillsPerIntake = Number(frequency.intake_number) || 1;
     let pillsPerBox = 0;
 
-    if(quantityReg.test(quantity.units_form)) {
-      pillsPerBox = Number(quantity.unit_number)
-    } else (
-      pillsPerBox = Number(quantity.units_per_unit)
-    )
+    if (quantityReg.test(quantity.units_form)) {
+      pillsPerBox = Number(quantity.unit_number);
+    } else pillsPerBox = Number(quantity.units_per_unit);
     const totalPills = pillsPerBox * boxes;
     if (totalPills <= 0 || pillsPerIntake <= 0) return null;
 
     let totalIntakes = totalPills / pillsPerIntake;
 
-
     console.log(totalIntakes);
-    
 
     if (totalIntakes <= 0) return null;
 
@@ -240,11 +234,11 @@ export default function MedicationDetailsModal({
     const daysInMonth = (d) =>
       new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
 
-    if (freq === "day") {      
+    if (freq === "day") {
       const end = new Date(startDate);
       end.setDate(end.getDate() + Math.ceil(totalIntakes) - 1);
       console.log(end);
-      
+
       return end;
     }
 
@@ -256,22 +250,19 @@ export default function MedicationDetailsModal({
     }
 
     if (freq === "month") {
-
       let end = new Date(startDate);
 
-      for(let i = 1; i < totalIntakes; i++) {
-        
-         if(end.getMonth() + 1 > 11) {
-          end.setMonth(0)
-          end.setFullYear(end.getFullYear() + 1)
-         }
-         end.setMonth(end.getMonth() + 1)
+      for (let i = 1; i < totalIntakes; i++) {
+        if (end.getMonth() + 1 > 11) {
+          end.setMonth(0);
+          end.setFullYear(end.getFullYear() + 1);
+        }
+        end.setMonth(end.getMonth() + 1);
       }
 
       end = new Date(`${end.getFullYear()}/${end.getMonth()}/${end.getDate()}`);
 
       console.log(end);
-      
 
       return end;
     }
@@ -292,6 +283,8 @@ export default function MedicationDetailsModal({
       ? formData.end_date.toISOString().split("T")[0]
       : null;
 
+    formData.quantity_per_box.number_of_boxes = parseInt(formData.number_of_boxes)
+
     try {
       let data = {
         name: formData.name,
@@ -299,16 +292,14 @@ export default function MedicationDetailsModal({
         medication_format: formData.medication_format,
         notes: "",
         space: formData.space,
-        quantity: formData.quantity,
+        quantity: formData.quantity_per_box,
         frequency: formData.frequency,
         start_date: formattedStartDate,
         end_date: formattedEndDate,
       };
-
-      await api.post(
-        "http://127.0.0.1:8000/api/treatments/",
-        data
-      );
+      console.log(data);
+      
+      await api.post("http://127.0.0.1:8000/api/treatments/", data);
       console.log("Success");
     } catch (error) {
       console.log(error);
@@ -326,11 +317,35 @@ export default function MedicationDetailsModal({
         space: space && space.id,
       }));
     }
+
+    if (Object.keys(medication).includes("presentation")) {
+      medication.presentation.forEach((item) => {
+        const libelle = getMatches(item.libelle);
+        let current_presentation = {};
+        if (libelle.length > 0) {
+          libelle.forEach((elem) => {
+            switch (elem.type) {
+              case "pack":
+                current_presentation.unit_type = elem.value.type;
+                current_presentation.unit_number = elem.value.n;
+              case "countUnit":
+                current_presentation.units_form = elem.value.form;
+                current_presentation.units_per_unit = elem.value.n;
+            }
+          });
+        }
+        if (
+          !presentation.find(
+            (e) => JSON.stringify(e) === JSON.stringify(current_presentation)
+          )
+        )
+          setPresentation((prev) => [...prev, current_presentation]);
+      });
+    }
   }, [medication, space]);
 
   useEffect(() => {
-    console.log("changin'");
-    
+
     setFormData((prev) => ({
       ...prev,
       frequency: {
@@ -343,23 +358,26 @@ export default function MedicationDetailsModal({
 
   useEffect(() => {
     const end_date = getEstimatedEndDate(
-      formData.quantity,
+      formData.quantity_per_box,
       formData.frequency,
       formData.start_date
     );
 
     setFormData((prev) => ({ ...prev, end_date: end_date }));
-  }, [formData.quantity, formData.start_date, formData.frequency]);
+  }, [formData.quantity_per_box, formData.start_date, formData.frequency]);
 
   useEffect(() => {
     while (dayTime.length > formData.frequency.intake_number) {
       dayTime.pop();
     }
     console.log(dayTime);
-    
   }, [formData.frequency.intake_number]);
 
+
+
   console.log(medication);
+  console.log(presentation);
+  console.log(formData);
 
   return (
     <Modal show={show} onHide={handleClose} id="medicationDetailsModal">
@@ -500,57 +518,35 @@ export default function MedicationDetailsModal({
           </div>
           <div className="box-size">
             <label htmlFor="">Contenance :</label>
-            {Object.keys(medication).length > 0 &&
-            medication.presentation.length > 0
-              ? medication.presentation.map((item) => {
+            <div className="box-choices">
+              {presentation.length > 0 &&
+                presentation.map((item) => {
                   return (
-                    <div className="size">
+                    <div className={`${JSON.stringify(formData.quantity_per_box) === JSON.stringify(item) ? "selected" : ""} size`}>
                       <input
                         type="radio"
                         name="size"
-                        value={item.libelle}
-                        onChange={() => handleQuantity(item.libelle)}
+                        onChange={() => handleQuantity(item)}
                       />
-                      <label htmlFor="size">{item.libelle}</label>
+                      <span className="units-per-unit">
+                        {item.units_per_unit}
+                      </span>
+                      <small className="units-form">{item.units_form}{item.units_per_unit > 1 && '(s)'}</small>
                     </div>
                   );
-                })
-              : Object.keys(medication).length > 0 &&
-                medication.composition.length > 0 &&
-                medication.composition.map((item) => {
-                  return (
-                    <li>
-                      {item.elementPharmaceutique}
-                      <Button
-                        onClick={() =>
-                          setFormData((prev) => ({
-                            ...prev,
-                            quantity: {
-                              pills_per_box: Number(item.match(/\d+/g)),
-                              number_of_boxes: prev.quantity.number_of_boxes,
-                            },
-                          }))
-                        }
-                      >
-                        Ajouter
-                      </Button>
-                    </li>
-                  );
                 })}
+            </div>
             <div className="field">
               <input
                 type="number"
                 name="number_of_boxes"
                 id=""
                 min={1}
-                value={formData.quantity.number_of_boxes}
+                value={formData.number_of_boxes}
                 onChange={(e) =>
                   setFormData((prev) => ({
                     ...prev,
-                    quantity: {
-                      pills_per_box: prev.quantity.pills_per_box,
-                      number_of_boxes: e.target.value,
-                    },
+                    number_of_boxes: e.target.value,
                   }))
                 }
               />

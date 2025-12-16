@@ -1,61 +1,68 @@
 #searchTreatmentModal {
-  .search-bar {
-    display: flex;
-    align-items: center;
 
-    input {
-      width: 100%;
-    }
+  .search-container {
+    box-shadow: 0px 0px 6px 1px #74828154;
+    border-radius: 5px;
 
-    .icon {
-      position: absolute;
-      right: 5%;
+    .search-bar {
       display: flex;
+      align-items: center;
 
-      svg {
-        color: $green;
+      input {
+        width: 100%;
+        border-radius: $borderRadiusSmall $borderRadiusSmall 0 0;
+        border: none;
+        border-bottom: 1px solid $whiteGreen;
+
+        &::placeholder {
+          color: $greyGreen;
+        }
+      }
+
+      .icon { 
+        position: absolute;
+        right: 5%;
+        display: flex;
+        
+        svg {
+          color: $green;
+        }
       }
     }
-  }
+    
+    .search-results {
+      display: flex;
+      flex-direction: column;
+      overflow-y: scroll;
+      border-radius: 0 0 $borderRadiusSmall $borderRadiusSmall;
+      
+      &::-webkit-scrollbar {
+        background: $white;
+        border-radius: 0 0 $borderRadiusSmall 0;
+        width: 0.5vw;
+      }
+      &::-webkit-scrollbar-thumb {
+        background: $green;
+        border-radius: $borderRadius;
+      }
+      
+      p {
+        text-align: center;
+        color: $greyGreen;
+      }
+      
+      .medication {
+        background: $white;
+        padding: 5px 10px;
+        border-radius: $borderRadiusSmall;
+        color: $blackGreen;
+        cursor: pointer;
+        transition: 0.3s ease-in;
+        font-family: $font1;
 
-  .search-results {
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    max-height: 40vh;
-    overflow-y: scroll;
-    background: $pearl;
-    border-radius: $borderRadiusSmall;
-    margin: 20px 0;
-
-    &::-webkit-scrollbar {
-      background: $whiteGreen;
-      width: 0.5vw;
-    }
-    &::-webkit-scrollbar-thumb {
-      background: $green;
-      border-radius: $borderRadius;
-    }
-
-    p {
-      text-align: center;
-      color: $green;
-      font-weight: 600;
-    }
-
-    .medication {
-      background: $white;
-      padding: 5px 10px;
-      border-radius: $borderRadiusSmall;
-      color: $green;
-      font-weight: 600;
-      cursor: pointer;
-      transition: 0.3s ease-in;
-
-      &:hover {
-        background: $lightGreen;
-        color: $pearl;
+        &:hover {
+          background: $whiteGreen;
+        }
       }
     }
   }

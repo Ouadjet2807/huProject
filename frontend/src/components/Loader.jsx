@@ -1,11 +1,14 @@
 import React from "react";
-import { BiLoaderAlt } from "react-icons/bi";
-import { RiLoader4Line } from "react-icons/ri";
+import Spinner from 'react-bootstrap/Spinner';
 
 export default function Loader() {
   return (
     <div className="loader-container">
-      <div className="loader"></div>
+      <div className="loader">
+        <Spinner animation="grow" size="sm"/>
+        <Spinner animation="grow" size="sm"/>
+        <Spinner animation="grow" size="sm"/>
+      </div>
     </div>
   );
 }

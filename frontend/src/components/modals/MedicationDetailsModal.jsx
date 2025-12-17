@@ -7,6 +7,8 @@ import { AuthContext } from "../../context/AuthContext";
 import { BsFillSunriseFill } from "react-icons/bs";
 import { BsFillSunsetFill } from "react-icons/bs";
 import { BsSunFill } from "react-icons/bs";
+import moment from "moment";
+import "moment/locale/fr";
 
 export default function MedicationDetailsModal({
   show,
@@ -14,6 +16,10 @@ export default function MedicationDetailsModal({
   medication,
   showAddTreatmentModal,
 }) {
+
+
+  moment.locale("fr");
+
   const { space } = useContext(AuthContext);
 
   const [dayTime, setDayTime] = useState([]);
@@ -31,7 +37,7 @@ export default function MedicationDetailsModal({
       units_per_unit: 1,
     },
     end_date: null,
-    start_date: new Date().toISOString().split("T")[0],
+    start_date: moment(new Date()).toISOString().split("T")[0],
     frequency: {
       intake_time_range: [""],
       intake_frequency: "day",
@@ -41,13 +47,30 @@ export default function MedicationDetailsModal({
     space: "",
   });
 
-  const formatPresentation = (str) => {
-    console.log(str.split(""));
-  };
-
   const handleClose = () => {
     setShow(false);
     showAddTreatmentModal(true);
+    setFormData({
+      name: "",
+      dosage: "",
+      medication_format: "",
+      number_of_boxes: 1,
+      quantity_per_box: {
+        unit_type: "",
+        unit_number: 1,
+        units_form: "",
+        units_per_unit: 1,
+      },
+      end_date: null,
+      start_date: new Date().toISOString().split("T")[0],
+      frequency: {
+        intake_time_range: [""],
+        intake_frequency: "day",
+        intake_number: 1,
+      },
+      notes: "",
+      space: "",
+    });
     setFreeTake(false);
   };
 
@@ -202,18 +225,31 @@ export default function MedicationDetailsModal({
     }));
   };
 
-  const getEstimatedEndDate = (quantity, frequency, startDateISO) => {
-    if (freeTake || !quantity || !frequency || !startDateISO) {
+  const getEstimatedEndDate = (
+    numberOfBoxes,
+    quantity,
+    frequency,
+    startDateISO
+  ) => {
+    if (
+      freeTake ||
+      !numberOfBoxes ||
+      !quantity ||
+      !frequency ||
+      !startDateISO
+    ) {
       return null;
     }
 
     const quantityReg = /(ml|l|g|mg|μg)$/i;
 
-    const startDate = new Date(startDateISO);
-    if (Number.isNaN(startDate.getTime())) return null;
+    const startDate = moment(new Date(startDateISO));
+    if (!startDate) return null;
 
-    const boxes = Number(quantity.number_of_boxes) || 1;
+    const boxes = Number(numberOfBoxes) || 1;
+
     const pillsPerIntake = Number(frequency.intake_number) || 1;
+
     let pillsPerBox = 0;
 
     if (quantityReg.test(quantity.units_form)) {
@@ -224,57 +260,13 @@ export default function MedicationDetailsModal({
 
     let totalIntakes = totalPills / pillsPerIntake;
 
-    console.log(totalIntakes);
-
     if (totalIntakes <= 0) return null;
 
     const freq = frequency.intake_frequency;
 
-    // Helper: days in month for a given date
-    const daysInMonth = (d) =>
-      new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+    const end = moment(startDate).add(totalIntakes, `${freq}s`)
 
-    if (freq === "day") {
-      const end = new Date(startDate);
-      end.setDate(end.getDate() + Math.ceil(totalIntakes) - 1);
-      console.log(end);
-
-      return end;
-    }
-
-    if (freq === "week") {
-      const daysNeeded = Math.ceil(totalIntakes * 7);
-      const end = new Date(startDate);
-      end.setDate(end.getDate() + daysNeeded - 1);
-      return end;
-    }
-
-    if (freq === "month") {
-      let end = new Date(startDate);
-
-      for (let i = 1; i < totalIntakes; i++) {
-        if (end.getMonth() + 1 > 11) {
-          end.setMonth(0);
-          end.setFullYear(end.getFullYear() + 1);
-        }
-        end.setMonth(end.getMonth() + 1);
-      }
-
-      end = new Date(`${end.getFullYear()}/${end.getMonth()}/${end.getDate()}`);
-
-      console.log(end);
-
-      return end;
-    }
-
-    // fallback: treat as daily
-    {
-      const intakesPerDay = Number(frequency.intake_number) || 1;
-      const daysNeeded = Math.ceil(totalIntakes / intakesPerDay);
-      const end = new Date(startDate);
-      end.setDate(end.getDate() + daysNeeded - 1);
-      return end;
-    }
+    return end
   };
 
   const handleSubmit = async () => {
@@ -283,7 +275,9 @@ export default function MedicationDetailsModal({
       ? formData.end_date.toISOString().split("T")[0]
       : null;
 
-    formData.quantity_per_box.number_of_boxes = parseInt(formData.number_of_boxes)
+    formData.quantity_per_box.number_of_boxes = parseInt(
+      formData.number_of_boxes
+    );
 
     try {
       let data = {
@@ -298,9 +292,10 @@ export default function MedicationDetailsModal({
         end_date: formattedEndDate,
       };
       console.log(data);
-      
+
       await api.post("http://127.0.0.1:8000/api/treatments/", data);
       console.log("Success");
+      handleClose();
     } catch (error) {
       console.log(error);
     }
@@ -345,7 +340,6 @@ export default function MedicationDetailsModal({
   }, [medication, space]);
 
   useEffect(() => {
-
     setFormData((prev) => ({
       ...prev,
       frequency: {
@@ -358,13 +352,14 @@ export default function MedicationDetailsModal({
 
   useEffect(() => {
     const end_date = getEstimatedEndDate(
+      formData.number_of_boxes,
       formData.quantity_per_box,
       formData.frequency,
       formData.start_date
     );
 
     setFormData((prev) => ({ ...prev, end_date: end_date }));
-  }, [formData.quantity_per_box, formData.start_date, formData.frequency]);
+  }, [formData.quantity_per_box, formData.start_date, formData.frequency, formData.number_of_boxes]);
 
   useEffect(() => {
     while (dayTime.length > formData.frequency.intake_number) {
@@ -372,8 +367,6 @@ export default function MedicationDetailsModal({
     }
     console.log(dayTime);
   }, [formData.frequency.intake_number]);
-
-
 
   console.log(medication);
   console.log(presentation);
@@ -522,7 +515,14 @@ export default function MedicationDetailsModal({
               {presentation.length > 0 &&
                 presentation.map((item) => {
                   return (
-                    <div className={`${JSON.stringify(formData.quantity_per_box) === JSON.stringify(item) ? "selected" : ""} size`}>
+                    <div
+                      className={`${
+                        JSON.stringify(formData.quantity_per_box) ===
+                        JSON.stringify(item)
+                          ? "selected"
+                          : ""
+                      } size`}
+                    >
                       <input
                         type="radio"
                         name="size"
@@ -531,7 +531,10 @@ export default function MedicationDetailsModal({
                       <span className="units-per-unit">
                         {item.units_per_unit}
                       </span>
-                      <small className="units-form">{item.units_form}{item.units_per_unit > 1 && '(s)'}</small>
+                      <small className="units-form">
+                        {item.units_form}
+                        {item.units_per_unit > 1 && "(s)"}
+                      </small>
                     </div>
                   );
                 })}
@@ -571,7 +574,7 @@ export default function MedicationDetailsModal({
         <Button variant="primary" onClick={handleSubmit}>
           Ajouter
         </Button>
-        <Button variant="secondary" onClick={handleClose}>
+        <Button variant="outline-secondary" onClick={handleClose}>
           Retour
         </Button>
       </Modal.Footer>

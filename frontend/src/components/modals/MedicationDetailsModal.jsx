@@ -14,6 +14,7 @@ export default function MedicationDetailsModal({
   show,
   setShow,
   medication,
+  setMedication,
   showAddTreatmentModal,
 }) {
   moment.locale("fr");
@@ -47,8 +48,8 @@ export default function MedicationDetailsModal({
 
   const handleClose = () => {
     setShow(false);
-    setPresentation([])
-    showAddTreatmentModal(true);
+    setPresentation([]);
+    setMedication({});
     setFormData({
       name: "",
       dosage: "",
@@ -90,6 +91,8 @@ export default function MedicationDetailsModal({
   const addImplicitOneIfNeeded = (s) => {
     let normalized = s.trim().toLowerCase();
 
+    console.log(s);
+
     const unitTypes = [
       "plaquette",
       "plaquettes",
@@ -107,6 +110,8 @@ export default function MedicationDetailsModal({
       "sachets",
       "récipient",
       "récipients",
+      "ra©cipient",
+      "ra©cipients",
       "rÃ©cipient",
       "rÃ©cipients",
       "tube",
@@ -148,6 +153,8 @@ export default function MedicationDetailsModal({
   };
 
   const normalizeForRegexes = (str) => {
+    console.log(str);
+
     // Clean str for addImplicitOneIfNeeded function
     let s = str
       .toLowerCase()
@@ -163,9 +170,12 @@ export default function MedicationDetailsModal({
       .replace(/,/g, ".")
       .replace(/×/g, "x")
       .replace(/\(s\)/g, "s")
-      .normalize("NFD")
+      .replace(/(a©|A©|Ã©|ã©)/g, "é")
+      .replace(/(a»|A»|Ã»|ã»)/g, "û")
+      .replace(/(a¨|A¨|Ã¨|ã¨)/g, "è")
       .replace(/\p{Diacritic}/gu, "");
 
+    console.log(s);
     return s;
   };
 
@@ -186,13 +196,13 @@ export default function MedicationDetailsModal({
     }
     // packaging
     for (const m of s.matchAll(
-      /([0-9]+)\s*(plaquette|flacon|flacon en verre de|flacons en verre de|tube|sachet|récipient|blister|boite|boîte|cartouche)/g
+      /([0-9]+)\s*(fut|fût|fûts|futs|plaquette|flacon|flacon en verre de|flacons en verre de|tube|sachet|recipient|récipient|ra©cipient|ra©cipients|rÃ©cipient|rÃ©cipients|blister|boite|boîte|cartouche)/g
     )) {
       push("pack", m, { n: parseInt(m[1], 10), type: m[2] }, m.index);
     }
     // countable units (pills, patches)
     for (const m of s.matchAll(
-      /([0-9]+(?:\.[0-9]+)?)\s*(comprime|comprima©|comprima©s|comprimÃ©|comprimÃ©s|comprimes|gelule|gelules|patch|patchs|pastille|pastilles|pansement|pansements|bande|bandes?|ml|l|g|mg|μg)/g
+      /([0-9]+(?:\.[0-9]+)?)\s*(comprime|comprima©|comprima©s|comprimÃ©|comprimÃ©s|comprimes|comprimés|comprimé|gélule|gélules|gelule|gelules|patch|patchs|pastille|pastilles|pansement|pansements|suppositoire|suppositoires|bande|bandes?|ml|l|g|mg|μg)/g
     )) {
       push("countUnit", m, { n: parseFloat(m[1]), form: m[2] }, m.index);
     }
@@ -377,226 +387,230 @@ export default function MedicationDetailsModal({
   console.log(formData);
 
   return (
-    <Modal show={show} onHide={handleClose} id="medicationDetailsModal">
-      <Modal.Header closeButton>
-        <Modal.Title>{medication.elementPharmaceutique}</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <form action="">
-          <div className="posology">
-            <label htmlFor="">Posologie :</label>
-            <div className="field" id="freeTake">
-              <input
-                type="checkbox"
-                name=""
-                id=""
-                onChange={() => setFreeTake(!freeTake)}
-              />
-              <label htmlFor="">Prise libre si douleur</label>
-            </div>
-            <div className="fields">
-              <input
-                type="number"
-                name="intake_number"
-                id=""
-                min={1}
-                value={formData.frequency.intake_number}
-                disabled={freeTake}
-                onChange={(e) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    frequency: {
-                      intake_number: e.target.value,
-                      intake_frequency: prev.frequency.intake_frequency,
-                      intake_time_range: prev.frequency.dayTime,
-                    },
-                  }))
-                }
-              />
-              <span>fois par</span>
-              <select
-                name="intake_frequency"
-                id=""
-                disabled={freeTake}
-                onChange={(e) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    frequency: {
-                      intake_frequency: e.target.value,
-                      intake_number: prev.frequency.intake_number,
-                      intake_time_range: prev.frequency.dayTime,
-                    },
-                  }))
-                }
-              >
-                <option value="day">Jour</option>
-                <option value="week">Semaine</option>
-                <option value="month">Mois</option>
-              </select>
-            </div>
-            <label htmlFor="">Quand ?</label>
-            <div className="fields">
-              <div
-                className={`dayTime field ${
-                  dayTime.includes("morning")
-                    ? "selected"
-                    : dayTime.length == formData.frequency.intake_number &&
+    medication && (
+      <Modal show={show} onHide={handleClose} id="medicationDetailsModal">
+        <Modal.Header closeButton>
+          <Modal.Title>{medication.elementPharmaceutique}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <form action="">
+            <div className="posology">
+              <label htmlFor="">Posologie :</label>
+              <div className="field" id="freeTake">
+                <input
+                  type="checkbox"
+                  name=""
+                  id=""
+                  onChange={() => setFreeTake(!freeTake)}
+                />
+                <label htmlFor="">Prise libre si douleur</label>
+              </div>
+              <div className="fields">
+                <input
+                  type="number"
+                  name="intake_number"
+                  id=""
+                  min={1}
+                  value={formData.frequency.intake_number}
+                  disabled={freeTake}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      frequency: {
+                        intake_number: e.target.value,
+                        intake_frequency: prev.frequency.intake_frequency,
+                        intake_time_range: prev.frequency.dayTime,
+                      },
+                    }))
+                  }
+                />
+                <span>fois par</span>
+                <select
+                  name="intake_frequency"
+                  id=""
+                  disabled={freeTake}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      frequency: {
+                        intake_frequency: e.target.value,
+                        intake_number: prev.frequency.intake_number,
+                        intake_time_range: prev.frequency.dayTime,
+                      },
+                    }))
+                  }
+                >
+                  <option value="day">Jour</option>
+                  <option value="week">Semaine</option>
+                  <option value="month">Mois</option>
+                </select>
+              </div>
+              <label htmlFor="">Quand ?</label>
+              <div className="fields">
+                <div
+                  className={`dayTime field ${
+                    dayTime.includes("morning")
+                      ? "selected"
+                      : dayTime.length == formData.frequency.intake_number &&
+                        !dayTime.includes("morning")
+                      ? "disabled"
+                      : ""
+                  }`}
+                  id="morning"
+                >
+                  <input
+                    type="checkbox"
+                    name="day_time"
+                    value="morning"
+                    disabled={
+                      dayTime.length == formData.frequency.intake_number &&
                       !dayTime.includes("morning")
-                    ? "disabled"
-                    : ""
-                }`}
-                id="morning"
-              >
-                <input
-                  type="checkbox"
-                  name="day_time"
-                  value="morning"
-                  disabled={
-                    dayTime.length == formData.frequency.intake_number &&
-                    !dayTime.includes("morning")
-                  }
-                  id=""
-                  onChange={(e) => handleDayTime(e)}
-                />
-                <BsFillSunriseFill />
-                <label htmlFor="">matin</label>
-              </div>
-              <div
-                className={`dayTime field ${
-                  dayTime.includes("midday")
-                    ? "selected"
-                    : dayTime.length == formData.frequency.intake_number &&
+                    }
+                    id=""
+                    onChange={(e) => handleDayTime(e)}
+                  />
+                  <BsFillSunriseFill />
+                  <label htmlFor="">matin</label>
+                </div>
+                <div
+                  className={`dayTime field ${
+                    dayTime.includes("midday")
+                      ? "selected"
+                      : dayTime.length == formData.frequency.intake_number &&
+                        !dayTime.includes("midday")
+                      ? "disabled"
+                      : ""
+                  }`}
+                  id="midday"
+                >
+                  <input
+                    type="checkbox"
+                    name="day_time"
+                    value="midday"
+                    disabled={
+                      dayTime.length == formData.frequency.intake_number &&
                       !dayTime.includes("midday")
-                    ? "disabled"
-                    : ""
-                }`}
-                id="midday"
-              >
-                <input
-                  type="checkbox"
-                  name="day_time"
-                  value="midday"
-                  disabled={
-                    dayTime.length == formData.frequency.intake_number &&
-                    !dayTime.includes("midday")
-                  }
-                  id=""
-                  onChange={(e) => handleDayTime(e)}
-                />
-                <BsSunFill />
-                <label htmlFor="">midi</label>
-              </div>
-              <div
-                className={`dayTime field ${
-                  dayTime.includes("evening")
-                    ? "selected"
-                    : dayTime.length == formData.frequency.intake_number &&
+                    }
+                    id=""
+                    onChange={(e) => handleDayTime(e)}
+                  />
+                  <BsSunFill />
+                  <label htmlFor="">midi</label>
+                </div>
+                <div
+                  className={`dayTime field ${
+                    dayTime.includes("evening")
+                      ? "selected"
+                      : dayTime.length == formData.frequency.intake_number &&
+                        !dayTime.includes("evening")
+                      ? "disabled"
+                      : ""
+                  }`}
+                  id="evening"
+                >
+                  <input
+                    type="checkbox"
+                    name="day_time"
+                    value="evening"
+                    disabled={
+                      dayTime.length == formData.frequency.intake_number &&
                       !dayTime.includes("evening")
-                    ? "disabled"
-                    : ""
-                }`}
-                id="evening"
-              >
-                <input
-                  type="checkbox"
-                  name="day_time"
-                  value="evening"
-                  disabled={
-                    dayTime.length == formData.frequency.intake_number &&
-                    !dayTime.includes("evening")
-                  }
-                  id=""
-                  onChange={(e) => handleDayTime(e)}
-                />
-                <BsFillSunsetFill />
-                <label htmlFor="">soir</label>
+                    }
+                    id=""
+                    onChange={(e) => handleDayTime(e)}
+                  />
+                  <BsFillSunsetFill />
+                  <label htmlFor="">soir</label>
+                </div>
               </div>
             </div>
-          </div>
-          <div className="box-size">
-            <label htmlFor="">Contenance :</label>
-            <div className="box-choices">
-              {presentation.length > 0 &&
-                presentation.map((item) => {
-                  return (
-                    <div
-                      className={`${
-                        JSON.stringify(formData.quantity_per_box) ===
-                        JSON.stringify(item)
-                          ? "selected"
-                          : ""
-                      } size`}
-                    >
-                      <input
-                        type="radio"
-                        name="size"
-                        onChange={() => handleQuantity(item)}
-                      />
-                      {item.units_form.match(/(ml|l|g|mg|μg)$/i) ? (
-                        <>
-                          <small className="units-form">
-                            {item.unit_number} {item.unit_type}
-                          </small>
-                          <span className="units-per-unit">
-                            de {' '}
-                            {item.units_per_unit}
-                            {item.units_form}
-                          </span>
-                        </>
-                      ) : (
-                        <>
-                          <span className="units-per-unit">
-                            {item.units_per_unit}
-                          </span>
-                          <small className="units-form">
-                            {item.units_form}
-                            {item.units_per_unit > 1 && "(s)"}
-                          </small>
-                        </>
-                      )}
-                    </div>
-                  );
-                })}
+            <div className="box-size">
+              <label htmlFor="">Contenance :</label>
+              <div className="box-choices">
+                {presentation.length > 0 &&
+                  presentation.map((item) => {
+                    return (
+                      <div
+                        className={`${
+                          JSON.stringify(formData.quantity_per_box) ===
+                          JSON.stringify(item)
+                            ? "selected"
+                            : ""
+                        } size`}
+                      >
+                        <input
+                          type="radio"
+                          name="size"
+                          onChange={() => handleQuantity(item)}
+                        />
+                        {item.units_form.match(/(ml|l|g|mg|μg)$/i) ? (
+                          <>
+                            <small className="units-form">
+                              {item.unit_number} {item.unit_type}
+                            </small>
+                            <span className="units-per-unit">
+                              de {item.units_per_unit}
+                              {item.units_form}
+                            </span>
+                          </>
+                        ) : (
+                          <>
+                            <span className="units-per-unit">
+                              {item.units_per_unit}
+                            </span>
+                            <small className="units-form">
+                              {item.units_form}
+                              {item.units_per_unit > 1 && "(s)"}
+                            </small>
+                          </>
+                        )}
+                      </div>
+                    );
+                  })}
+              </div>
+              <div className="field">
+                <input
+                  type="number"
+                  name="number_of_boxes"
+                  id=""
+                  min={1}
+                  value={formData.number_of_boxes}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      number_of_boxes: e.target.value,
+                    }))
+                  }
+                />
+                <span>nombre de boîte prescrites</span>
+              </div>
             </div>
-            <div className="field">
+            <div className="field start-date">
+              <label htmlFor="start_date">Début du traitement :</label>
               <input
-                type="number"
-                name="number_of_boxes"
-                id=""
-                min={1}
-                value={formData.number_of_boxes}
+                type="date"
+                name="start_date"
                 onChange={(e) =>
                   setFormData((prev) => ({
                     ...prev,
-                    number_of_boxes: e.target.value,
+                    start_date: e.target.value,
                   }))
                 }
+                id=""
+                value={formData.start_date}
               />
-              <span>nombre de boîte prescrites</span>
             </div>
-          </div>
-          <div className="field start-date">
-            <label htmlFor="start_date">Début du traitement :</label>
-            <input
-              type="date"
-              name="start_date"
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, start_date: e.target.value }))
-              }
-              id=""
-              value={formData.start_date}
-            />
-          </div>
-        </form>
-      </Modal.Body>
-      <Modal.Footer>
-        <Button variant="primary" onClick={handleSubmit}>
-          Ajouter
-        </Button>
-        <Button variant="outline-secondary" onClick={handleClose}>
-          Retour
-        </Button>
-      </Modal.Footer>
-    </Modal>
+          </form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="primary" onClick={handleSubmit}>
+            Ajouter
+          </Button>
+          <Button variant="outline-secondary" onClick={handleClose}>
+            Retour
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    )
   );
 }

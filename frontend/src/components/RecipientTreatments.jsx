@@ -22,11 +22,9 @@ import moment from "moment";
 import "moment/locale/fr";
 
 export default function RecipientTreatments({ formData, space }) {
-  const [addTreatment, setAddTreatment] = useState();
   const [showAddTreatment, setShowAddTreatement] = useState(false);
   const [showMedicationDetails, setShowMedicationDetails] = useState(false);
   const [selectedMedication, setSelectedMedication] = useState({});
-  const [unitName, setUnitName] = useState("");
   const [treatments, setTreatments] = useState([]);
 
   console.log(selectedMedication);
@@ -326,6 +324,7 @@ export default function RecipientTreatments({ formData, space }) {
         showAddTreatmentModal={setShowAddTreatement}
         show={showMedicationDetails}
         medication={selectedMedication}
+        setMedication={setSelectedMedication}
       />
       <h3>Traitements médicaux</h3>
       <Container

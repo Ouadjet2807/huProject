@@ -58,7 +58,7 @@ export default function Login() {
   return (
     <div id="login">
       <h2>Se connecter</h2>
-      <form>
+      <form onKeyDown={(e) => e.key === 'Enter' && handleSubmit(e)}>
         <input
           type="email"
           name="email"

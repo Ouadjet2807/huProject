@@ -40,14 +40,10 @@ export default function Register({data, token}) {
       [e.target.name]: e.target.value,
     }));
 
-    console.log(formData);
   };
 
   const handleSubmit = async (e) => {
 
-    console.log(data);
-    
-    
     e.preventDefault();
     if (isLoading) {
       return;
@@ -57,18 +53,7 @@ export default function Register({data, token}) {
 
     register(formData);
 
-    // if(token) {
-    //     data.accepted = true
-    //     data.token = token
-    //   try {
-    //     const res = await axios.put(`http://127.0.0.1:8000/api/invitations/${token}/`, data)
-    //   } catch (error) {
-    //     console.log(error);
-        
-    //   }
-    // }
     console.log(user);
-    
 
     setIsLoading(false);
   };
@@ -123,7 +108,7 @@ export default function Register({data, token}) {
   return (
     <div id="register">
       <h2>Register</h2>
-      <form>
+      <form onKeyDown={(e) => e.key === 'Enter' && handleSubmit(e)}>
         <input
           type="email"
           name="email"

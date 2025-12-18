@@ -161,6 +161,15 @@
             background: $darkGreen;
           }
         }
+
+        .button-container {
+
+          .loader-container {
+            top: 0;
+            left: 0;
+            transform: scale(0.6);
+          }
+        }
       }
     }
   }

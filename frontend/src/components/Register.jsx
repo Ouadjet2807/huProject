@@ -5,17 +5,17 @@ import { v4 as uuidv4 } from "uuid";
 import { AuthContext } from "../context/AuthContext";
 import { PiEyeBold } from "react-icons/pi";
 import { PiEyeClosedDuotone } from "react-icons/pi";
-import { ToastContext } from "../context/ToastContext"; 
+import { ToastContext } from "../context/ToastContext";
 import Button from "react-bootstrap/esm/Button";
+import Loader from "./Loader";
 
-export default function Register({data, token}) {
-  const [isLoading, setIsLoading] = useState(false);
+export default function Register({ data, token }) {
 
   const [formData, setFormData] = useState({
     invited: {
-       invited: false,
+      invited: false,
       invited_by: null,
-      role: 1
+      role: 1,
     },
     email: "",
     username: "",
@@ -30,7 +30,7 @@ export default function Register({data, token}) {
 
   const navigate = useNavigate();
 
-  const { register, message, user } = useContext(AuthContext);
+  const { register, message, user, loading } = useContext(AuthContext);
 
   const { setShowToast, setMessage, setColor } = useContext(ToastContext);
 
@@ -39,29 +39,21 @@ export default function Register({data, token}) {
       ...prev,
       [e.target.name]: e.target.value,
     }));
-
   };
 
   const handleSubmit = async (e) => {
-
     e.preventDefault();
-    if (isLoading) {
+    if (loading) {
       return;
     }
 
-    setIsLoading(true);
-
     register(formData);
 
-    console.log(user);
-
-    setIsLoading(false);
   };
 
   useEffect(() => {
-
-    if(message.message === '') return
-    setMessage(message.message)
+    if (message.message === "") return;
+    setMessage(message.message);
     if (message.status === "success") {
       setShowToast(true);
       setColor("success");
@@ -87,28 +79,27 @@ export default function Register({data, token}) {
   }, [formData.first_name, formData.last_name]);
 
   useEffect(() => {
-    if(!data) return
+    if (!data) return;
 
     let invitation = {
       invited: true,
       invited_by: data.sender,
-      role: data.role
-    }
+      role: data.role,
+    };
 
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       invited: JSON.stringify(invitation),
       email: data.email,
-    }))
-  }, [data])
+    }));
+  }, [data]);
 
   console.log(data);
-  
 
   return (
     <div id="register">
       <h2>Register</h2>
-      <form onKeyDown={(e) => e.key === 'Enter' && handleSubmit(e)}>
+      <form onKeyDown={(e) => e.key === "Enter" && handleSubmit(e)}>
         <input
           type="email"
           name="email"
@@ -166,10 +157,13 @@ export default function Register({data, token}) {
           </div>
         </div>
 
-        <Button
-          disabled={isLoading}
-          onClick={(e) => handleSubmit(e)}
-        >S'enregistrer</Button>
+        <div className="button-container" style={{display: 'flex', gap: '15px', alignItems: 'center', marginTop: loading ? 0 : '0.9vw', marginLeft: loading ? '-5.8vw' : 0}}>
+          {loading && <Loader />}
+          <Button disabled={loading} onClick={(e) => handleSubmit(e)}>
+            {" "}
+            S'enregistrer
+          </Button>
+        </div>
       </form>
     </div>
   );

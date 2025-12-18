@@ -2,7 +2,7 @@ nav {
   display: flex;
   justify-content: flex-end;
   padding: 10px 5px;
-  background: linear-gradient(47deg, #005444, #97c6bd);
+  background: linear-gradient(47deg, $green, $aquaOpac);
   border-radius: $borderRadius 0 0 $borderRadius;
   position: relative;
   width: 100%;

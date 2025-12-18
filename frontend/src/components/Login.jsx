@@ -6,20 +6,21 @@ import { ToastContext } from "../context/ToastContext";
 import { PiEyeBold } from "react-icons/pi";
 import { PiEyeClosedDuotone } from "react-icons/pi";
 import Button from "react-bootstrap/esm/Button";
+import Loader from "./Loader";
 
 export default function Login() {
-  const [isLoading, setIsLoading] = useState(false);
+
 
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
 
-  const [showPassword, setShowPassword] = useState(false)
+  const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();
 
-  const { login, message } = useContext(AuthContext);
+  const { login, message, loading } = useContext(AuthContext);
   const { setShowToast, setMessage, setColor } = useContext(ToastContext);
 
   const handleChange = (e) => {
@@ -31,34 +32,33 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (isLoading) {
+    if (loading) {
       return;
     }
 
-    setIsLoading(true);
     login(formData.email, formData.password);
-    setIsLoading(false);
+
   };
 
   useEffect(() => {
     console.log(message);
-    
-    if(message.message === '') return
-    setMessage(message.message)
+
+    if (message.message === "") return;
+    setMessage(message.message);
     if (message.status === "success") {
-        setShowToast(true)
-        setColor("success")
-        navigate("/home");
+      setShowToast(true);
+      setColor("success");
+      navigate("/home");
     } else {
-      setShowToast(true)
-      setColor("danger")
+      setShowToast(true);
+      setColor("danger");
     }
   }, [message]);
 
   return (
     <div id="login">
       <h2>Se connecter</h2>
-      <form onKeyDown={(e) => e.key === 'Enter' && handleSubmit(e)}>
+      <form onKeyDown={(e) => e.key === "Enter" && handleSubmit(e)}>
         <input
           type="email"
           name="email"
@@ -68,29 +68,27 @@ export default function Login() {
           onChange={(e) => handleChange(e)}
         />
         <div className="password-field">
-
-        <input
-          type={showPassword ? "text" : "password"}
-          name="password"
-          id=""
-          value={formData.password}
-          placeholder="Mot de passe"
-          onChange={(e) => handleChange(e)}
+          <input
+            type={showPassword ? "text" : "password"}
+            name="password"
+            id=""
+            value={formData.password}
+            placeholder="Mot de passe"
+            onChange={(e) => handleChange(e)}
           />
-          <div className="show-hide-password" onClick={() => setShowPassword(!showPassword)}>
-            {showPassword ?
-             <PiEyeBold />
-
-             :
-
-             <PiEyeClosedDuotone />
-            }
+          <div
+            className="show-hide-password"
+            onClick={() => setShowPassword(!showPassword)}
+          >
+            {showPassword ? <PiEyeBold /> : <PiEyeClosedDuotone />}
           </div>
-          </div>
-        <Button
-          disabled={isLoading}
-          onClick={(e) => handleSubmit(e)}
-        >Connexion</Button>
+        </div>
+        <div className="button-container" style={{display: 'flex', gap: '15px', alignItems: 'center', marginTop: loading ? 0 : '0.9vw', marginLeft: loading ? '-5.8vw' : 0}}>
+          {loading && <Loader />}
+          <Button disabled={loading} onClick={(e) => handleSubmit(e)}>
+            Connexion
+          </Button>
+        </div>
       </form>
     </div>
   );

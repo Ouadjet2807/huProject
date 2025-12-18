@@ -16,8 +16,6 @@ export default function MedicationDetailsModal({
   medication,
   showAddTreatmentModal,
 }) {
-
-
   moment.locale("fr");
 
   const { space } = useContext(AuthContext);
@@ -49,6 +47,7 @@ export default function MedicationDetailsModal({
 
   const handleClose = () => {
     setShow(false);
+    setPresentation([])
     showAddTreatmentModal(true);
     setFormData({
       name: "",
@@ -264,9 +263,9 @@ export default function MedicationDetailsModal({
 
     const freq = frequency.intake_frequency;
 
-    const end = moment(startDate).add(totalIntakes, `${freq}s`)
+    const end = moment(startDate).add(totalIntakes, `${freq}s`);
 
-    return end
+    return end;
   };
 
   const handleSubmit = async () => {
@@ -359,7 +358,12 @@ export default function MedicationDetailsModal({
     );
 
     setFormData((prev) => ({ ...prev, end_date: end_date }));
-  }, [formData.quantity_per_box, formData.start_date, formData.frequency, formData.number_of_boxes]);
+  }, [
+    formData.quantity_per_box,
+    formData.start_date,
+    formData.frequency,
+    formData.number_of_boxes,
+  ]);
 
   useEffect(() => {
     while (dayTime.length > formData.frequency.intake_number) {
@@ -528,13 +532,28 @@ export default function MedicationDetailsModal({
                         name="size"
                         onChange={() => handleQuantity(item)}
                       />
-                      <span className="units-per-unit">
-                        {item.units_per_unit}
-                      </span>
-                      <small className="units-form">
-                        {item.units_form}
-                        {item.units_per_unit > 1 && "(s)"}
-                      </small>
+                      {item.units_form.match(/(ml|l|g|mg|μg)$/i) ? (
+                        <>
+                          <small className="units-form">
+                            {item.unit_number} {item.unit_type}
+                          </small>
+                          <span className="units-per-unit">
+                            de {' '}
+                            {item.units_per_unit}
+                            {item.units_form}
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          <span className="units-per-unit">
+                            {item.units_per_unit}
+                          </span>
+                          <small className="units-form">
+                            {item.units_form}
+                            {item.units_per_unit > 1 && "(s)"}
+                          </small>
+                        </>
+                      )}
                     </div>
                   );
                 })}

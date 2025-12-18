@@ -134,7 +134,7 @@
 
         &::-webkit-scrollbar {
           background: transparent;
-          width: .3vw;
+          width: 0.3vw;
         }
 
         &::-webkit-scrollbar-thumb {
@@ -179,39 +179,42 @@
               }
             }
 
-             &.expired {
-            .card-header {
-              border-radius: 15px 15px 0 0;
-            }
-            .card-body {
-              border-radius: 0 0 15px 15px;
-            }
+            &.expired {
+              .card-header {
+                border-radius: 15px 15px 0 0;
+              }
+              .card-body {
+                border-radius: 0 0 15px 15px;
 
-            .card-body,
-            .card-header {
-              backdrop-filter: brightness(0.9);
-              filter: saturate(0.5) brightness(0.9);
-            }
-            h5 {
-              margin-bottom: 0;
-              position: absolute;
-              top: 3%;
-              right: 3%;
-              z-index: 6;
-              transition: 0.3s ease-in;
-            }
-
-            &:hover {
-              filter: none;
-              .card-img-overlay {
-                opacity: 1;
               }
 
+              .card-body,
+              .card-header {
+                backdrop-filter: brightness(0.9);
+                filter: saturate(0.5) brightness(0.9);
+              }
+
+              
               h5 {
-                opacity: 0;
+                margin-bottom: 0;
+                position: absolute;
+                top: 3%;
+                right: 3%;
+                z-index: 6;
+                transition: 0.3s ease-in;
+              }
+
+              &:hover {
+                filter: none;
+                .card-img-overlay {
+                  opacity: 1;
+                }
+
+                h5 {
+                  opacity: 0;
+                }
               }
             }
-          }
           }
         }
 
@@ -245,6 +248,15 @@
             display: flex;
             flex-direction: column;
 
+              .remaining {
+                .progress {
+
+                  .progress-bar {
+                    filter: brightness(1.5) saturate(0.3) !important;
+                  }
+                }
+              }
+
             .start-time {
               display: flex;
               align-items: center;
@@ -261,15 +273,14 @@
                 svg {
                   width: 3vw;
 
-                  &:nth-child(2) {
-                    border-left: 1px solid black;
+                  &:nth-child(2),
+                  &:nth-child(3) {
+                    border-left: 1px solid $greyGreen;
                   }
                 }
               }
             }
           }
-
-         
         }
       }
 

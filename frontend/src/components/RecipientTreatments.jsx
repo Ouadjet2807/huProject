@@ -233,7 +233,8 @@ export default function RecipientTreatments({ formData, space }) {
                     <ListGroup horizontal>
                       <ListGroup.Item>
                         <PiPillDuotone />{" "}
-                        {item.quantity.units_per_unit *
+                        {item.quantity.units_form.match(/(ml|l|g|mg|μg)$/i) ? item.quantity.unit_number *
+                          item.quantity.number_of_boxes : item.quantity.units_per_unit *
                           item.quantity.number_of_boxes}
                       </ListGroup.Item>
                       <ListGroup.Item>

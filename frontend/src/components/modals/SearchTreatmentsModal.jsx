@@ -21,6 +21,47 @@ export default function SearchTreatmentsModal({
     return () => clearTimeout(delayDebounceFn);
   }, [inputValue]);
 
+  const displayMedName = (med) => {
+    console.log(debouncedValue.length);
+    const regex = new RegExp(debouncedValue, "i");
+    console.log(regex);
+    let index = med.search(regex);
+    let endIndex = index + debouncedValue.length;
+
+    let substrings = [];
+    if (index > 0) {
+      substrings.push(
+        med.substring(0, index),
+        med.substring(index, endIndex),
+        med.substring(endIndex, med.length)
+      );
+    } else {
+      substrings.push(
+        med.substring(0, endIndex),
+        med.substring(endIndex, med.length)
+      );
+    }
+
+    return (
+      <>
+        {substrings.map((sub, index) => {
+          return (substrings.length > 2 && index == 1) ||
+            (substrings.length == 2 && index == 0) ? (
+            <span className="search-value">{sub}</span>
+          ) : (
+
+              sub.replace(" ", "").length < 35 ? (
+                <span>{sub}</span>
+              ) : (
+                <span>{sub.slice(0, 35).padEnd(38, "...")}</span>
+              )
+      
+          );
+        })}
+      </>
+    );
+  };
+
   useEffect(() => {
     const getMedsData = async () => {
       if (debouncedValue !== "") {
@@ -41,8 +82,8 @@ export default function SearchTreatmentsModal({
   }, [debouncedValue]);
 
   const handleClose = () => {
-    setDebouncedValue('')
-    setSearchResults([])
+    setDebouncedValue("");
+    setSearchResults([]);
     setShow(false);
   };
 
@@ -60,6 +101,8 @@ export default function SearchTreatmentsModal({
               type="text"
               name="search_treatment"
               id=""
+              defaultValue={debouncedValue}
+              // value={debouncedValue}
               placeholder="Rechercher un traitement"
               onChange={(e) => setInputValue(e.target.value)}
             />
@@ -67,7 +110,7 @@ export default function SearchTreatmentsModal({
               <IoIosSearch />
             </div>
           </div>
-          <div className="search-results">
+          <ul className="search-results">
             {searchResults && searchResults.length > 0 ? (
               searchResults
                 .filter(
@@ -76,18 +119,22 @@ export default function SearchTreatmentsModal({
                 )
                 .map((med) => {
                   return (
-                    <div
+                    <li
                       className="medication"
                       onClick={() => setSelectedMedication(med)}
                     >
-                      {med.elementPharmaceutique}
-                    </div>
+                     <IoIosSearch /> <p>{displayMedName(med.elementPharmaceutique)}</p>
+                    </li>
                   );
                 })
             ) : (
-              <>{debouncedValue !== "" && <p>Aucun résultat</p>}</>
+              <>
+                {debouncedValue !== "" && (
+                  <p className="no-result" style={{ margin: "1vw" }}>Aucun résultat</p>
+                )}
+              </>
             )}
-          </div>
+          </ul>
         </div>
       </Modal.Body>
       <Modal.Footer>

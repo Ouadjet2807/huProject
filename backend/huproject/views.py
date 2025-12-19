@@ -230,7 +230,7 @@ class AgendaItemViewSet(viewsets.ModelViewSet):
         
         caregiver = user.caregiver
 
-        qs = AgendaItem.objects.filter(agenda__space__caregivers=caregiver)
+        qs = AgendaItem.objects.filter(agenda__space__caregivers=caregiver).filter(private=False) | AgendaItem.objects.filter(agenda__space__caregivers=caregiver).filter(created_by=user) 
 
         qs = qs.select_related('agenda', 'created_by').order_by('start_date')
 

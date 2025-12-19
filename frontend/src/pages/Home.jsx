@@ -8,6 +8,7 @@ import Loader from "../components/Loader";
 import InviteUserModal from "../components/modals/InviteUserModal";
 import { TbUsersPlus } from "react-icons/tb";
 import { FaUserCircle } from "react-icons/fa";
+import Button from "react-bootstrap/esm/Button";
 
 export default function Home({ setRefreshRecipients, space }) {
   const [addRecipient, setAddRecipient] = useState(false);
@@ -66,9 +67,9 @@ export default function Home({ setRefreshRecipients, space }) {
                   );
                 })}
 
-              <button onClick={() => setAddRecipient(true)}>
+              <Button variant="aqua" onClick={() => setAddRecipient(true)}>
                 Add a recipient
-              </button>
+              </Button>
             </div>
             <div className="caregivers box">
               <h3>Your recipients</h3>
@@ -92,9 +93,9 @@ export default function Home({ setRefreshRecipients, space }) {
                   );
                 })}
               {isCreator() && (
-                <button onClick={() => setShowInviteModal(true)}>
+                <Button variant="aqua" onClick={() => setShowInviteModal(true)}>
                   <TbUsersPlus /> Inviter une personne
-                </button>
+                </Button>
               )}
             </div>
           </div>

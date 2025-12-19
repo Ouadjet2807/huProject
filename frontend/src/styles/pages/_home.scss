@@ -44,7 +44,7 @@
           width: 90%;
           height: 3vw;
           background: $white;
-          border-radius: 13px;
+          border-radius: $borderRadius;
           color: $green;
           padding: 5px 15px;
           display: flex;
@@ -63,23 +63,7 @@
         }
       }
 
-      button {
-        background: $lightGreen;
-        color: $green;
-        font-family: $font1;
-        font-weight: 600;
-        width: max-content;
-        border-radius: 5px;
-        text-transform: uppercase;
-        border: none;
-        margin: 10px auto;
-        padding: 15px 40px;
-        cursor: pointer;
-
-        &:hover {
-          background: $darkGreen;
-        }
-      }
+      
     }
   }
 }

@@ -62,19 +62,15 @@
         overflow-y: scroll;
 
         &::-webkit-scrollbar {
+          background: transparent;
+          width: .2vw;
         }
 
         &::-webkit-scrollbar-thumb {
-          fill: $green;
+          background: $whiteGreen;
+          border-radius: $borderRadius;
         }
 
-        input:not([type="checkbox"]),
-        textarea,
-        select {
-          border-radius: 5px;
-          border: 1px solid #a09898;
-          padding: 5px 8px;
-        }
 
         .edit-sensible-info {
           width: max-content;
@@ -109,6 +105,10 @@
 
             input {
               width: 100%;
+            }
+
+            button {
+              height: 100%;
             }
           }
         }

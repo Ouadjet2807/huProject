@@ -15,6 +15,7 @@ $green: #004643;
 $darkGreen: #163737;
 $blackGreen: #08181c;
 $pearl: rgb(244, 248, 248);
+$sand: #F0EDE5;
 $charcoal: rgb(21, 22, 22);
 
 $font1: "Roboto";
@@ -90,15 +91,26 @@ button {
   cursor: pointer;
 }
 
- .btn-aqua {
-      background: $aquaOpac !important;
-      border: 1px solid $green !important;
-      color: $green !important;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin: auto;
-    }
+.btn-aqua {
+    background: $aquaOpac !important;
+    border: 1px solid $green !important;
+    color: $green !important;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: auto;
+  }
+
+.btn-outline-green {
+    background: transparent !important;
+    border: 1px solid $aquaOpac !important;
+    color: $aquaOpac !important;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: auto;
+  }
+
 
 input[type="email"],
 input[type="password"],
@@ -111,6 +123,10 @@ textarea {
   border-radius: 5px;
   border: 1px solid $whiteGreen;
   padding: 5px 8px;
+
+  &::placeholder {
+    color: $greyGreen;
+  }
 }
 
 small {

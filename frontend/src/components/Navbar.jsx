@@ -76,6 +76,9 @@ export default function Navbar() {
   };
 
   useGSAP(() => {
+
+    if(!user) return 
+    
     if (activeNav) {
       gsap.to(".App", {
         gridTemplateColumns: "15% 85%",
@@ -143,7 +146,7 @@ export default function Navbar() {
       ref={navbar}
     >
       <ul className="nav-list">
-        {user ? (
+        {user && (
           <>
             {auth_routes.map((item) => {
               return (
@@ -160,19 +163,9 @@ export default function Navbar() {
               <span>{activeNav ? <><LuLogOut /> Déconnexion</>: <LuLogOut />}</span>
             </li>
           </>
-        ) : (
-          no_auth_routes.map((item) => {
-            return (
-              <li
-                className={`nav-item ${
-                  item.path === location.pathname ? "active" : ""
-                }`}
-              >
-                <a href={item.path}>{activeNav ? item.name : item.icon}</a>
-              </li>
-            );
-          })
-        )}
+        ) 
+          
+        }
       </ul>
     </nav>
   );

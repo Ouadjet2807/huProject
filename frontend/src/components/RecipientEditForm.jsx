@@ -105,7 +105,7 @@ export default function RecipientEditForm({
           </select>
         </div>
         <Button
-          variant="primary"
+          variant="aqua"
           className="edit-sensible-info"
           onClick={() => setEditionMode(!editionMode)}
         >
@@ -133,7 +133,7 @@ export default function RecipientEditForm({
                   type="button"
                   name="delete_field"
                   className="delete"
-                  variant="outline-primary"
+                  variant="outline-green"
                   onClick={(e) => handleAllergiesField(e, index)}
                   disabled={medicalInfo.allergies.length < 2}
                 >
@@ -143,7 +143,7 @@ export default function RecipientEditForm({
             );
           })}
           <Button
-            variant="primary"
+            variant="aqua"
             name="add_field"
             onClick={(e) => handleAllergiesField(e)}
           >

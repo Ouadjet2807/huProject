@@ -4,7 +4,7 @@ import Button from "react-bootstrap/esm/Button";
 import { FaRegTrashAlt } from "react-icons/fa";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
-import { TbSquareCheck } from "react-icons/tb";
+import { FaRegSquare } from "react-icons/fa";
 import { TbSquareCheckFilled } from "react-icons/tb";
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 gsap.registerPlugin(useGSAP);
@@ -173,7 +173,7 @@ export default function TodoList({ user, space }) {
             return (
               <div className={`todo-item ${todo.completed ? "completed" : ""}`}>
                 <div className="field">
-                {todo.completed ? <TbSquareCheckFilled /> : <TbSquareCheck />}
+                {todo.completed ? <TbSquareCheckFilled /> : <FaRegSquare />}
                 <input
                   type="checkbox"
                   name=""

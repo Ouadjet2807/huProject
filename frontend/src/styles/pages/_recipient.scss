@@ -11,6 +11,15 @@
     .recipient-left-tab {
       padding: 2vw;
       width: max-content;
+      
+      span {
+        color: $greyGreen;
+        font-size: 2rem;
+      }
+
+      h2 {
+        margin: 0;
+      }
 
       ul {
         background-color: $green;
@@ -35,11 +44,6 @@
           }
         }
       }
-    }
-
-    .age {
-      font-family: inherit;
-      font-style: italic;
     }
 
     > *:not(.recipient-left-tab) {

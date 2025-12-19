@@ -119,10 +119,12 @@ export default function Recipient({spaceId}) {
         <div className="recipient-container">
 
           <div className="recipient-left-tab">
-          <h2>
+          <div style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
+            <h2>
             {recipient.first_name} {recipient.last_name} -{" "}
-            <span className="age text-secondary">{getAge()} ans</span>
-          </h2>
+            </h2>
+            <span>{getAge()} ans</span>
+          </div>
             <ul>
               <li id="general" className={activeTab === "general" ? "active" : ""} onClick={(e) => handleTab(e)}>
                 Information génerales

@@ -17,7 +17,7 @@
 
       &::before {
         content: "";
-        box-shadow: inset 1px 1px 24px 7px $aqua;
+        background: $aqua;
         border-radius: $borderRadiusLight $borderRadiusLight 0 0;
         border: 1px solid $green;
         border-bottom: none;

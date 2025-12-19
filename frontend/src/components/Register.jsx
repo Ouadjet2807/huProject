@@ -159,7 +159,7 @@ export default function Register({ data, token }) {
 
         <div className="button-container" style={{display: 'flex', gap: '15px', alignItems: 'center', marginTop: loading ? 0 : '0.9vw', marginLeft: loading ? '-5.8vw' : 0}}>
           {loading && <Loader />}
-          <Button disabled={loading} onClick={(e) => handleSubmit(e)}>
+          <Button disabled={loading} onClick={(e) => handleSubmit(e)} variant="aqua">
             {" "}
             S'enregistrer
           </Button>

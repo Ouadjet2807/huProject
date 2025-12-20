@@ -25,6 +25,7 @@ export default function Space({ editMode, setEditMode, roles }) {
   const [removeRecipient, setRemoveRecipient] = useState(false);
   const [refreshSpace, setRefreshSpace] = useState(false);
   const [validationField, setValidationField] = useState("");
+  const [validationError, setValidationError] = useState(false);
 
   const handleEditMode = (e) => {
     if (!e.target) return;
@@ -157,7 +158,10 @@ export default function Space({ editMode, setEditMode, roles }) {
 
   const deleteRecipient = async (recipient) => {
     
-    if(validationField.toUpperCase() !== "SUPPRIMER") return
+    if(validationField.toUpperCase() !== "SUPPRIMER") {
+      setValidationError(true)
+      return
+    }
 
     try {
       await api.delete(`http://127.0.0.1:8000/api/recipients/${recipient.id}/`)
@@ -232,7 +236,7 @@ export default function Space({ editMode, setEditMode, roles }) {
         <Modal.Header closeButton>
           <Modal.Title>Supprimer un aidé</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body style={{display: 'flex', flexDirection: 'column'}}>
           <p>
             Êtes-vous sûr(e) de vouloir supprimmer cette personne ?<br /> Toutes
             ses donnée seront perdues
@@ -245,8 +249,11 @@ export default function Space({ editMode, setEditMode, roles }) {
           )}
           <div className="validation-field">
             <label htmlFor="">SUPPRIMER</label>
-            <input type="text" name="validation" id="" onChange={(e) => setValidationField(e.target.value)}/>
+            <input type="text" name="validation" id="" onChange={(e) => setValidationField(e.target.value)} style={{boxShadow: validationError ? '#d9002d70 0px 0px 2px 1px' : ''}}/>
           </div>
+          {validationError &&
+            <small style={{textAlign: 'center', color: 'red', marginBottom: '10px'}}>Ce champ est requis</small>
+          }
           <small>Ecrivez "supprimer" dans le champ ci-dessus puis cliquez sur continuer</small>
         </Modal.Body>
         <Modal.Footer>

@@ -301,7 +301,7 @@
     display: flex;
     position: relative;
     align-items: center;
-    margin: 10px auto;
+    margin: 10px auto 5px;
     width: max-content;
 
     label {
@@ -309,11 +309,12 @@
       padding: 5px 9px;
       color: $error;
       opacity: 0.5;
+      z-index: 6;
     }
 
     input {
       position: relative;
-      background: transparent;
+      background: #ffc1af;
       text-transform: uppercase;
       border: 1px solid $error;
       color: $error;

@@ -193,8 +193,7 @@ export default function EventModal({
     setEventCreator(getCreator(event.created_by));
   }, [user])
 
-  console.log(editFormData);
-  console.log(eventCreator);
+
 
   return (
     <>
@@ -212,7 +211,7 @@ export default function EventModal({
                   <div className="info">
                     <Modal.Title>{event.title}</Modal.Title>
                     <span>
-                      créé {eventCreator && <>par {eventCreator}</>} le{" "}
+                      créé {eventCreator ? <>par {eventCreator}</> : ""} le{" "}
                       {new Date(
                         event.created_at.slice(0, 10)
                       ).toLocaleDateString("fr-Fr", date_options)}
@@ -464,20 +463,20 @@ export default function EventModal({
               </form>
             )}
             <Modal.Footer>
-              {event.created_by == user.id || canEdit() && (
+              {(event.created_by === user.id || canEdit()) && (
                 <>
-                  <Button variant="danger" onClick={() => handleDelete()}>
+                  <Button variant="outline-danger" onClick={() => handleDelete()}>
                     <FaRegTrashAlt />
                     Supprimer
                   </Button>
                   {editionMode ? (
-                    <Button variant="primary" onClick={() => handleUpdate()}>
+                    <Button variant="outline-primary" onClick={() => handleUpdate()}>
                       <CiEdit />
                       Enregistrer
                     </Button>
                   ) : (
                     <Button
-                      variant="primary"
+                      variant="outline-primary"
                       onClick={() => setEditionMode(true)}
                     >
                       <CiEdit />
@@ -486,7 +485,7 @@ export default function EventModal({
                   )}
                 </>
               )}
-              <Button variant="secondary" onClick={handleClose}>
+              <Button variant="outline-secondary" onClick={handleClose}>
                 Fermer
               </Button>
             </Modal.Footer>

@@ -6,7 +6,8 @@
     grid-template-columns: 40% 60%;
 
     .right-tab {
-      background: $whiteGreen;
+      background: linear-gradient(
+142deg, $aquaOpac, $green);
       padding: 45px;
       height: 100%;
       width: max-content;

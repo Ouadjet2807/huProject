@@ -169,7 +169,7 @@ export default function Agenda({ space }) {
             <ul>
               {todayAgendaItems.map((event) => {
                 return (
-                  <li onClick={() => setShowEvent(true)}>
+                  <li onClick={() => handleSelectEvent(event)}>
                     <div
                       className="icon"
                       style={{
@@ -197,6 +197,7 @@ export default function Agenda({ space }) {
           )}
         </div>
         <Button
+          variant="aqua"
           className="add-event-btn"
           onClick={() => setShowEventForm(true)}
         >

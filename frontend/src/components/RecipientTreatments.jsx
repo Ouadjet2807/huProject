@@ -1,8 +1,9 @@
-import React, { use, useEffect, useState } from "react";
+import React, { use, useContext, useEffect, useState } from "react";
 import Button from "react-bootstrap/esm/Button";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import SearchTreatmentsModal from "./modals/SearchTreatmentsModal";
 import MedicationDetailsModal from "./modals/MedicationDetailsModal";
+import Loader from "./Loader";
 import api from "../api/api";
 import Card from "react-bootstrap/Card";
 import Container from "react-bootstrap/Container";
@@ -13,13 +14,15 @@ import { CiMedicalClipboard } from "react-icons/ci";
 import { PiPillDuotone } from "react-icons/pi";
 import Badge from "react-bootstrap/Badge";
 import ListGroup from "react-bootstrap/ListGroup";
-import { LuSunrise } from "react-icons/lu";
+import { LuLoader, LuSunrise } from "react-icons/lu";
 import { LuSunset } from "react-icons/lu";
 import { LuSun } from "react-icons/lu";
 import { LuCalendarFold } from "react-icons/lu";
 import { LuTrash2 } from "react-icons/lu";
 import moment from "moment";
 import "moment/locale/fr";
+import { UseDimensionsContext } from "../context/UseDimensionsContext";
+
 
 export default function RecipientTreatments({ formData, space }) {
   const [showAddTreatment, setShowAddTreatement] = useState(false);
@@ -27,7 +30,12 @@ export default function RecipientTreatments({ formData, space }) {
   const [selectedMedication, setSelectedMedication] = useState({});
   const [treatments, setTreatments] = useState([]);
 
+  const { width, height } = useContext(UseDimensionsContext)
+  const [loading, setLoading] = useState(true);
+
   console.log(selectedMedication);
+  console.log(width);
+  console.log(height);
 
   moment.locale("fr");
 
@@ -36,6 +44,7 @@ export default function RecipientTreatments({ formData, space }) {
       const response = await api.get("http://127.0.0.1:8000/api/treatments");
       console.log("Success", response.data);
       setTreatments(response.data);
+      setLoading(false);
     } catch (error) {
       console.log(error);
     }
@@ -98,7 +107,6 @@ export default function RecipientTreatments({ formData, space }) {
 
   const getProgressColor = (item) => {
     let value = getProgress(item);
-    console.log(value);
 
     switch (true) {
       case value >= 50:
@@ -129,8 +137,6 @@ export default function RecipientTreatments({ formData, space }) {
   const getRemainingUnits = (item) => {
     if (item.frequency == "" || !item.end_date) return;
 
-    console.log(item);
-
     const today = moment(new Date());
 
     const intake_time_range =
@@ -144,13 +150,9 @@ export default function RecipientTreatments({ formData, space }) {
     const end_date = moment(new Date(item.end_date));
     const time = moment(end_date - moment().subtract(1, "days"));
 
-    console.log(time._i);
-
     let totalUnits = 0;
 
     let reg = /(ml|l|g|mg|μg)$/i;
-
-    console.log(reg.test(item.quantity.units_form));
 
     if (reg.test(item.quantity.units_form)) {
       totalUnits = item.quantity.unit_number * item.quantity.number_of_boxes;
@@ -160,8 +162,6 @@ export default function RecipientTreatments({ formData, space }) {
 
     if (start_date > today) return totalUnits;
 
-    console.log(totalUnits);
-
     let todaysIntakeCount = checkTodaysIntake(
       intake_number,
       intake_time_range,
@@ -170,15 +170,9 @@ export default function RecipientTreatments({ formData, space }) {
 
     let frequency = item.frequency.intake_frequency;
 
-    console.log(todaysIntakeCount);
-
     let remaining_time =
       end_date.add(1, `${frequency}s`).diff(today, `${frequency}s`) *
       intake_number;
-
-    console.log(remaining_time);
-
-    console.log(todaysIntakeCount);
 
     return Math.ceil(remaining_time) > 0
       ? Math.ceil(remaining_time) - todaysIntakeCount
@@ -188,6 +182,11 @@ export default function RecipientTreatments({ formData, space }) {
   const renderTreatmentsList = () => {
     if (!treatments || treatments.length == 0) return;
 
+    let breakPoints =
+      width > 1200 ? 3 : width > 800 ? 2 : 1;
+
+    console.log(breakPoints);
+
     treatments.sort((a, b) => {
       return new Date(b.end_date) - new Date(a.end_date);
     });
@@ -196,13 +195,15 @@ export default function RecipientTreatments({ formData, space }) {
 
     // split the array in arrays of 3 maximum elements
     for (let i = 0; i <= treatments.length; i++) {
-      if (i !== 0 && i % 3 == 0) {
-        rows.push(treatments.slice(i - 3, i));
+      if (i !== 0 && i % breakPoints == 0) {
+        rows.push(treatments.slice(i - breakPoints, i));
       } else if (i == treatments.length) {
-        let firstIndex = rows.length * 3;
+        let firstIndex = rows.length * breakPoints;
         rows.push(treatments.slice(firstIndex, i)); // store the remaining
       }
     }
+
+    console.log(rows);
 
     return rows.map((row) => {
       return (
@@ -231,9 +232,11 @@ export default function RecipientTreatments({ formData, space }) {
                     <ListGroup horizontal>
                       <ListGroup.Item>
                         <PiPillDuotone />{" "}
-                        {item.quantity.units_form.match(/(ml|l|g|mg|μg)$/i) ? item.quantity.unit_number *
-                          item.quantity.number_of_boxes : item.quantity.units_per_unit *
-                          item.quantity.number_of_boxes}
+                        {item.quantity.units_form.match(/(ml|l|g|mg|μg)$/i)
+                          ? item.quantity.unit_number *
+                            item.quantity.number_of_boxes
+                          : item.quantity.units_per_unit *
+                            item.quantity.number_of_boxes}
                       </ListGroup.Item>
                       <ListGroup.Item>
                         {item.frequency.intake_number} par
@@ -310,7 +313,9 @@ export default function RecipientTreatments({ formData, space }) {
     getTreatments();
   }, []);
 
-  console.log(treatments);
+  useEffect(() => {
+    renderTreatmentsList();
+  }, [width]);
 
   return (
     <div id="recipientTreatments">
@@ -327,21 +332,28 @@ export default function RecipientTreatments({ formData, space }) {
         setMedication={setSelectedMedication}
       />
       <h3>Traitements médicaux</h3>
-      <Container
-        className="treatments-list"
-        style={{
-          justifyContent: treatments.length > 0 ? "flex-start" : "center",
-        }}
-      >
-        {treatments.length > 0 ? (
-          renderTreatmentsList()
-        ) : (
-          <small>
-            <CiMedicalClipboard /> Aucun traitement enregistré
-          </small>
-        )}
-      </Container>
+      {!loading ? (
+        <Container
+          className="treatments-list"
+          style={{
+            justifyContent: treatments.length > 0 ? "flex-start" : "center",
+          }}
+        >
+          {treatments.length > 0 ? (
+            renderTreatmentsList()
+          ) : (
+            <small>
+              <CiMedicalClipboard /> Aucun traitement enregistré
+            </small>
+          )}
+        </Container>
+      ) : (
+        <div>
+          <Loader />
+        </div>
+      )}
       <Button
+        variant="aqua"
         className="add-treatment-btn"
         onClick={() => setShowAddTreatement(true)}
       >

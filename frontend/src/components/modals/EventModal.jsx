@@ -61,8 +61,7 @@ export default function EventModal({
   };
 
   const getCreator = async (id) => {
-    let creator = "";
-
+    let creator = ""
 
     if(!id) return ""
 
@@ -81,6 +80,17 @@ export default function EventModal({
       return creator;
     }
   };
+
+  const canEdit = () => {
+
+    if(!user || !space) return
+    let caregiver = space.caregivers.find(e => e.user === user.id)
+
+    if (caregiver && caregiver.access_level < 3) return true
+
+    return false
+
+  }
 
   const getParticipant = (key, id) => {
     const person = space[key].filter((item) => item.id == id);
@@ -454,7 +464,7 @@ export default function EventModal({
               </form>
             )}
             <Modal.Footer>
-              {event.created_by == user.id && (
+              {event.created_by == user.id || canEdit() && (
                 <>
                   <Button variant="danger" onClick={() => handleDelete()}>
                     <FaRegTrashAlt />

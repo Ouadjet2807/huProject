@@ -11,7 +11,7 @@
     .recipient-left-tab {
       padding: 2vw;
       width: max-content;
-      
+
       span {
         color: $greyGreen;
         font-size: 2rem;
@@ -51,11 +51,16 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      align-items: stretch;
+      align-items: flex-end;
       border-left: 1px solid $whiteGreen;
     }
 
     #generalSection {
+
+      h3 {
+        width: 100%;
+      }
+
       form {
         display: flex;
         flex-direction: column;
@@ -64,10 +69,11 @@
         height: 38vw;
         width: 100%;
         overflow-y: scroll;
+        align-items: center;
 
         &::-webkit-scrollbar {
           background: transparent;
-          width: .2vw;
+          width: 0.2vw;
         }
 
         &::-webkit-scrollbar-thumb {
@@ -75,21 +81,23 @@
           border-radius: $borderRadius;
         }
 
-
         .edit-sensible-info {
           width: max-content;
-          margin: 5px auto;
+          margin: 5px 0;
         }
 
         label {
           margin: 15px 0 5px;
           font-weight: 800;
+          font-size: .875em;
+          color: $greyGreen;
         }
 
         .form-row {
           display: grid;
           grid-template-columns: 49% 49%;
           gap: 0 10px;
+          width: 100%;
 
           input {
             width: 100%;
@@ -100,6 +108,11 @@
           display: flex;
           flex-direction: column;
           width: 100%;
+          align-items: center;
+
+          label, textarea {
+            width: 100%;
+          }
 
           .deletable_field {
             display: flex;
@@ -189,7 +202,6 @@
               }
               .card-body {
                 border-radius: 0 0 15px 15px;
-
               }
 
               .card-body,
@@ -198,7 +210,6 @@
                 filter: saturate(0.5) brightness(0.9);
               }
 
-              
               h5 {
                 margin-bottom: 0;
                 position: absolute;
@@ -252,14 +263,13 @@
             display: flex;
             flex-direction: column;
 
-              .remaining {
-                .progress {
-
-                  .progress-bar {
-                    filter: brightness(1.5) saturate(0.3) !important;
-                  }
+            .remaining {
+              .progress {
+                .progress-bar {
+                  filter: brightness(1.5) saturate(0.3) !important;
                 }
               }
+            }
 
             .start-time {
               display: flex;

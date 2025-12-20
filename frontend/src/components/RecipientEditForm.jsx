@@ -3,7 +3,7 @@ import Button from "react-bootstrap/esm/Button";
 import { FaRegTrashCan } from "react-icons/fa6";
 import { CiEdit } from "react-icons/ci";
 import { MdCancelPresentation } from "react-icons/md";
-
+import { LuSave } from "react-icons/lu";
 export default function RecipientEditForm({
   data,
   medicalInfo,
@@ -59,6 +59,9 @@ export default function RecipientEditForm({
     }
   };
 
+  console.log(data);
+  
+
   return (
     <div id="generalSection">
       <h3>Informations générales</h3>
@@ -105,7 +108,7 @@ export default function RecipientEditForm({
           </select>
         </div>
         <Button
-          variant="aqua"
+          variant="edit"
           className="edit-sensible-info"
           onClick={() => setEditionMode(!editionMode)}
         >
@@ -143,7 +146,7 @@ export default function RecipientEditForm({
             );
           })}
           <Button
-            variant="aqua"
+            variant="edit"
             name="add_field"
             onClick={(e) => handleAllergiesField(e)}
           >
@@ -161,6 +164,7 @@ export default function RecipientEditForm({
           ></textarea>
         </div>
       </form>
+      <Button variant="aqua"><LuSave /> Sauvegarder</Button>
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import api from "../api/api";
 import Button from "react-bootstrap/esm/Button";
-import { FaRegTrashAlt } from "react-icons/fa";
+import { LuTrash2 } from "react-icons/lu";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { FaRegSquare } from "react-icons/fa";
@@ -184,11 +184,12 @@ export default function TodoList({ user, space }) {
                   </div>
                 {todo.title}
                 <div className="delete" onClick={() => deleteTodo(index, todo)}>
-                  <FaRegTrashAlt />
+                  <LuTrash2 />
                 </div>
               </div>
             );
           })}
+      </div>
         <form
           id="addTaskForm"
           action=""
@@ -217,9 +218,8 @@ export default function TodoList({ user, space }) {
                 return <option value={category.value}>{category.name}</option>;
               })}
           </select>
-          <Button onClick={(e) => handleSubmit(e)}>Ajouter une tâche</Button>
+          <Button variant="aqua" onClick={(e) => handleSubmit(e)}>Ajouter une tâche</Button>
         </form>
-      </div>
     </div>
   );
 }

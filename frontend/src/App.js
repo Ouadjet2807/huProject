@@ -29,6 +29,7 @@ function App() {
         <Routes>
           <Route path="login" element={<Sign />} />
           <Route path="account" element={<Account />} />
+          <Route path="account/:tab" element={<Account />} />
           <Route
             path="home"
             element={

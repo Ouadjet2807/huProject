@@ -56,7 +56,6 @@
     }
 
     #generalSection {
-
       h3 {
         width: 100%;
       }
@@ -89,7 +88,7 @@
         label {
           margin: 15px 0 5px;
           font-weight: 800;
-          font-size: .875em;
+          font-size: 0.875em;
           color: $greyGreen;
         }
 
@@ -110,7 +109,8 @@
           width: 100%;
           align-items: center;
 
-          label, textarea {
+          label,
+          textarea {
             width: 100%;
           }
 
@@ -140,6 +140,9 @@
     }
 
     #recipientTreatments {
+      h3 {
+        width: 100%;
+      }
       .treatments-list {
         padding: 0;
         height: 40vw;
@@ -302,5 +305,63 @@
         margin: 15px auto;
       }
     }
+
+    #recipientSpecialists {
+      
+      .specialists-container {
+        width: 100%;
+
+        small {
+          text-align: center;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+        }
+      }
+
+      h3 {
+        width: 100%;
+      }
+      button {
+        margin: 1vw auto;
+      }
+    }
   }
 }
+
+.create-specialist-modal {
+        form {
+          .contact-fields {
+            display: flex;
+            flex-direction: column;
+            .address {
+              width: 100%;
+              display: flex;
+              flex-direction: colum n;
+              padding: 5px;
+
+              .address-suggestions {
+                padding: 5px;
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                border: 1px solid $whiteGreen;
+                border-top: none;
+                border-radius: 0 0 5px 5px;
+
+                li {
+                      padding: 0 5px;
+                      display: flex;
+                      align-items: center;
+                      gap: 5px;
+
+                      svg {
+                        color: $mediumGreen2;
+                      }
+                }
+              }
+            }
+          }
+        }
+      }

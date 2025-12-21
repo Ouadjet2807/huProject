@@ -11,7 +11,8 @@ nav {
     width: 100%;
     display: flex;
     flex-direction: column;
-    padding: 15px;
+    align-items: center;
+    padding: 10px 5px;
     gap: 10px;
 
     li {
@@ -21,6 +22,7 @@ nav {
       border-radius: 50%;
       display: flex;
       align-items: center;
+      justify-content: center;
       height: 3vw;
       width: 3vw;
       padding: 10px;

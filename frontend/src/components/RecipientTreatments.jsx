@@ -33,10 +33,6 @@ export default function RecipientTreatments({ formData, space }) {
   const { width, height } = useContext(UseDimensionsContext)
   const [loading, setLoading] = useState(true);
 
-  console.log(selectedMedication);
-  console.log(width);
-  console.log(height);
-
   moment.locale("fr");
 
   const getTreatments = async () => {

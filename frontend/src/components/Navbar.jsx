@@ -119,6 +119,7 @@ export default function Navbar() {
         height: "3vw",
         padding: "10px",
         textAlign: "center",
+        justifyContent: "center",
         borderRadius: "50%",
       });
        gsap.to(".navigation ul li a, .navigation ul li span", {

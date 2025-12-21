@@ -307,7 +307,6 @@
     }
 
     #recipientSpecialists {
-      
       .specialists-container {
         width: 100%;
 
@@ -331,37 +330,93 @@
 }
 
 .create-specialist-modal {
-        form {
-          .contact-fields {
+  form {
+    .field {
+      display: flex;
+      width: 100%;
+
+      label {
+        position: absolute;
+        text-transform: capitalize;
+        margin-left: 3.6vw;
+        color: $greyGreen;
+      }
+
+      input[type="tel"] {
+        padding-left: 7.2vw;
+      }
+
+      svg {
+        position: absolute;
+        margin-left: 1vw;
+        color: $charcoal;
+      }
+
+      input,
+      textarea,
+      label {
+        font-family: $font1;
+      }
+
+      input,
+      textarea {
+        padding-left: 3.5vw;
+        width: 100%;
+      }
+
+      &:not(.textarea) {
+        align-items: center;
+      }
+
+      &.textarea {
+        svg {
+          margin-top: 1vw;
+        }
+      }
+    }
+
+    .contact-fields {
+      display: flex;
+      flex-direction: column;
+      .address {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+
+        label {
+          position: absolute;
+          text-transform: capitalize;
+          margin-left: 3.6vw;
+          color: $greyGreen;
+        }
+
+        input {
+          text-transform: capitalize;
+          z-index: 6;
+          background: transparent;
+        }
+
+        .address-suggestions {
+          padding: 5px;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          border: 1px solid $whiteGreen;
+          border-top: none;
+          border-radius: 0 0 5px 5px;
+
+          li {
+            padding: 0 5px;
             display: flex;
-            flex-direction: column;
-            .address {
-              width: 100%;
-              display: flex;
-              flex-direction: colum n;
-              padding: 5px;
+            align-items: center;
+            gap: 5px;
 
-              .address-suggestions {
-                padding: 5px;
-                display: flex;
-                flex-direction: column;
-                gap: 10px;
-                border: 1px solid $whiteGreen;
-                border-top: none;
-                border-radius: 0 0 5px 5px;
-
-                li {
-                      padding: 0 5px;
-                      display: flex;
-                      align-items: center;
-                      gap: 5px;
-
-                      svg {
-                        color: $mediumGreen2;
-                      }
-                }
-              }
+            svg {
+              color: $greyGreen;
             }
           }
         }
       }
+    }
+  }
+}

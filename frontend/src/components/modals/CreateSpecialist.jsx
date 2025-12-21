@@ -8,7 +8,7 @@ import { HiOutlineLocationMarker } from "react-icons/hi";
 import { RxLetterCaseToggle } from "react-icons/rx";
 import { LuMessageSquareText } from "react-icons/lu";
 import { LuStethoscope } from "react-icons/lu";
-
+import { LuPhone } from "react-icons/lu";
 export default function CreateSpecialist({
   space,
   setRefreshRecipients,
@@ -19,6 +19,10 @@ export default function CreateSpecialist({
   const [addressValue, setAddressValue] = useState();
   const [debouncedValue, setDebouncedValue] = useState();
   const [addressSuggestions, setAddressSuggestions] = useState([]);
+  const [contact, setContact] = useState({
+    address: "",
+    phone_number: "",
+  });
   const [formData, setFormData] = useState({
     name: "",
     speciality: "",
@@ -27,6 +31,29 @@ export default function CreateSpecialist({
     created_at: "",
     space: space.id,
   });
+
+  const handleContact = (e) => {
+    let regex = /^[1-9]\d+$/g;
+
+    let value = e.target.value;
+    let isValid = regex.test(e.target.value);
+    console.log(contact.phone_number.length);
+    console.log(value);
+    console.log(isValid);
+    console.log(value.match(regex));
+    if (e.target.type == "tel" && value.match(regex)) {
+        console.log(value.match(regex));
+      setContact((prev) => ({
+        ...prev,
+        phone_number: e.target.value,
+      }));
+    } else if (contact.phone_number.length <= 1) {
+         setContact((prev) => ({
+        ...prev,
+        phone_number: e.target.value,
+      }));
+    }
+  };
 
   const handleClose = () => {
     setShow(false);
@@ -84,12 +111,13 @@ export default function CreateSpecialist({
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
       setDebouncedValue(addressValue);
-    }, 800);
+    }, 300);
 
     return () => clearTimeout(delayDebounceFn);
   }, [addressValue]);
 
   console.log(formData);
+  console.log(contact);
 
   return (
     <Modal show={show} onHide={handleClose} className="create-specialist-modal">
@@ -111,30 +139,39 @@ export default function CreateSpecialist({
           </div>
           <div className="field">
             <LuStethoscope />
-          <input
-            type="text"
-            name="speciality"
-            id=""
-            placeholder="Spécialité"
-            value={formData.speciality}
-            onChange={(e) => handleChange(e)}
+            <input
+              type="text"
+              name="speciality"
+              id=""
+              placeholder="Spécialité"
+              value={formData.speciality}
+              onChange={(e) => handleChange(e)}
             />
-            </div>
+          </div>
           <div className="contact-fields">
             <label htmlFor="contact">Contact</label>
             <div className="address">
-              <input
-                type="text"
-                name="address"
-                id=""
-                value={addressValue}
-                onChange={(e) => setAddressValue(e.target.value)}
-              />
+              <div className="field">
+                <HiOutlineLocationMarker />
+                <input
+                  type="text"
+                  name="address"
+                  placeholder="Adresse"
+                  id=""
+                  value={addressValue}
+                  onChange={(e) => setAddressValue(e.target.value)}
+                />
+                {addressSuggestions.length > 0 && (
+                  <label className="suggestion" htmlFor="address">
+                    {addressSuggestions[0].fulltext}
+                  </label>
+                )}
+              </div>
               {addressSuggestions.length > 0 && (
                 <ul className="address-suggestions">
                   {addressSuggestions.map((item) => {
                     return (
-                      <li onClick={() => setAddressValue(item.fulltext)}>
+                      <li onClick={() => handleContact(item.fulltext)}>
                         <HiOutlineLocationMarker /> {item.fulltext}
                       </li>
                     );
@@ -142,23 +179,31 @@ export default function CreateSpecialist({
                 </ul>
               )}
             </div>
-            <input
-              type="tel"
-              name="birth_date"
-              id=""
-              value={formData.birth_date}
-              onChange={(e) => handleChange(e)}
-            />
-          </div>
-          <div className="field">
-            <LuMessageSquareText />
-          <textarea
-            name="notes"
-            id=""
-            value={formData.notes}
-            onChange={(e) => handleChange(e)}
-            ></textarea>
+            <div className="field">
+              <LuPhone />
+              <input
+                type="tel"
+                name="phone_number"
+                placeholder="Téléphone"
+                value={contact.phone_number}
+                maxLength={10}
+                id=""
+                onChange={(e) => handleContact(e)}
+                // onKeyDown={(e) => handleContact(e)}
+              />
+              <label htmlFor="phone_number">+ 33</label>
             </div>
+          </div>
+          <div className="field textarea">
+            <LuMessageSquareText />
+            <textarea
+              name="notes"
+              placeholder="Notes"
+              id=""
+              value={formData.notes}
+              onChange={(e) => handleChange(e)}
+            ></textarea>
+          </div>
         </form>
       </Modal.Body>
       <Modal.Footer>

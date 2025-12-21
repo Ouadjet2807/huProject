@@ -44,7 +44,7 @@ export default function Specialists() {
               </div>
             })
             :
-            <small style={{textAlign: 'center', width: '100%', display: 'block'}}><FaUserMd /> Aucun spécialiste</small>
+            <small style={{textAlign: 'center', width: '100%', display: 'flex'}}><FaUserMd /> Aucun spécialiste</small>
           }
         </div>
 

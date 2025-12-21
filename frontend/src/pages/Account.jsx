@@ -43,6 +43,14 @@ export default function () {
   }, [activeTab]);
 
   useEffect(() => {
+
+    let pathname = window.location.pathname.replace("/", '').split("/")
+    
+    if(pathname.length > 1) {
+      setActiveTab(pathname[1])
+      return
+    }
+    
     let storage = sessionStorage.getItem("tab");
     
     if (storage == "") {
@@ -52,7 +60,7 @@ export default function () {
 
     setActiveTab(storage);
 
-  });
+  }, []);
   
   return (
     <div id="account">

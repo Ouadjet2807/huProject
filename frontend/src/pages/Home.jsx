@@ -59,9 +59,9 @@ export default function Home({ setRefreshRecipients, space }) {
                         <div className="icon">
                           <FaUserCircle />
                         </div>
-                        <strong>
+                        <span>
                           {item.first_name} {item.last_name}
-                        </strong>
+                        </span>
                       </span>
                     </div>
                   );
@@ -78,16 +78,15 @@ export default function Home({ setRefreshRecipients, space }) {
                 space.caregivers.map((item) => {
                   return (
                     <div
-                      className="recipient"
-                      onClick={() => navigate(`/caregivers/${item.id}`)}
+                      className="caregiver" onClick={() => navigate(`/account/space`)}
                     >
                       <span>
                         <div className="icon">
                           <FaUserCircle />
                         </div>
-                        <strong>
+                        <span>
                           {item.first_name} {item.last_name}
-                        </strong>
+                        </span>
                       </span>
                     </div>
                   );

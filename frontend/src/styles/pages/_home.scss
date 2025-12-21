@@ -4,13 +4,14 @@
     padding: 2vw;
     display: grid;
     grid-template-columns: 40% 60%;
+    justify-items: center;
 
     .right-tab {
-      background: linear-gradient(
-142deg, $aquaOpac, $green);
+      background: linear-gradient(142deg, #abd1c685, #004643a6);
       padding: 45px;
       height: 100%;
       width: max-content;
+      border: 1px solid #004643;
       border-radius: $borderRadius;
     }
 
@@ -26,33 +27,37 @@
 
     .left-tab {
       padding: 0 2vw 0 0;
+      width: 100%;
 
-      .recipients {
-        background: $green;
+      .box {
         border-radius: $borderRadius;
         padding: 20px;
-        margin: 5vw auto;
+        margin: 1vw auto;
         display: flex;
         flex-direction: column;
         gap: 10px;
+
+        button {
+          margin: 1px auto;
+        }
 
         h3 {
           margin: 0;
           color: $white;
         }
 
-        .recipient {
-          width: 90%;
+        > div {
           height: 3vw;
-          background: $white;
+          background: rgba(255, 255, 255, 0.8);
           border-radius: $borderRadius;
           color: $green;
-          padding: 5px 15px;
+          padding: 5px;
           display: flex;
           align-items: center;
+          cursor: pointer;
 
           span {
-            gap: 10px;
+            gap: 5px;
             display: flex;
             align-items: center;
             text-transform: capitalize;
@@ -62,9 +67,29 @@
             }
           }
         }
-      }
 
-      
+        &.recipients {
+          background: #00464380;
+          border: 1px solid $green;
+
+          .recipient {
+            svg {
+              color: #00464380;
+            }
+          }
+        }
+
+        &.caregivers {
+          background: #1182684d;
+          border: 1px solid $mediumGreen2;
+
+          .caregiver {
+            svg {
+              color: #1182684d;
+            }
+          }
+        }
+      }
     }
   }
 }

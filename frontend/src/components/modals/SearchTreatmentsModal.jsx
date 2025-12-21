@@ -102,7 +102,6 @@ export default function SearchTreatmentsModal({
               name="search_treatment"
               id=""
               defaultValue={debouncedValue}
-              // value={debouncedValue}
               placeholder="Rechercher un traitement"
               onChange={(e) => setInputValue(e.target.value)}
             />

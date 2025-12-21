@@ -10,7 +10,6 @@ export default function RecipientEditForm({
   setMedicalInfo,
 }) {
   const [editionMode, setEditionMode] = useState(false);
-  const [allergieFieldCount, setAllergieFieldCount] = useState(1);
 
   const genderChoices = [
     { name: "Femme", value: "F" },

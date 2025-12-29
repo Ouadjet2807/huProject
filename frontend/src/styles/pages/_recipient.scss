@@ -331,6 +331,10 @@
 
 .create-specialist-modal {
   form {
+    gap: 10px;
+    display: flex;
+    flex-direction: column;
+
     .field {
       display: flex;
       width: 100%;
@@ -338,12 +342,12 @@
       label {
         position: absolute;
         text-transform: capitalize;
-        margin-left: 3.6vw;
+        margin-left: 2.9vw;
         color: $greyGreen;
       }
 
       input[type="tel"] {
-        padding-left: 7.2vw;
+        padding-left: 5.5vw;
       }
 
       svg {
@@ -360,7 +364,7 @@
 
       input,
       textarea {
-        padding-left: 3.5vw;
+        padding-left: 2.8vw;
         width: 100%;
       }
 
@@ -370,7 +374,7 @@
 
       &.textarea {
         svg {
-          margin-top: 1vw;
+          margin-top: .8vw;
         }
       }
     }
@@ -386,7 +390,7 @@
         label {
           position: absolute;
           text-transform: capitalize;
-          margin-left: 3.6vw;
+          margin-left: 2.9vw;
           color: $greyGreen;
         }
 

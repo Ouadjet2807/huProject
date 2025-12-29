@@ -16,7 +16,7 @@ export default function CreateSpecialist({
   setShow,
 }) {
   const { user } = useContext(AuthContext);
-  const [addressValue, setAddressValue] = useState();
+  const [placeholderSuggestion, setPlaceholderSuggestion] = useState();
   const [debouncedValue, setDebouncedValue] = useState();
   const [addressSuggestions, setAddressSuggestions] = useState([]);
   const [contact, setContact] = useState({
@@ -111,7 +111,10 @@ export default function CreateSpecialist({
   useEffect(() => {
     let addressValue = contact.address
 
-    console.log(addressSuggestions.find(e => e.fulltext.toUpperCase() === addressValue.toUpperCase())); 
+    if(addressSuggestions.some(e => e.fulltext.toUpperCase() === addressValue.toUpperCase())) {
+        setAddressSuggestions([])
+        return
+    }
 
     const delayDebounceFn = setTimeout(() => {
       setDebouncedValue(addressValue);
@@ -119,6 +122,17 @@ export default function CreateSpecialist({
 
     return () => clearTimeout(delayDebounceFn);
   }, [contact.address]);
+
+  useEffect(() => {
+    if(!addressSuggestions || addressSuggestions.length <= 0) return
+
+    let placeholder = addressSuggestions.find(e => e.fulltext.toUpperCase().includes(contact.address.toUpperCase()))
+    console.log(placeholder);
+
+    if(!placeholder) return
+    
+    setPlaceholderSuggestion(placeholder.fulltext)
+  }, [addressSuggestions, contact.address])
 
 
   console.log(formData);
@@ -167,9 +181,9 @@ export default function CreateSpecialist({
                   value={contact.address}
                   onChange={(e) => setContact(prev => ({...prev, address: e.target.value}))}
                 />
-                {addressSuggestions && addressSuggestions.length > 0 && (
+                {placeholderSuggestion && (
                   <label className="suggestion" htmlFor="address">
-                    {addressSuggestions[0].fulltext}
+                    {placeholderSuggestion}
                   </label>
                 )}
               </div>

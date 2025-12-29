@@ -58,7 +58,7 @@ export default function Specialists() {
         className="add-treatment-btn"
         onClick={() => setShowAddSpecialist(true)}
       >
-        <FaUserMd /> Ajouter un specialists
+        <FaUserMd /> Ajouter un specialiste
       </Button>
     </div>
   )

@@ -32,25 +32,22 @@ export default function CreateSpecialist({
     space: space.id,
   });
 
-  const handleContact = (e) => {
-    let regex = /^[1-9]\d+$/g;
+
+  const handleTelField = (e) => {
+    let regex = /^[^0]\d*$/g;
 
     let value = e.target.value;
     let isValid = regex.test(e.target.value);
-    console.log(contact.phone_number.length);
-    console.log(value);
-    console.log(isValid);
-    console.log(value.match(regex));
-    if (e.target.type == "tel" && value.match(regex)) {
-        console.log(value.match(regex));
+
+    if(isValid) {
       setContact((prev) => ({
         ...prev,
-        phone_number: e.target.value,
+        phone_number: value.match(regex)[0]
       }));
-    } else if (contact.phone_number.length <= 1) {
-         setContact((prev) => ({
+    } else if (value == '') {
+        setContact((prev) => ({
         ...prev,
-        phone_number: e.target.value,
+        phone_number: value
       }));
     }
   };
@@ -93,7 +90,10 @@ export default function CreateSpecialist({
 
   useEffect(() => {
     const getAddressSuggestions = async () => {
-      if (!debouncedValue) return;
+      if (!debouncedValue || debouncedValue === "") {
+        setAddressSuggestions([]);
+        return;
+      }
 
       try {
         const res = await axios.get(
@@ -109,15 +109,21 @@ export default function CreateSpecialist({
   }, [debouncedValue]);
 
   useEffect(() => {
+    let addressValue = contact.address
+
+    console.log(addressSuggestions.find(e => e.fulltext.toUpperCase() === addressValue.toUpperCase())); 
+
     const delayDebounceFn = setTimeout(() => {
       setDebouncedValue(addressValue);
     }, 300);
 
     return () => clearTimeout(delayDebounceFn);
-  }, [addressValue]);
+  }, [contact.address]);
+
 
   console.log(formData);
   console.log(contact);
+  console.log(addressSuggestions);
 
   return (
     <Modal show={show} onHide={handleClose} className="create-specialist-modal">
@@ -158,20 +164,20 @@ export default function CreateSpecialist({
                   name="address"
                   placeholder="Adresse"
                   id=""
-                  value={addressValue}
-                  onChange={(e) => setAddressValue(e.target.value)}
+                  value={contact.address}
+                  onChange={(e) => setContact(prev => ({...prev, address: e.target.value}))}
                 />
-                {addressSuggestions.length > 0 && (
+                {addressSuggestions && addressSuggestions.length > 0 && (
                   <label className="suggestion" htmlFor="address">
                     {addressSuggestions[0].fulltext}
                   </label>
                 )}
               </div>
-              {addressSuggestions.length > 0 && (
+              {addressSuggestions && addressSuggestions.length > 0 && (
                 <ul className="address-suggestions">
                   {addressSuggestions.map((item) => {
                     return (
-                      <li onClick={() => handleContact(item.fulltext)}>
+                      <li onClick={() => setContact(prev => ({...prev, address: item.fulltext}))}>
                         <HiOutlineLocationMarker /> {item.fulltext}
                       </li>
                     );
@@ -186,10 +192,9 @@ export default function CreateSpecialist({
                 name="phone_number"
                 placeholder="Téléphone"
                 value={contact.phone_number}
-                maxLength={10}
+                maxLength={9}
                 id=""
-                onChange={(e) => handleContact(e)}
-                // onKeyDown={(e) => handleContact(e)}
+                onChange={(e) => handleTelField(e)}
               />
               <label htmlFor="phone_number">+ 33</label>
             </div>

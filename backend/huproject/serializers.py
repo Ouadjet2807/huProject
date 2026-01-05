@@ -86,7 +86,7 @@ class CaregiverSerializer(serializers.ModelSerializer):
 class HealthcareProfessionalSerializer(serializers.ModelSerializer):
     class Meta:
         model = HealthcareProfessional
-        fields = ('id','name','specialty','contact','notes')
+        fields = ('id','name','specialty','contact','notes', 'space')
 
 class TreatmentSerializer(serializers.ModelSerializer):
     prescribed_by = HealthcareProfessionalSerializer(read_only=True)

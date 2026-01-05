@@ -6,8 +6,11 @@ import RecipientEditForm from "../components/RecipientEditForm";
 import RecipientTreatments from "../components/RecipientTreatments";
 import Specialists from "../components/Specialists";
 import Loader from "../components/Loader";
+import moment from "moment";
+import { locale } from "moment";
 
-export default function Recipient({spaceId}) {
+export default function Recipient({ spaceId }) {
+  moment.locale("fr");
   const [recipient, setRecipient] = useState({});
 
   const [activeTab, setActiveTab] = useState("general");
@@ -27,12 +30,9 @@ export default function Recipient({spaceId}) {
     space_id: "",
   });
 
-  const today = new Date();
-
   const params = useParams();
 
   const recipient_id = params.id;
-
 
   const handleTab = (e) => {
     if (e.target.id) {
@@ -42,11 +42,10 @@ export default function Recipient({spaceId}) {
 
   const getAge = () => {
     if (Object.keys(recipient).includes("birth_date")) {
-      const birth_date = new Date(recipient.birth_date);
+      const birth_date = moment(recipient.birth_date);
 
-      console.log(birth_date);
-
-      const age = today.getFullYear() - birth_date.getFullYear();
+      const today = moment()
+      const age = today.diff(birth_date, 'years')
 
       return age;
     }
@@ -65,7 +64,9 @@ export default function Recipient({spaceId}) {
         );
       case "treatments":
         console.log("treatments tab");
-        return <RecipientTreatments formData={formData} setFormData={setFormData}/>;
+        return (
+          <RecipientTreatments formData={formData} setFormData={setFormData} />
+        );
 
       case "specialists":
         return <Specialists />;
@@ -117,22 +118,33 @@ export default function Recipient({spaceId}) {
     <div id="recipient">
       {Object.keys(recipient).includes("first_name") ? (
         <div className="recipient-container">
-
           <div className="recipient-left-tab">
-          <div style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
-            <h2>
-            {recipient.first_name} {recipient.last_name} -{" "}
-            </h2>
-            <span>{getAge()} ans</span>
-          </div>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              <h2>
+                {recipient.first_name} {recipient.last_name} -{" "}
+              </h2>
+              <span>{getAge()} ans</span>
+            </div>
             <ul>
-              <li id="general" className={activeTab === "general" ? "active" : ""} onClick={(e) => handleTab(e)}>
+              <li
+                id="general"
+                className={activeTab === "general" ? "active" : ""}
+                onClick={(e) => handleTab(e)}
+              >
                 Information génerales
               </li>
-              <li id="treatments" className={activeTab === "treatments" ? "active" : ""} onClick={(e) => handleTab(e)}>
+              <li
+                id="treatments"
+                className={activeTab === "treatments" ? "active" : ""}
+                onClick={(e) => handleTab(e)}
+              >
                 Traitements
               </li>
-              <li id="specialists" className={activeTab === "specialists" ? "active" : ""} onClick={(e) => handleTab(e)}>
+              <li
+                id="specialists"
+                className={activeTab === "specialists" ? "active" : ""}
+                onClick={(e) => handleTab(e)}
+              >
                 Spécialiste
               </li>
             </ul>

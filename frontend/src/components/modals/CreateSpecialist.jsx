@@ -9,6 +9,9 @@ import { RxLetterCaseToggle } from "react-icons/rx";
 import { LuMessageSquareText } from "react-icons/lu";
 import { LuStethoscope } from "react-icons/lu";
 import { LuPhone } from "react-icons/lu";
+import { TiContacts } from "react-icons/ti";
+import { FaUserMd } from "react-icons/fa";
+
 export default function CreateSpecialist({
   space,
   setRefreshRecipients,
@@ -25,26 +28,31 @@ export default function CreateSpecialist({
   });
   const [formData, setFormData] = useState({
     name: "",
-    speciality: "",
+    specialty: "",
     contact: "",
     notes: "",
-    created_at: "",
-    space: space.id,
+    space: "",
   });
 
 
   const handleTelField = (e) => {
-    let regex = /^[^0]\d*$/g;
+      if(/^[A-Z]$/gi.test(e.target.value)) return
 
-    let value = e.target.value;
-    let isValid = regex.test(e.target.value);
+      let regex = /^[^0][^A-Z]*\d*$/gi;
+
+      let value = e.target.value;
+      let isValid = regex.test(e.target.value);
+      console.log(isValid);
+
+      console.log(value.match(regex));
 
     if(isValid) {
       setContact((prev) => ({
         ...prev,
-        phone_number: value.match(regex)[0]
+        phone_number: value.match(regex)
       }));
-    } else if (value == '') {
+    } else if (value === '') {
+
         setContact((prev) => ({
         ...prev,
         phone_number: value
@@ -66,9 +74,13 @@ export default function CreateSpecialist({
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    console.log(formData);
+
+    if(!formData.space) return
+    
     try {
       const response = await api.post(
-        "http://127.0.0.1:8000/api/healthcare_professionnals/",
+        "http://127.0.0.1:8000/api/healthcare_professionals/",
         formData
       );
       console.log("Success!", response.data);
@@ -86,7 +98,7 @@ export default function CreateSpecialist({
       ...prev,
       space: space.id,
     }));
-  }, []);
+  }, [space]);
 
   useEffect(() => {
     const getAddressSuggestions = async () => {
@@ -109,9 +121,10 @@ export default function CreateSpecialist({
   }, [debouncedValue]);
 
   useEffect(() => {
+
     let addressValue = contact.address
 
-    if(addressSuggestions.some(e => e.fulltext.toUpperCase() === addressValue.toUpperCase())) {
+    if(addressSuggestions && addressSuggestions.some(e => e.fulltext.toUpperCase() === addressValue.toUpperCase())) {
         setAddressSuggestions([])
         return
     }
@@ -127,12 +140,18 @@ export default function CreateSpecialist({
     if(!addressSuggestions || addressSuggestions.length <= 0) return
 
     let placeholder = addressSuggestions.find(e => e.fulltext.toUpperCase().includes(contact.address.toUpperCase()))
-    console.log(placeholder);
 
     if(!placeholder) return
     
     setPlaceholderSuggestion(placeholder.fulltext)
   }, [addressSuggestions, contact.address])
+
+  useEffect(() => {
+       setFormData(prev => ({
+      ...prev, 
+      contact: JSON.stringify(contact)
+    }))
+  }, [contact])
 
 
   console.log(formData);
@@ -142,7 +161,7 @@ export default function CreateSpecialist({
   return (
     <Modal show={show} onHide={handleClose} className="create-specialist-modal">
       <Modal.Header closeButton>
-        <Modal.Title>Ajouter un professionel de santé</Modal.Title>
+        <Modal.Title><FaUserMd /> Ajouter un professionel de santé</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <form action="" method="post">
@@ -161,15 +180,15 @@ export default function CreateSpecialist({
             <LuStethoscope />
             <input
               type="text"
-              name="speciality"
+              name="specialty"
               id=""
               placeholder="Spécialité"
-              value={formData.speciality}
+              value={formData.specialty}
               onChange={(e) => handleChange(e)}
             />
           </div>
+            <label htmlFor="contact" className="contact-label"><TiContacts/> Contact</label>
           <div className="contact-fields">
-            <label htmlFor="contact">Contact</label>
             <div className="address">
               <div className="field">
                 <HiOutlineLocationMarker />
@@ -183,7 +202,7 @@ export default function CreateSpecialist({
                 />
                 {placeholderSuggestion && (
                   <label className="suggestion" htmlFor="address">
-                    {placeholderSuggestion}
+                  {placeholderSuggestion}
                   </label>
                 )}
               </div>

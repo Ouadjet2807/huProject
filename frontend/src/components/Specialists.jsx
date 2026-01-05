@@ -16,7 +16,7 @@ export default function Specialists() {
 
   const getSpecialists = async () => {
     try {
-      const res = await api.get("http://127.0.0.1:8000/api/healthcare_professional/")
+      const res = await api.get("http://127.0.0.1:8000/api/healthcare_professionals/")
       setSpecialists(res.data)
       setLoading(false)
     } catch (error) {

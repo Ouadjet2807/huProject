@@ -309,13 +309,60 @@
     #recipientSpecialists {
       .specialists-container {
         width: 100%;
+        display: grid;
+        grid-template-columns: 33% 33% 33%;
+        gap: 20px;
+        height: 100%;
+        align-items: start;
+        padding: 20px 0;
 
         small {
-          text-align: center;
           display: flex;
           align-items: center;
-          justify-content: center;
           gap: 10px;
+        }
+
+        .specialist {
+          display: grid;
+          grid-template-columns: 25% 71%;
+          align-items: center;
+          gap: 10px;
+          border: 1px solid $whiteGreen;
+          border-radius: $borderRadius;
+          box-shadow: 5px 4px 8px 1px #e0e8e57d;
+          cursor: pointer;
+          
+          .icon {
+            width: 100%;
+            height: 100%;
+            border-right: 1px solid $whiteGreen;
+            display: flex;
+            align-items: center;
+
+            svg {
+              color: $whiteGreen;
+              font-size: 8vw;
+              padding: 20px;
+            }
+          }
+
+          .info {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            padding: 10px 0;
+
+            span {
+              display: flex;
+              align-items: center;
+              gap: 10px;
+              
+
+              svg {
+                color: $greyGreen;
+              }
+            }
+          }
         }
       }
 
@@ -330,7 +377,6 @@
 }
 
 .create-specialist-modal {
-
   .modal-title {
     display: flex;
     align-items: center;
@@ -383,11 +429,11 @@
         margin-top: 1vw;
 
         svg {
-          margin-top: .8vw;
+          margin-top: 0.8vw;
         }
       }
     }
-    
+
     .contact-label {
       font-weight: 600;
       display: flex;
@@ -431,7 +477,7 @@
         }
 
         .address-suggestions {
-          padding: .7vw;
+          padding: 0.7vw;
           display: flex;
           flex-direction: column;
           gap: 10px;

@@ -87,7 +87,6 @@ export default function CreateSpecialist({
       let update_recipient = recipient
       
       update_recipient.healthcare_professionals.push(response.data.id)
-      update_recipient.space_id = space.id
 
       console.log(update_recipient);
       

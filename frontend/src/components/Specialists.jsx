@@ -47,7 +47,7 @@ export default function Specialists({recipient}) {
 
   const getSpecialists = async () => {
     try {
-      const res = await api.get("http://127.0.0.1:8000/api/healthcare_professionals/")
+      const res = await api.get(`http://127.0.0.1:8000/api/healthcare_professionals/?recipient=${recipient.id}`)
 
       const formatted_data = formatSpecialist(res.data)
       setSpecialists(formatted_data)

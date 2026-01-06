@@ -446,6 +446,11 @@ class TreatmentViewSet(viewsets.ModelViewSet):
         if not user or not hasattr(user, 'caregiver'):
             return Treatment.objects.none()
 
+        if self.request.GET.get('recipient'):
+            recipient_id = self.request.GET.get('recipient')
+
+            return Recipient.objects.get(id=recipient_id).treatments
+
         caregiver = user.caregiver
 
         return Treatment.objects.filter(space__in=caregiver.spaces.all()).select_related('space')
@@ -491,9 +496,14 @@ class HealthcareProfessionalViewSet(viewsets.ModelViewSet):
         if not user or not hasattr(user, 'caregiver'):
             return HealthcareProfessional.objects.none()
         
+        if self.request.GET.get('recipient'):
+            recipient_id = self.request.GET.get('recipient')
+
+            return Recipient.objects.get(id=recipient_id).healthcare_professionals
+
         caregiver = user.caregiver
 
-        return HealthcareProfessional.objects.filter(space__in=caregiver.spaces.all()).select_related('space')
+        return Caregiver.objects.filter(space__in=caregiver.spaces.all()).select_related('space')
 
     def perform_create(self, serializer):
-        serializer.save() 
+        serializer.save()

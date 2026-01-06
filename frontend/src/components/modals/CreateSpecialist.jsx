@@ -14,9 +14,9 @@ import { FaUserMd } from "react-icons/fa";
 
 export default function CreateSpecialist({
   space,
-  setRefreshRecipients,
   show,
   setShow,
+  recipient
 }) {
   const { user } = useContext(AuthContext);
   const [placeholderSuggestion, setPlaceholderSuggestion] = useState();
@@ -83,8 +83,17 @@ export default function CreateSpecialist({
         "http://127.0.0.1:8000/api/healthcare_professionals/",
         formData
       );
+
+      let update_recipient = recipient
+      
+      update_recipient.healthcare_professionals.push(response.data.id)
+      update_recipient.space_id = space.id
+
+      console.log(update_recipient);
+      
+      await api.put(`http://127.0.0.1:8000/api/recipients/${recipient.id}/`, update_recipient)
       console.log("Success!", response.data);
-      setRefreshRecipients(true);
+
       handleClose();
     } catch (error) {
       console.log(error);
@@ -157,7 +166,8 @@ export default function CreateSpecialist({
   console.log(formData);
   console.log(contact);
   console.log(addressSuggestions);
-
+  console.log(recipient);
+  
   return (
     <Modal show={show} onHide={handleClose} className="create-specialist-modal">
       <Modal.Header closeButton>

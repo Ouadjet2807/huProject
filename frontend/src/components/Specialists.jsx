@@ -8,7 +8,7 @@ import { AuthContext } from '../context/AuthContext';
 import { LuPhone } from "react-icons/lu";
 import { HiOutlineLocationMarker } from "react-icons/hi";
 
-export default function Specialists() {
+export default function Specialists({recipient}) {
 
   const [specialists, setSpecialists] = useState([])
   const [loading, setLoading] = useState(true)
@@ -69,11 +69,11 @@ export default function Specialists() {
 
   return (
     <div id="recipientSpecialists">
-      <CreateSpecialist show={showAddSpecialist} setShow={setShowAddSpecialist} space={space}/>
+      <CreateSpecialist show={showAddSpecialist} setShow={setShowAddSpecialist} space={space} recipient={recipient}/>
       <h3>Spécialistes de la santé</h3>
       {!loading ?
 
-        <div className="specialists-container">
+        <div className="specialists-container" style={{alignItems: specialists.length <= 0 ? 'center' : 'start'}}>
           {specialists.length > 0 ?
 
             specialists.map(item => {
@@ -90,7 +90,7 @@ export default function Specialists() {
               </div>)
             })
             :
-            <small style={{textAlign: 'center', width: '100%', display: 'flex'}}><FaUserMd /> Aucun spécialiste</small>
+            <small style={{textAlign: 'center', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gridColumn: '2'}}><FaUserMd /> Aucun spécialiste</small>
           }
         </div>
 

@@ -105,14 +105,10 @@ class TreatmentSerializer(serializers.ModelSerializer):
 class RecipientSerializer(serializers.ModelSerializer):
     space_id = serializers.UUIDField(write_only=True)
     medical_info = serializers.JSONField(required=False)
-    treatments = TreatmentSerializer(many=True, read_only=True)
-    treatments_ids = serializers.PrimaryKeyRelatedField(queryset=Treatment.objects.all(), many=True, write_only=True, required=False)
-    healthcare_professionals = HealthcareProfessionalSerializer(many=True, read_only=True)
-    healthcare_professionals_ids = serializers.PrimaryKeyRelatedField(queryset=HealthcareProfessional.objects.all(), many=True, write_only=True, required=False)
-
+    
     class Meta:
         model = Recipient
-        fields = ('id', 'gender', 'first_name', 'last_name', 'birth_date', 'medical_info', 'space_id', 'treatments','treatments_ids','healthcare_professionals','healthcare_professionals_ids')
+        fields = ('id', 'gender', 'first_name', 'last_name', 'birth_date', 'medical_info', 'space_id', 'treatments','healthcare_professionals')
         read_only_fields = ('id',)
 
 
@@ -126,8 +122,8 @@ class RecipientSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         caregivers = validated_data.pop('caregivers', [])
         recipient = Recipient.objects.create(**validated_data)
-        treatments = validated_data.pop('treatments_ids', [])
-        professionals = validated_data.pop('professionals_ids', [])
+        treatments = validated_data.pop('treatments', [])
+        professionals = validated_data.pop('healthcare_professionals', [])
         recipient = super().create(validated_data)
         if treatments:
             recipient.treatments.set(treatments)
@@ -138,9 +134,11 @@ class RecipientSerializer(serializers.ModelSerializer):
         return recipient
 
     def update(self, instance, validated_data):
+        print(self)
         caregivers = validated_data.pop('caregivers', None)
-        treatments = validated_data.pop('treatments_ids', None)
-        professionals = validated_data.pop('professionals_ids', None)
+        treatments = validated_data.pop('treatments', None)
+        professionals = validated_data.pop('healthcare_professionals', None)
+        print(professionals)
         instance = super().update(instance, validated_data)
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
@@ -150,7 +148,7 @@ class RecipientSerializer(serializers.ModelSerializer):
         if treatments is not None:
             instance.treatments.set(treatments)
         if professionals is not None:
-            instance.professionals.set(professionals)
+            instance.healthcare_professionals.set(professionals)
         return instance
 
 class SpaceSerializer(serializers.ModelSerializer):

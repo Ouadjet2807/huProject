@@ -23,21 +23,22 @@ import moment from "moment";
 import "moment/locale/fr";
 import { UseDimensionsContext } from "../context/UseDimensionsContext";
 
-
-export default function RecipientTreatments({ formData, space }) {
+export default function RecipientTreatments({ formData, space, recipient }) {
   const [showAddTreatment, setShowAddTreatement] = useState(false);
   const [showMedicationDetails, setShowMedicationDetails] = useState(false);
   const [selectedMedication, setSelectedMedication] = useState({});
   const [treatments, setTreatments] = useState([]);
 
-  const { width, height } = useContext(UseDimensionsContext)
+  const { width, height } = useContext(UseDimensionsContext);
   const [loading, setLoading] = useState(true);
 
   moment.locale("fr");
 
   const getTreatments = async () => {
     try {
-      const response = await api.get("http://127.0.0.1:8000/api/treatments");
+      const response = await api.get(
+        `http://127.0.0.1:8000/api/treatments/?recipient=${recipient.id}`
+      );
       console.log("Success", response.data);
       setTreatments(response.data);
       setLoading(false);
@@ -178,8 +179,7 @@ export default function RecipientTreatments({ formData, space }) {
   const renderTreatmentsList = () => {
     if (!treatments || treatments.length == 0) return;
 
-    let breakPoints =
-      width > 1200 ? 3 : width > 800 ? 2 : 1;
+    let breakPoints = width > 1200 ? 3 : width > 800 ? 2 : 1;
 
     console.log(breakPoints);
 
@@ -321,6 +321,7 @@ export default function RecipientTreatments({ formData, space }) {
         setSelectedMedication={setSelectedMedication}
       />
       <MedicationDetailsModal
+        recipient={recipient}
         setShow={setShowMedicationDetails}
         showAddTreatmentModal={setShowAddTreatement}
         show={showMedicationDetails}

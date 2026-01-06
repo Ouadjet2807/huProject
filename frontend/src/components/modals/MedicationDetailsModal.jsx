@@ -14,6 +14,7 @@ export default function MedicationDetailsModal({
   show,
   setShow,
   medication,
+  recipient,
   setMedication,
   showAddTreatmentModal,
 }) {
@@ -302,8 +303,11 @@ export default function MedicationDetailsModal({
       };
       console.log(data);
 
-      await api.post("http://127.0.0.1:8000/api/treatments/", data);
+      const response = await api.post("http://127.0.0.1:8000/api/treatments/", data);
       console.log("Success");
+      recipient.treatments.push(response.data.id)
+
+      await api.put(`http://127.0.0.1:8000/api/recipients/${recipient.id}/`, recipient)
       handleClose();
     } catch (error) {
       console.log(error);

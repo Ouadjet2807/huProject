@@ -110,9 +110,12 @@ export default function Recipient({ spaceId }) {
     }));
   }, [medicalInfo]);
 
-  console.log(recipient);
-  console.log(formData);
-  console.log(medicalInfo.allergies.length);
+  useEffect(() => {
+    if(!Object.keys(recipient).includes('space_id')) {
+      recipient.space_id = spaceId
+    }
+  }, [recipient])
+
 
   return (
     <div id="recipient">

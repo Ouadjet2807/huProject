@@ -65,11 +65,11 @@ export default function Recipient({ spaceId }) {
       case "treatments":
         console.log("treatments tab");
         return (
-          <RecipientTreatments formData={formData} setFormData={setFormData} />
+          <RecipientTreatments formData={formData} setFormData={setFormData} recipient={recipient}/>
         );
 
       case "specialists":
-        return <Specialists />;
+        return <Specialists recipient={recipient} />;
 
       default:
         return <RecipientEditForm />;

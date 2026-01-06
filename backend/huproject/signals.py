@@ -121,9 +121,10 @@ def create_caregiver_space(sender, instance, created, **kwargs):
         logger.exception(f"Failed to create Space/membership for caregiver {instance!s}: {e}")
 
 
+
 @receiver(pre_save, sender=Caregiver)
 def update_membership(sender, instance, **kwargs):
-    
+
     membership = SpaceMembership.objects.get(user=instance.user)
 
     try:
@@ -154,7 +155,6 @@ def update_caregiver_profile(sender, instance, **kwargs):
         caregiver.save()
     except Exception as e:
         raise ValidationError("Echec de la modification de l'objet Caregiver")
-    
 
 @receiver(post_save, sender=User)
 def create_caregiver_profile(sender, instance, created, **kwargs):

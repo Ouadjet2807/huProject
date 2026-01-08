@@ -314,7 +314,12 @@ export default function RecipientTreatments({ formData, space, recipient }) {
   }, [width]);
 
   return (
-    <div id="recipientTreatments">
+    <div
+      id="recipientTreatments"
+      style={{
+        alignItems: !loading ? "flex-end" : "center",
+      }}
+    >
       <SearchTreatmentsModal
         setShow={setShowAddTreatement}
         show={showAddTreatment}

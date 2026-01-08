@@ -1,14 +1,19 @@
 import React, { useEffect, useRef, useState } from "react";
 import Button from "react-bootstrap/esm/Button";
 import Modal from "react-bootstrap/Modal";
+import Dropdown from "react-bootstrap/Dropdown";
+import DropdownButton from "react-bootstrap/DropdownButton";
+import Form from "react-bootstrap/Form";
+import InputGroup from "react-bootstrap/InputGroup";
 import api from "../../api/api";
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
-import { BsFillSunriseFill } from "react-icons/bs";
-import { BsFillSunsetFill } from "react-icons/bs";
-import { BsSunFill } from "react-icons/bs";
+import { FiSunrise } from "react-icons/fi";
+import { FiSunset } from "react-icons/fi";
+import { FiSun } from "react-icons/fi";
 import moment from "moment";
 import "moment/locale/fr";
+import { LuPillBottle } from "react-icons/lu";
 
 export default function MedicationDetailsModal({
   show,
@@ -25,6 +30,7 @@ export default function MedicationDetailsModal({
   const [dayTime, setDayTime] = useState([]);
   const [presentation, setPresentation] = useState([]);
   const [freeTake, setFreeTake] = useState(false);
+  const [prescriptorsOptions, setPrescriptorsOptions] = useState([]);
   const [formData, setFormData] = useState({
     name: "",
     dosage: "",
@@ -289,6 +295,12 @@ export default function MedicationDetailsModal({
       formData.number_of_boxes
     );
 
+    const freeTakeData = {
+    intake_time_range: [""],
+    intake_frequency: "free",
+    intake_number: 0,
+   }
+
     try {
       let data = {
         name: formData.name,
@@ -297,18 +309,36 @@ export default function MedicationDetailsModal({
         notes: "",
         space: formData.space,
         quantity: formData.quantity_per_box,
-        frequency: formData.frequency,
+        frequency: freeTake ? freeTakeData : formData.frequency,
         start_date: formattedStartDate,
         end_date: formattedEndDate,
       };
       console.log(data);
 
-      const response = await api.post("http://127.0.0.1:8000/api/treatments/", data);
+      const response = await api.post(
+        "http://127.0.0.1:8000/api/treatments/",
+        data
+      );
       console.log("Success");
-      recipient.treatments.push(response.data.id)
+      recipient.treatments.push(response.data.id);
 
-      await api.put(`http://127.0.0.1:8000/api/recipients/${recipient.id}/`, recipient)
+      await api.put(
+        `http://127.0.0.1:8000/api/recipients/${recipient.id}/`,
+        recipient
+      );
       handleClose();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getPrescriptors = async () => {
+    try {
+      const res = await api.get(
+        `http://127.0.0.1:8000/api/healthcare_professionals/?recipient=${recipient.id}`
+      );
+      console.log(res.data);
+      setPrescriptorsOptions(res.data);
     } catch (error) {
       console.log(error);
     }
@@ -390,9 +420,18 @@ export default function MedicationDetailsModal({
   console.log(presentation);
   console.log(formData);
 
+  useEffect(() => {
+    getPrescriptors();
+  }, []);
+
   return (
     medication && (
-      <Modal show={show} onHide={handleClose} id="medicationDetailsModal">
+      <Modal
+        size="lg"
+        show={show}
+        onHide={handleClose}
+        id="medicationDetailsModal"
+      >
         <Modal.Header closeButton>
           <Modal.Title>{medication.elementPharmaceutique}</Modal.Title>
         </Modal.Header>
@@ -400,62 +439,63 @@ export default function MedicationDetailsModal({
           <form action="">
             <div className="posology">
               <label htmlFor="">Posologie :</label>
-              <div className="field" id="freeTake">
-                <input
-                  type="checkbox"
-                  name=""
-                  id=""
+              <div className="wrapper" id="freeTake">
+                <div className="fields">
+                  <input
+                    type="number"
+                    name="intake_number"
+                    id=""
+                    min={1}
+                    max={10}
+                    value={formData.frequency.intake_number}
+                    disabled={freeTake}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        frequency: {
+                          intake_number: e.target.value,
+                          intake_frequency: prev.frequency.intake_frequency,
+                          intake_time_range: prev.frequency.dayTime,
+                        },
+                      }))
+                    }
+                  />
+                  <span>fois par</span>
+                  <select
+                    name="intake_frequency"
+                    id=""
+                    disabled={freeTake}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        frequency: {
+                          intake_frequency: e.target.value,
+                          intake_number: prev.frequency.intake_number,
+                          intake_time_range: prev.frequency.dayTime,
+                        },
+                      }))
+                    }
+                  >
+                    <option value="day">Jour</option>
+                    <option value="week">Semaine</option>
+                    <option value="month">Mois</option>
+                  </select>
+                </div>
+                <Form.Check
+                  type="switch"
+                  name="freeIntakeInput"
+                  id="custom-switch"
                   onChange={() => setFreeTake(!freeTake)}
+                  label="Prise libre si douleur"
                 />
-                <label htmlFor="">Prise libre si douleur</label>
               </div>
-              <div className="fields">
-                <input
-                  type="number"
-                  name="intake_number"
-                  id=""
-                  min={1}
-                  value={formData.frequency.intake_number}
-                  disabled={freeTake}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      frequency: {
-                        intake_number: e.target.value,
-                        intake_frequency: prev.frequency.intake_frequency,
-                        intake_time_range: prev.frequency.dayTime,
-                      },
-                    }))
-                  }
-                />
-                <span>fois par</span>
-                <select
-                  name="intake_frequency"
-                  id=""
-                  disabled={freeTake}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      frequency: {
-                        intake_frequency: e.target.value,
-                        intake_number: prev.frequency.intake_number,
-                        intake_time_range: prev.frequency.dayTime,
-                      },
-                    }))
-                  }
-                >
-                  <option value="day">Jour</option>
-                  <option value="week">Semaine</option>
-                  <option value="month">Mois</option>
-                </select>
-              </div>
-              <label htmlFor="">Quand ?</label>
-              <div className="fields">
+              <label htmlFor="daytime">Quand ?</label>
+              <div className="daytime-fields fields">
                 <div
                   className={`dayTime field ${
                     dayTime.includes("morning")
                       ? "selected"
-                      : dayTime.length == formData.frequency.intake_number &&
+                      : freeTake || dayTime.length == formData.frequency.intake_number &&
                         !dayTime.includes("morning")
                       ? "disabled"
                       : ""
@@ -467,20 +507,19 @@ export default function MedicationDetailsModal({
                     name="day_time"
                     value="morning"
                     disabled={
-                      dayTime.length == formData.frequency.intake_number &&
+                      freeTake || dayTime.length == formData.frequency.intake_number &&
                       !dayTime.includes("morning")
                     }
                     id=""
                     onChange={(e) => handleDayTime(e)}
                   />
-                  <BsFillSunriseFill />
-                  <label htmlFor="">matin</label>
+                  <FiSunrise />
                 </div>
                 <div
                   className={`dayTime field ${
                     dayTime.includes("midday")
                       ? "selected"
-                      : dayTime.length == formData.frequency.intake_number &&
+                      : freeTake || dayTime.length == formData.frequency.intake_number &&
                         !dayTime.includes("midday")
                       ? "disabled"
                       : ""
@@ -492,20 +531,19 @@ export default function MedicationDetailsModal({
                     name="day_time"
                     value="midday"
                     disabled={
-                      dayTime.length == formData.frequency.intake_number &&
+                      freeTake || dayTime.length == formData.frequency.intake_number &&
                       !dayTime.includes("midday")
                     }
                     id=""
                     onChange={(e) => handleDayTime(e)}
                   />
-                  <BsSunFill />
-                  <label htmlFor="">midi</label>
+                  <FiSun />
                 </div>
                 <div
                   className={`dayTime field ${
                     dayTime.includes("evening")
                       ? "selected"
-                      : dayTime.length == formData.frequency.intake_number &&
+                      : freeTake || dayTime.length == formData.frequency.intake_number &&
                         !dayTime.includes("evening")
                       ? "disabled"
                       : ""
@@ -517,15 +555,17 @@ export default function MedicationDetailsModal({
                     name="day_time"
                     value="evening"
                     disabled={
-                      dayTime.length == formData.frequency.intake_number &&
+                      freeTake || dayTime.length == formData.frequency.intake_number &&
                       !dayTime.includes("evening")
                     }
                     id=""
                     onChange={(e) => handleDayTime(e)}
                   />
-                  <BsFillSunsetFill />
-                  <label htmlFor="">soir</label>
+                  <FiSunset />
                 </div>
+                <label htmlFor="">matin</label>
+                <label htmlFor="">midi</label>
+                <label htmlFor="">soir</label>
               </div>
             </div>
             <div className="box-size">
@@ -572,12 +612,17 @@ export default function MedicationDetailsModal({
                     );
                   })}
               </div>
-              <div className="field">
-                <input
-                  type="number"
+
+              <label htmlFor="number_of_boxes">
+                Nombre de boîte(s) prescrite(s)
+              </label>
+              <div className="range">
+                <Form.Range
+                  type="range"
                   name="number_of_boxes"
                   id=""
                   min={1}
+                  max={15}
                   value={formData.number_of_boxes}
                   onChange={(e) =>
                     setFormData((prev) => ({
@@ -586,23 +631,34 @@ export default function MedicationDetailsModal({
                     }))
                   }
                 />
-                <span>nombre de boîte prescrites</span>
+                <span>
+                  {formData.number_of_boxes} <LuPillBottle />
+                </span>
               </div>
             </div>
-            <div className="field start-date">
-              <label htmlFor="start_date">Début du traitement :</label>
-              <input
-                type="date"
-                name="start_date"
-                onChange={(e) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    start_date: e.target.value,
-                  }))
-                }
-                id=""
-                value={formData.start_date}
-              />
+            <div className="additional-info">
+         
+                <label htmlFor="start_date">Début du traitement</label>
+                <input
+                  type="date"
+                  name="start_date"
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      start_date: e.target.value,
+                    }))
+                  }
+                  id=""
+                  value={formData.start_date}
+                />
+              <label htmlFor="prescribed_by">Prescrit par</label>
+              <Form.Select aria-label="Default select example" onChange={(e) => setFormData(prev => ({...prev, prescribed_by: e.target.value}))}>
+
+                  <option value="Non renseigné"> Non renseigné</option>
+                  {prescriptorsOptions.map((item) => {
+                    return <option value={item.name} selected={formData.prescribed_by == item.name}>{item.name}</option>;
+                  })}
+               </Form.Select>
             </div>
           </form>
         </Modal.Body>

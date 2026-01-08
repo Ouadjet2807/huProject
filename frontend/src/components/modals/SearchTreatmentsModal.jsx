@@ -50,10 +50,10 @@ export default function SearchTreatmentsModal({
             <span className="search-value">{sub}</span>
           ) : (
 
-              sub.replace(" ", "").length < 35 ? (
+              sub.replace(" ", "").length < 80 ? (
                 <span>{sub}</span>
               ) : (
-                <span>{sub.slice(0, 35).padEnd(38, "...")}</span>
+                <span>{sub.slice(0, 80).padEnd(83, "...")}</span>
               )
       
           );
@@ -90,7 +90,7 @@ export default function SearchTreatmentsModal({
   console.log(searchResults);
 
   return (
-    <Modal show={show} onHide={handleClose} id="searchTreatmentModal">
+    <Modal size="lg" show={show} onHide={handleClose} id="searchTreatmentModal">
       <Modal.Header closeButton>
         <Modal.Title>Ajouter un traitement</Modal.Title>
       </Modal.Header>

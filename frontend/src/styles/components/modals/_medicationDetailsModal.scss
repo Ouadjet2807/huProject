@@ -1,5 +1,4 @@
 #medicationDetailsModal {
-
   .modal-header {
     align-items: flex-start;
   }
@@ -7,27 +6,52 @@
   form {
     padding: 0 20px;
 
-    label {
-      font-weight: 600;
+    > div {
+      > label {
+        font-weight: 600;
+      }
     }
 
     .posology {
-      display: flex;
-      flex-direction: column;
+      display: grid;
+      grid-template-columns: 50% 50%;
       gap: 15px;
+      justify-items: center;
 
-      #freeTake {
-        width: max-content;
-        margin: auto;
+      > label {
+        grid-row: 1;
+        width: 100%;
+      }
+
+      .wrapper {
         display: flex;
+        flex-direction: column;
         gap: 15px;
+      }
 
-        input {
-          accent-color: $lightGreen;
-        }
+      .frequency {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
 
-        label {
-          font-weight: 400;
+        .field {
+          width: max-content;
+          margin: auto;
+          display: flex;
+          gap: 15px;
+          align-items: center;
+
+          input[type="checkbox"] {
+            accent-color: $lightGreen;
+          }
+
+          input[type="number"] {
+            width: 5vw;
+          }
+
+          label {
+            font-weight: 400;
+          }
         }
       }
 
@@ -35,11 +59,9 @@
         display: flex;
         gap: 15px;
         align-items: center;
-        justify-content: center;
 
         input[type="number"] {
-          text-align: center;
-          width: 3vw;
+          width: 4vw;
         }
 
         input,
@@ -55,7 +77,8 @@
           justify-content: center;
 
           &.dayTime {
-            width: 25%;
+            width: 3vw;
+            height: 3vw;
             border-width: 1.5px;
             border-style: solid;
             border-color: $charcoal;
@@ -86,7 +109,7 @@
             }
 
             svg {
-              font-size: 1.5vw;
+              font-size: 1vw;
               z-index: 6;
               width: 2vw;
             }
@@ -180,19 +203,41 @@
           }
         }
       }
+
+      .daytime-fields {
+        display: grid;
+        grid-template-columns: 33% 33% 33%;
+        align-items: center;
+        justify-content: center;
+        justify-items: center;
+        width: 45%;
+        margin: auto;
+      }
+    }
+
+    .field {
+      display: flex;
+      align-items: center;
+      gap: 50px;
     }
 
     .box-size {
       margin: 3vw 0;
-      display: flex;
-      flex-direction: column;
+      display: grid;
+      grid-template-columns: 50% 50%;
+      justify-items: center;
       gap: 15px;
 
+      > label {
+        grid-row: 1;
+        width: 100%;
+      }
+
       .box-choices {
-        display: grid;
-        grid-template-columns: 45% 45%;
+        display: flex;
+        width: max-content;
         gap: 25px;
-        margin: 20px auto;
+        margin: 5px 65px;
 
         .size {
           display: flex;
@@ -200,11 +245,11 @@
           align-items: center;
           justify-content: center;
           position: relative;
-          width: 5vw;
-          height: 5vw;
+          width: max-content;
+          height: max-content;
           border: 1px solid #b1b7b8;
           border-radius: $borderRadiusLight;
-          padding: 10px 15px;
+          padding: 25px 15px;
           box-shadow: 2px 2px 7px 5px rgba(221, 221, 221, 0.3294117647);
           cursor: pointer;
           transition: 0.2s ease-in;
@@ -230,23 +275,41 @@
           }
         }
       }
+    }
 
-      .field {
+    .range {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      align-items: center;
+      width: 65%;
+
+      input {
+        fill: $green;
+      }
+
+      span {
         display: flex;
         align-items: center;
         gap: 10px;
-
-        input {
-          width: 3vw;
-          text-align: center;
-        }
       }
     }
 
-    .start-date {
-      display: flex;
+    .additional-info {
+      display: grid;
+      grid-template-columns: 50% 50%;
       align-items: center;
-      gap: 10px;
+      gap: 15px;
+
+      > label {
+        grid-row: 1;
+      }
+
+      .start-date {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
     }
   }
 }

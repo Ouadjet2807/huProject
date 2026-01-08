@@ -10,13 +10,13 @@ import { TbUsersPlus } from "react-icons/tb";
 import { FaUserCircle } from "react-icons/fa";
 import Button from "react-bootstrap/esm/Button";
 
-export default function Home({ setRefreshRecipients, space }) {
+export default function Home({ setRefreshSpace }) {
   const [addRecipient, setAddRecipient] = useState(false);
   const [showInviteModal, setShowInviteModal] = useState(false);
 
   const navigate = useNavigate();
 
-  const { user, logout, loading } = useContext(AuthContext);
+  const { user, space, logout, loading } = useContext(AuthContext);
 
   console.log(loading);
 
@@ -33,6 +33,15 @@ export default function Home({ setRefreshRecipients, space }) {
 
     if (space.created_by === user.id) return true;
   };
+
+  console.log(space);
+
+  useEffect(() => {
+    if(Object.keys(space).length <= 0) {
+      setRefreshSpace(true)
+    }
+  }, [space])
+  
 
   return (
     <div id="home">
@@ -103,7 +112,7 @@ export default function Home({ setRefreshRecipients, space }) {
             show={addRecipient}
             setShow={setAddRecipient}
             space={space}
-            setRefreshRecipients={setRefreshRecipients}
+            setRefreshRecipients={setRefreshSpace}
           />
 
           <div className="right-tab">

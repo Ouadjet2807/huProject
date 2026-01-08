@@ -33,7 +33,7 @@ function App() {
           <Route
             path="home"
             element={
-              <Home setRefreshRecipients={setRefreshSpace} space={space} />
+              <Home setRefreshSpace={setRefreshSpace} />
             }
           />
           <Route path="calendar" element={<Agenda />} />

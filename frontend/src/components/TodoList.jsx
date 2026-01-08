@@ -85,8 +85,6 @@ export default function TodoList({ user, space }) {
 
     setFilteredTodoList(filter);
 
-    console.log(todo);
-    console.log(filteredTodoList[index]);
 
     try {
       await api.put(`http://127.0.0.1:8000/api/todo_lists/${todo.id}/`, todo);
@@ -147,9 +145,6 @@ export default function TodoList({ user, space }) {
     }
   }, [activeCategory, todoList]);
 
-
-  console.log(activeCategory);
-  
 
   return (
     <div id="todoList">

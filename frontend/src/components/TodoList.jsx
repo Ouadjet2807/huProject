@@ -7,6 +7,10 @@ import { useGSAP } from "@gsap/react";
 import { FaRegSquare } from "react-icons/fa";
 import { TbSquareCheckFilled } from "react-icons/tb";
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
+import Dropdown from 'react-bootstrap/Dropdown';
+import DropdownButton from 'react-bootstrap/DropdownButton';
+import Form from 'react-bootstrap/Form';
+import InputGroup from 'react-bootstrap/InputGroup';
 gsap.registerPlugin(useGSAP);
 
 export default function TodoList({ user, space }) {
@@ -145,6 +149,8 @@ export default function TodoList({ user, space }) {
     }
   }, [activeCategory, todoList]);
 
+  console.log(newTask);
+  
 
   return (
     <div id="todoList">
@@ -190,29 +196,27 @@ export default function TodoList({ user, space }) {
           action=""
           onKeyDown={(e) => e.key === "Enter" && handleSubmit(e)}
         >
-          <input
-            type="text"
+            <InputGroup className="mb-3">
+        <Form.Control aria-label="Text input with dropdown button" type="text"
             name="title"
             id=""
             value={newTask.title}
             placeholder="Nouvelle tâche"
-            onChange={(e) => handleChange(e)}
-          />
-          <select
-            ref={selectInputRef}
-            name="frequency"
-            id=""
-            onChange={(e) => handleChange(e)}
-          >
-            <option value="" selected disabled>
-              Fréquence
-            </option>
-            {todoCategory
+            onChange={(e) => handleChange(e)}/>
+
+        <DropdownButton
+          variant="outline-secondary"
+          title={Object.keys(newTask).includes("frequency") ? todoCategory.find(cat => cat.value == newTask.frequency).name : "Fréquence"}
+          id="input-group-dropdown-2"
+          align="end"
+        >
+             {todoCategory
               .filter((item) => item.value !== "all")
               .map((category) => {
-                return <option value={category.value}>{category.name}</option>;
+                return <Dropdown.Item onClick={() => setNewTask(prev => ({...prev, frequency: category.value}))}>{category.name}</Dropdown.Item>;
               })}
-          </select>
+        </DropdownButton>
+      </InputGroup>
           <Button variant="aqua" onClick={(e) => handleSubmit(e)}>Ajouter une tâche</Button>
         </form>
     </div>

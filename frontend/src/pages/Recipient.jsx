@@ -5,6 +5,7 @@ import axios from "axios";
 import RecipientEditForm from "../components/RecipientEditForm";
 import RecipientTreatments from "../components/RecipientTreatments";
 import Specialists from "../components/Specialists";
+import DailyLife from "../components/DailyLife";
 import Loader from "../components/Loader";
 import moment from "moment";
 import { locale } from "moment";
@@ -44,8 +45,8 @@ export default function Recipient({ spaceId }) {
     if (Object.keys(recipient).includes("birth_date")) {
       const birth_date = moment(recipient.birth_date);
 
-      const today = moment()
-      const age = today.diff(birth_date, 'years')
+      const today = moment();
+      const age = today.diff(birth_date, "years");
 
       return age;
     }
@@ -65,14 +66,25 @@ export default function Recipient({ spaceId }) {
       case "treatments":
         console.log("treatments tab");
         return (
-          <RecipientTreatments formData={formData} setFormData={setFormData} recipient={recipient}/>
+          <RecipientTreatments
+            formData={formData}
+            setFormData={setFormData}
+            recipient={recipient}
+          />
         );
 
       case "specialists":
         return <Specialists recipient={recipient} />;
-
+      case "dailyLife":
+        return <DailyLife />
       default:
-        return <RecipientEditForm />;
+        return (
+          <RecipientEditForm
+            data={formData}
+            medicalInfo={medicalInfo}
+            setMedicalInfo={setMedicalInfo}
+          />
+        );
     }
   };
 
@@ -111,11 +123,10 @@ export default function Recipient({ spaceId }) {
   }, [medicalInfo]);
 
   useEffect(() => {
-    if(!Object.keys(recipient).includes('space_id') || !recipient.spaceId) {
-      recipient.space_id = spaceId
+    if (!Object.keys(recipient).includes("space_id") || !recipient.spaceId) {
+      recipient.space_id = spaceId;
     }
-  }, [recipient, spaceId])
-
+  }, [recipient, spaceId]);
 
   return (
     <div id="recipient">
@@ -149,6 +160,13 @@ export default function Recipient({ spaceId }) {
                 onClick={(e) => handleTab(e)}
               >
                 Spécialiste
+              </li>
+              <li
+                id="dailyLife"
+                className={activeTab === "dailyLife" ? "active" : ""}
+                onClick={(e) => handleTab(e)}
+              >
+                Vie quotidienne
               </li>
             </ul>
           </div>

@@ -10,6 +10,7 @@ import { TbUsersPlus } from "react-icons/tb";
 import { FaUserCircle } from "react-icons/fa";
 import Button from "react-bootstrap/esm/Button";
 
+
 export default function Home({ setRefreshSpace }) {
   const [addRecipient, setAddRecipient] = useState(false);
   const [showInviteModal, setShowInviteModal] = useState(false);
@@ -116,6 +117,7 @@ export default function Home({ setRefreshSpace }) {
           />
 
           <div className="right-tab">
+            <h3>Todo list</h3>
             <TodoList user={user} space={space} />
           </div>
         </div>

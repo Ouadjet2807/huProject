@@ -14,7 +14,7 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 100%;
+  height: 95%;
   gap: 10px;
 
   .todo-category {
@@ -110,8 +110,8 @@
   }
 
   form {
-    display: grid;
-    grid-template-columns: 65% 35%;
+    display: flex;
+    flex-direction: column;
     justify-items: center;
     gap: 20px 0px;
     background: rgba(255, 255, 255, 0.2);
@@ -123,13 +123,22 @@
     input {
       width: 100%;
     }
-    select {
-      transform-origin: center;
-      width: max-content;
+    .input-group {
+      flex-wrap: nowrap;
+
+      button {
+        min-width: 15vw;
+      }
+
+      .dropdown-item {
+
+        &:active {
+          background-color: $mediumGreen2;
+        }
+      }
     }
 
     button {
-      grid-column: 1/3;
       background: $aqua;
       color: $green;
       border: 1px solid $green;

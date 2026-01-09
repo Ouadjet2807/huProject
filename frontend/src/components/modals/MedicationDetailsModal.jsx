@@ -59,13 +59,13 @@ export default function MedicationDetailsModal({
 
   const fetchMedication = async (code) => {
     console.log(code);
-    
+
     try {
       const response = await axios.get(
             `https://medicaments-api.giygas.dev/medicament/id/${code}`
           );
       setMedication(response.data)
-          
+
     } catch(error) {
       console.log(error);
     }

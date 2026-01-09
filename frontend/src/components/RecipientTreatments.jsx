@@ -71,6 +71,11 @@ export default function RecipientTreatments({ formData, recipient }) {
     }
   };
 
+  const selectTreatment = (treatment) => {
+    setSelectedTreatment(treatment)
+    setShowMedicationDetails(true)
+  }
+
   const archiveTreatment = async (treatment) => {
     console.log(space);
     
@@ -339,7 +344,7 @@ export default function RecipientTreatments({ formData, recipient }) {
                     </div>
                   </Card.Body>
                   <Card.ImgOverlay>
-                    <Button variant="aqua">
+                    <Button variant="aqua" onClick={() => selectTreatment(item)}>
                       <GrPowerCycle /> Renouveler le traitement
                     </Button>
                   </Card.ImgOverlay>
@@ -397,6 +402,7 @@ export default function RecipientTreatments({ formData, recipient }) {
         showAddTreatmentModal={setShowAddTreatement}
         show={showMedicationDetails}
         medication={selectedMedication}
+        treatment={selectedTreatment}
         setMedication={setSelectedMedication}
       />
       <div className="header"><h3>Traitements médicaux </h3> <Button variant="aqua" onClick={() => setArchiveTab(!archiveTab)}>{!archiveTab ? 'Archives' : 'Retour'}</Button></div>

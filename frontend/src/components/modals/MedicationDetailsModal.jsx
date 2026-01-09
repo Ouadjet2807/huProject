@@ -6,6 +6,7 @@ import DropdownButton from "react-bootstrap/DropdownButton";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 import api from "../../api/api";
+import axios from "axios";
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { FiSunrise } from "react-icons/fi";
@@ -19,6 +20,7 @@ export default function MedicationDetailsModal({
   show,
   setShow,
   medication,
+  treatment,
   recipient,
   setMedication,
   showAddTreatmentModal,
@@ -32,6 +34,7 @@ export default function MedicationDetailsModal({
   const [freeTake, setFreeTake] = useState(false);
   const [prescriptorsOptions, setPrescriptorsOptions] = useState([]);
   const [formData, setFormData] = useState({
+    cis_code: "",
     name: "",
     dosage: "",
     medication_format: "",
@@ -52,6 +55,21 @@ export default function MedicationDetailsModal({
     notes: "",
     space: "",
   });
+
+
+  const fetchMedication = async (code) => {
+    console.log(code);
+    
+    try {
+      const response = await axios.get(
+            `https://medicaments-api.giygas.dev/medicament/id/${code}`
+          );
+      setMedication(response.data)
+          
+    } catch(error) {
+      console.log(error);
+    }
+  }
 
   const handleClose = () => {
     setShow(false);
@@ -348,6 +366,7 @@ export default function MedicationDetailsModal({
     if (Object.keys(medication).length > 0) {
       setFormData((prev) => ({
         ...prev,
+        cis_code: medication.cis,
         name: medication && medication.elementPharmaceutique,
         dosage: medication && medication.composition[0].dosage,
         medication_format:
@@ -416,9 +435,13 @@ export default function MedicationDetailsModal({
     console.log(dayTime);
   }, [formData.frequency.intake_number]);
 
-  console.log(medication);
-  console.log(presentation);
-  console.log(formData);
+
+  useEffect(() => {
+    if(!treatment) return
+
+    fetchMedication(treatment.cis_code)
+
+  }, [treatment])
 
   useEffect(() => {
     getPrescriptors();

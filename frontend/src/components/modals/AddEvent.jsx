@@ -236,7 +236,7 @@ export default function AddEvent({ agenda, show, setShow }) {
         setShow={setShowCreateCategory}
         agenda={agenda}
       />
-      <Modal show={show} onHide={handleClose} className="add-event-modal">
+      <Modal size="lg" show={show} onHide={handleClose} className="add-event-modal">
         <Modal.Header closeButton>
           <Modal.Title>Ajouter un événement</Modal.Title>
         </Modal.Header>

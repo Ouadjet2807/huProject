@@ -97,7 +97,7 @@
       .rbc-toolbar {
         .rbc-toolbar-label {
           font-family: $font3;
-          color: $lightGreen;
+          color: $mediumGreen2;
           font-weight: 900;
           font-size: 1.3vw;
         }
@@ -188,7 +188,8 @@
         }
 
         .rbc-today {
-          background-color: $lightGreen;
+          border: 1px solid $mediumGreen2;
+          background: $aqua;
         }
 
         .rbc-header {
@@ -199,10 +200,10 @@
           border-radius: 10px;
           margin: 0.2vw;
           padding: 0.2vw;
-          border-left: none;
-
+          
           &:not(.rbc-today, .rbc-off-range-bg) {
             background: $white;
+            border-left: none;
           }
 
           &.rbc-off-range-bg {

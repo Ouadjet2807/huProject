@@ -111,10 +111,10 @@ export default function Recipient({ spaceId }) {
   }, [medicalInfo]);
 
   useEffect(() => {
-    if(!Object.keys(recipient).includes('space_id')) {
+    if(!Object.keys(recipient).includes('space_id') || !recipient.spaceId) {
       recipient.space_id = spaceId
     }
-  }, [recipient])
+  }, [recipient, spaceId])
 
 
   return (

@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 import Loader from "./Loader";
 import { PiCrownSimpleDuotone } from "react-icons/pi";
 import Button from "react-bootstrap/esm/Button";
@@ -26,6 +27,8 @@ export default function Space({ editMode, setEditMode, roles }) {
   const [refreshSpace, setRefreshSpace] = useState(false);
   const [validationField, setValidationField] = useState("");
   const [validationError, setValidationError] = useState(false);
+
+  const navigate = useNavigate();
 
   const handleEditMode = (e) => {
     if (!e.target) return;
@@ -401,6 +404,7 @@ export default function Space({ editMode, setEditMode, roles }) {
             space.recipients.map((item) => {
               return (
                 <li
+                onClick={() => navigate(`/recipient/${item.id}`)}
                   className={`recipient ${
                     item.user === user.id ? "current-user" : ""
                   }`}

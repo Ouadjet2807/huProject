@@ -140,9 +140,15 @@
     }
 
     #recipientTreatments {
-      h3 {
+
+      .header {
+        display: flex;
         width: 100%;
-      }
+        
+        h3 {
+          width: 100%;
+        }
+        }
       .treatments-list {
         padding: 0;
         height: 40vw;
@@ -286,15 +292,8 @@
               .time-range {
                 display: flex;
                 align-items: center;
+                gap: 5px;
 
-                svg {
-                  width: 3vw;
-
-                  &:nth-child(2),
-                  &:nth-child(3) {
-                    border-left: 1px solid $greyGreen;
-                  }
-                }
               }
             }
           }

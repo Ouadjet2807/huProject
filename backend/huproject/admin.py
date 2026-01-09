@@ -15,6 +15,11 @@ class TreatmentAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'medication_format', 'start_date', 'end_date', 'dosage', 'frequency', 'created_at')
     search_fields = ('name', 'medication_format', 'start_date', 'end_date', 'dosage', 'frequency', 'created_at')
 
+@admin.register(ArchivedTreatment)
+class ArchivedTreatmentAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'archived_at')
+    search_fields = ('name', 'archived_at',)
+
 @admin.register(HealthcareProfessional)
 class HealthcareProfessionalAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'specialty', 'created_at')

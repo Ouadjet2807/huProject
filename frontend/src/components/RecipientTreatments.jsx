@@ -22,23 +22,31 @@ import { LuTrash2 } from "react-icons/lu";
 import moment from "moment";
 import "moment/locale/fr";
 import { UseDimensionsContext } from "../context/UseDimensionsContext";
+import { AuthContext } from "../context/AuthContext";
 
-export default function RecipientTreatments({ formData, space, recipient }) {
+export default function RecipientTreatments({ formData, recipient }) {
   const [showAddTreatment, setShowAddTreatement] = useState(false);
   const [showMedicationDetails, setShowMedicationDetails] = useState(false);
   const [selectedMedication, setSelectedMedication] = useState({});
+  const [selectedTreatment, setSelectedTreatment] = useState({});
   const [treatments, setTreatments] = useState([]);
+  const [archivedTreatments, setArchivedTreatments] = useState([])
+  const [archiveTab, setArchiveTab] = useState(false)
 
   const { width, height } = useContext(UseDimensionsContext);
+  const { space } = useContext(AuthContext);
   const [loading, setLoading] = useState(true);
 
   moment.locale("fr");
 
+  const today = moment(new Date());
+
   const getTreatments = async () => {
     try {
       const response = await api.get(
-        `http://127.0.0.1:8000/api/treatments/?recipient=${recipient.id}`
+        `http://127.0.0.1:8000/api/treatments`
       );
+
       console.log("Success", response.data);
       setTreatments(response.data);
       setLoading(false);
@@ -47,7 +55,51 @@ export default function RecipientTreatments({ formData, space, recipient }) {
     }
   };
 
-  const checkTodaysIntake = (intake_number, intake_time_range, today) => {
+  const getArchivedTreatments = async () => {
+    try {
+      setArchivedTreatments([])
+      const response = await api.get(
+        `http://127.0.0.1:8000/api/archived_treatments`
+      );
+
+      response.data.forEach(doc => {
+        setArchivedTreatments(prev => ([...prev, doc.treatment]));
+      })
+      setLoading(false);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const archiveTreatment = async (treatment) => {
+    console.log(space);
+    
+   if(!space) return
+    try {
+      await api.post("http://127.0.0.1:8000/api/archived_treatments/", {name: treatment.name, treatment: treatment.id, space: space.id})
+      removeTreatement(treatment.id, true)
+    } catch (error) {
+      console.log(error);
+    }
+
+    getArchivedTreatments()
+  }
+
+  const checkForExpiredTreatments = () => {
+    if(treatments.length <= 0) return
+
+    treatments.forEach((item) => {
+
+      const end_date = moment(item.end_date)
+
+      if(end_date < today && today.diff(end_date, 'weeks') > 2) {
+        archiveTreatment(item)
+      }
+    })
+
+  };
+
+  const checkTodaysIntake = (intake_number, intake_time_range) => {
     let todaysIntakeCount = 0;
 
     if (!intake_time_range) return intake_number;
@@ -89,8 +141,6 @@ export default function RecipientTreatments({ formData, space, recipient }) {
     let start = moment(new Date(item.start_date));
     let end = moment(new Date(item.end_date));
 
-    const today = moment(new Date());
-
     if (start > today) return 100;
 
     const initialTime = end.diff(start);
@@ -115,20 +165,25 @@ export default function RecipientTreatments({ formData, space, recipient }) {
     }
   };
 
-  const deleteTreatement = async (id) => {
+  const removeTreatement = async (id, archiving) => {
+    if(!recipient.space_id) return
     if (
-      window.confirm("Êtes-vous sûr(e) de vouloir supprimer ce traitement ?")
+      archiving || window.confirm("Êtes-vous sûr(e) de vouloir supprimer ce traitement ?")
     ) {
+
+      recipient.treatments = recipient.treatments.filter(item => item.id !== id)
       try {
-        await api.delete(`http://127.0.0.1:8000/api/treatments/${id}/`);
+        await api.put(`http://127.0.0.1:8000/api/recipients/${recipient.id}/`, recipient);
         console.log("success");
 
-        let filter = treatments.filter((t) => t.id !== id);
-        setTreatments(filter);
+   
+        setTreatments(treatments.filter((t) => t.id !== id));
+        setArchivedTreatments(treatments.filter((t) => t.id == id))
       } catch (error) {
         console.log(error);
       }
     }
+
   };
 
   const getRemainingUnits = (item) => {
@@ -162,7 +217,6 @@ export default function RecipientTreatments({ formData, space, recipient }) {
     let todaysIntakeCount = checkTodaysIntake(
       intake_number,
       intake_time_range,
-      today
     );
 
     let frequency = item.frequency.intake_frequency;
@@ -179,23 +233,29 @@ export default function RecipientTreatments({ formData, space, recipient }) {
   const renderTreatmentsList = () => {
     if (!treatments || treatments.length == 0) return;
 
+    let array = archiveTab ? treatments.filter(item => archivedTreatments.includes(item.id)) : treatments
+
+    console.log(array);
+    console.log(archivedTreatments);
+    
+
     let breakPoints = width > 1200 ? 3 : width > 800 ? 2 : 1;
 
     console.log(breakPoints);
 
-    treatments.sort((a, b) => {
+    array.sort((a, b) => {
       return new Date(b.end_date) - new Date(a.end_date);
     });
 
     let rows = [];
 
     // split the array in arrays of 3 maximum elements
-    for (let i = 0; i <= treatments.length; i++) {
+    for (let i = 0; i <= array.length; i++) {
       if (i !== 0 && i % breakPoints == 0) {
-        rows.push(treatments.slice(i - breakPoints, i));
-      } else if (i == treatments.length) {
+        rows.push(array.slice(i - breakPoints, i));
+      } else if (i == array.length) {
         let firstIndex = rows.length * breakPoints;
-        rows.push(treatments.slice(firstIndex, i)); // store the remaining
+        rows.push(array.slice(firstIndex, i)); // store the remaining
       }
     }
 
@@ -213,7 +273,7 @@ export default function RecipientTreatments({ formData, space, recipient }) {
                   pill
                   className="remove-treatment"
                   bg="light"
-                  onClick={() => deleteTreatement(item.id)}
+                  onClick={() => removeTreatement(item.id, false)}
                 >
                   <LuTrash2 />
                 </Badge>
@@ -269,7 +329,7 @@ export default function RecipientTreatments({ formData, space, recipient }) {
                         {getRemainingUnits(item)} {item.medication_format}(s)
                         restant(s)
                       </small>
-                      {item.end_date && (
+                      {!archiveTab && item.end_date && (
                         <ProgressBar
                           animated
                           variant={getProgressColor(item)}
@@ -310,8 +370,14 @@ export default function RecipientTreatments({ formData, space, recipient }) {
   }, []);
 
   useEffect(() => {
+    checkForExpiredTreatments();
+  }, [treatments, space]);
+
+  useEffect(() => {
     renderTreatmentsList();
   }, [width]);
+
+  
 
   return (
     <div
@@ -333,7 +399,7 @@ export default function RecipientTreatments({ formData, space, recipient }) {
         medication={selectedMedication}
         setMedication={setSelectedMedication}
       />
-      <h3>Traitements médicaux</h3>
+      <div className="header"><h3>Traitements médicaux </h3> <Button variant="aqua" onClick={() => setArchiveTab(!archiveTab)}>{!archiveTab ? 'Archives' : 'Retour'}</Button></div>
       {!loading ? (
         <Container
           className="treatments-list"

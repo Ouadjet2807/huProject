@@ -163,6 +163,21 @@ class Treatment(models.Model):
     def __str__(self):
         return self.name
 
+
+class ArchivedTreatment(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=100)
+    treatment = models.OneToOneField(Treatment, on_delete=models.CASCADE, related_name='is_archived')
+    space = models.ForeignKey(
+        Space,
+        on_delete=models.CASCADE,
+        related_name='contains_archive'
+    )
+    archived_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
+
 class Recipient(Person):
     space = models.ForeignKey(Space, related_name='recipients', on_delete=models.CASCADE)
     medical_info = models.JSONField(blank=True, null=True)

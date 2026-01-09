@@ -458,6 +458,34 @@ class TreatmentViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save()
 
+
+class ArchivedTreatmentViewSet(viewsets.ModelViewSet):
+    serializer_class = ArchivedTreatmentSerializer
+    lookup_field = 'id'
+    queryset = ArchivedTreatment.objects.all()
+    permission_classes = [permissions.IsAuthenticated] 
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['treatment']
+    ordering_fields = ['archived_at']
+
+    def get_queryset(self):
+        user = self.request.user
+
+        if not user or not hasattr(user, 'caregiver'):
+            return ArchivedTreatment.objects.none()
+
+        if self.request.GET.get('recipient'):
+            recipient_id = self.request.GET.get('recipient')
+
+            return Recipient.objects.get(id=recipient_id).treatments
+
+        caregiver = user.caregiver
+
+        return ArchivedTreatment.objects.filter(space__in=caregiver.spaces.all()).select_related('space')
+
+    def perform_create(self, serializer):
+        serializer.save()
+
 class TodoListViewSet(viewsets.ModelViewSet):
     serializer_class = TodoListSerializer
     lookup_field = 'id'

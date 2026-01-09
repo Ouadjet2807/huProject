@@ -5,6 +5,7 @@ from rest_framework_simplejwt.views import TokenRefreshView
 
 router = routers.DefaultRouter()
 router.register(r'treatments', TreatmentViewSet, 'treatment')
+router.register(r'archived_treatments', ArchivedTreatmentViewSet, 'archived_treatment')
 router.register(r'healthcare_professionals', HealthcareProfessionalViewSet, 'healthcare-professionals')
 router.register(r'agenda_item_categories', AgendaItemCategoryViewSet, 'agenda-items-categories')
 router.register(r'agenda_items', AgendaItemViewSet, 'agenda-items')
@@ -14,7 +15,7 @@ router.register(r'recipients', RecipientViewSet, 'recipient')
 router.register(r'spaces', SpaceViewSet, 'space')
 router.register(r'space_memberships', SpaceMembershipViewSet, 'space-membership')
 router.register(r'invitations', InvitationViewSet, 'invitation')
-router.register(r'todo_lists', TodoListViewSet, 'todo-lists')
+router.register(r'todo_lists', TodoListViewSet, 'todo-lists') 
 
 urlpatterns = [
     path("register/", UserRegistrationAPIView.as_view(), name="register-user"),

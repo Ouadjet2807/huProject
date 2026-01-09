@@ -138,6 +138,7 @@ class HealthcareProfessional(models.Model):
 
 class Treatment(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    cis_code = models.CharField(max_length=10)
     name = models.CharField(max_length=150)
     dosage = models.CharField(max_length=100, blank=True)
     medication_format = models.CharField(max_length=100, blank=True)

@@ -99,7 +99,7 @@ class TreatmentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Treatment
-        fields = ('id','name','dosage', 'medication_format', 'quantity', 'frequency','start_date','end_date','prescribed_by','prescribed_by_id','notes', 'space', 'created_at')
+        fields = ('id','name','dosage', 'cis_code', 'medication_format', 'quantity', 'frequency','start_date','end_date','prescribed_by','prescribed_by_id','notes', 'space', 'created_at')
 
 
 class ArchivedTreatmentSerializer(serializers.ModelSerializer):

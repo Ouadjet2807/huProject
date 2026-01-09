@@ -19,6 +19,7 @@ import { LuSunset } from "react-icons/lu";
 import { LuSun } from "react-icons/lu";
 import { LuCalendarFold } from "react-icons/lu";
 import { LuTrash2 } from "react-icons/lu";
+import { GoArchive } from "react-icons/go";
 import moment from "moment";
 import "moment/locale/fr";
 import { UseDimensionsContext } from "../context/UseDimensionsContext";
@@ -44,7 +45,7 @@ export default function RecipientTreatments({ formData, recipient }) {
   const getTreatments = async () => {
     try {
       const response = await api.get(
-        `http://127.0.0.1:8000/api/treatments`
+        `http://127.0.0.1:8000/api/treatments/?recipient=${recipient.id}`
       );
 
       console.log("Success", response.data);
@@ -405,7 +406,7 @@ export default function RecipientTreatments({ formData, recipient }) {
         treatment={selectedTreatment}
         setMedication={setSelectedMedication}
       />
-      <div className="header"><h3>Traitements médicaux </h3> <Button variant="aqua" onClick={() => setArchiveTab(!archiveTab)}>{!archiveTab ? 'Archives' : 'Retour'}</Button></div>
+      <div className="header"><h3>Traitements médicaux </h3> <Button variant="aqua" onClick={() => setArchiveTab(!archiveTab)}><GoArchive /> {!archiveTab ? 'Archives' : 'Retour'}</Button></div>
       {!loading ? (
         <Container
           className="treatments-list"

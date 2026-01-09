@@ -203,9 +203,10 @@
           cursor: pointer;
           transition: 0.3s ease-in;
 
-          &:hover {
+          &.recipient:hover {
             background: $whiteGreen;
-            color: $greyGreen;
+            color: $green;
+
           }
 
           .status-badge {

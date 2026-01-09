@@ -11,9 +11,13 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
+import moment from "moment";
+import { locale } from "moment";
 gsap.registerPlugin(useGSAP);
 
 export default function TodoList({ user, space }) {
+
+  moment.locale("fr")
 
     const todoCategory = [
     {
@@ -58,9 +62,10 @@ export default function TodoList({ user, space }) {
     console.log();
 
     try {
-      await api.post("http://127.0.0.1:8000/api/todo_lists/", newTask);
+      let response = await api.post("http://127.0.0.1:8000/api/todo_lists/", newTask);
       console.log("success");
 
+      newTask.id = response.data.id
       setTodoList((prev) => [...prev, newTask]);
       setFilteredTodoList((prev) => [...prev, newTask]);
       setNewTask({
@@ -80,9 +85,10 @@ export default function TodoList({ user, space }) {
   };
 
   const updateTodo = async (index, todo) => {
+
     todo.completed = !todo.completed;
     todo.completed_by = user.id;
-    todo.updated_at = new Date();
+    todo.updated_at = moment(new Date).format();
 
     
     let filter = filteredTodoList.toSpliced(index, 1, todo);
@@ -141,16 +147,45 @@ export default function TodoList({ user, space }) {
   }, [user, space]);
 
   useEffect(() => {
-    if (activeCategory !== "all") {
-      let filter = todoList.filter((item) => item.frequency === activeCategory);
-      setFilteredTodoList(filter);
-    } else {
-      setFilteredTodoList(todoList);
+    const filterCategories = () => {
+      if (activeCategory !== "all") {
+        let filter = todoList.filter((item) => item.frequency === activeCategory);
+        setFilteredTodoList(filter);
+      } else {
+        setFilteredTodoList(todoList);
+      }
     }
+    filterCategories()
   }, [activeCategory, todoList]);
 
+  useEffect(() => {
+    const resetTodo = () => {
+
+      const frequencies = {
+        daily: 'days',
+        weekly: 'weeks',
+        monthly: 'months',
+      }
+
+      todoList.forEach((todo, index) => {
+        console.log(index);
+        const updated_date = moment(todo.updated_at)
+        if(!todo.completed) return
+
+        const frequency = frequencies[todo.frequency]
+
+        if(moment().diff(updated_date, frequency) >= 1) {
+          updateTodo(index, todo)
+        }
+      })
+    }
+
+    resetTodo()
+  }, [todoList])
+
   console.log(newTask);
-  
+  console.log(todoList);
+
 
   return (
     <div id="todoList">

@@ -275,7 +275,7 @@
             .remaining {
               .progress {
                 .progress-bar {
-                  filter: brightness(1.5) saturate(0.3) !important;
+                  filter: contrast(0.5) brightness(1.5) saturate(0.9);
                 }
               }
             }

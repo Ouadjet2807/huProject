@@ -41,16 +41,6 @@ export default function Navbar() {
     },
   ];
 
-  const no_auth_routes = [
-    {
-      name: "Register",
-      path: "/register",
-    },
-    {
-      name: "Login",
-      path: "/login",
-    },
-  ];
 
   const handleNavAnimation = (e) => {
     e.stopPropagation();

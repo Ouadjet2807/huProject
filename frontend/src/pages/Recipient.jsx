@@ -128,6 +128,9 @@ export default function Recipient({ spaceId }) {
     }
   }, [recipient, spaceId]);
 
+  console.log(recipient);
+  
+
   return (
     <div id="recipient">
       {Object.keys(recipient).includes("first_name") ? (

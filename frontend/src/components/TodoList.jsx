@@ -121,13 +121,6 @@ export default function TodoList({ user, space }) {
     try {
       const response = await api.get("http://127.0.0.1:8000/api/todo_lists");
 
-      console.log("success", response.data);
-
-      response.data.forEach(d => {
-        console.log(d.created_by.last_name);
-        
-      })
-
       setTodoList(response.data);
       setFilteredTodoList(response.data);
     } catch (error) {

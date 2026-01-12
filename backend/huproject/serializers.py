@@ -103,17 +103,17 @@ class TreatmentSerializer(serializers.ModelSerializer):
 
 
 class ArchivedTreatmentSerializer(serializers.ModelSerializer):
-
+    treatment = serializers.PrimaryKeyRelatedField(queryset=Treatment.objects.all())
     class Meta:
         model = ArchivedTreatment
         fields = ('id', 'name', 'space', 'treatment')
 
 
-
-
 class RecipientSerializer(serializers.ModelSerializer):
     space_id = serializers.UUIDField(write_only=True)
     medical_info = serializers.JSONField(required=False)
+    treatments = TreatmentSerializer(many=True)
+    healthcare_professionals = HealthcareProfessionalSerializer(many=True)
 
     class Meta:
         model = Recipient
@@ -161,6 +161,7 @@ class RecipientSerializer(serializers.ModelSerializer):
 class SpaceSerializer(serializers.ModelSerializer):
     caregivers = CaregiverSerializer(many=True, read_only=True)
     recipients = RecipientSerializer(many=True, read_only=True)
+    created_by =  CustomUserSerializer(read_only=True)
 
     class Meta:
         model = Space
@@ -177,6 +178,7 @@ class SpaceMembershipSerializer(serializers.ModelSerializer):
 
 class InvitationSerializer(serializers.ModelSerializer):
     space =  serializers.PrimaryKeyRelatedField(queryset=Space.objects.all())
+    sender = CustomUserSerializer(read_only=True)
 
     class Meta:
         model = Invitation
@@ -195,6 +197,9 @@ class AgendaSerializer(serializers.ModelSerializer):
 class AgendaItemSerializer(serializers.ModelSerializer):
     agenda = AgendaSerializer(read_only=True)
     agenda_id = serializers.PrimaryKeyRelatedField(queryset=Agenda.objects.all(), source='agenda', write_only=True)
+    created_by = CustomUserSerializer(read_only=True)
+    participants = CaregiverSerializer(many=True)
+    recipients = RecipientSerializer(many=True)
 
     class Meta:
         model = AgendaItem
@@ -213,6 +218,8 @@ class AgendaItemCategorySerializer(serializers.ModelSerializer):
 
 class TodoListSerializer(serializers.ModelSerializer):
     space = serializers.PrimaryKeyRelatedField(queryset=Space.objects.all())
+    created_by = CustomUserSerializer(read_only=True)
+    completed_by = CustomUserSerializer()
 
     class Meta:
         model = TodoList
@@ -221,6 +228,8 @@ class TodoListSerializer(serializers.ModelSerializer):
 
 class GrocerySerializer(serializers.ModelSerializer):
     space = serializers.PrimaryKeyRelatedField(queryset=Space.objects.all())
+    created_by = CustomUserSerializer(read_only=True)
+    recipient = RecipientSerializer()
 
     class Meta:
         model = TodoList

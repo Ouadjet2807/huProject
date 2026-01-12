@@ -123,6 +123,11 @@ export default function TodoList({ user, space }) {
 
       console.log("success", response.data);
 
+      response.data.forEach(d => {
+        console.log(d.created_by.last_name);
+        
+      })
+
       setTodoList(response.data);
       setFilteredTodoList(response.data);
     } catch (error) {

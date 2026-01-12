@@ -129,7 +129,7 @@ class HealthcareProfessional(models.Model):
     space = models.ForeignKey(
         Space,
         on_delete=models.CASCADE,
-        related_name='healthcare_professional_space'
+        related_name='hold'
     )
 
     def __str__(self):
@@ -151,14 +151,14 @@ class Treatment(models.Model):
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
-        related_name='prescriptor'
+        related_name='prescribed_treatments'
     )
     notes = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     space = models.ForeignKey(
         Space,
         on_delete=models.CASCADE,
-        related_name='treatment_space'
+        related_name='contains'
     )
 
     def __str__(self):
@@ -168,11 +168,11 @@ class Treatment(models.Model):
 class ArchivedTreatment(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100)
-    treatment = models.OneToOneField(Treatment, on_delete=models.CASCADE, related_name='initial_treatment')
+    treatment = models.OneToOneField(Treatment, on_delete=models.CASCADE, related_name='is_archived')
     space = models.ForeignKey(
         Space,
         on_delete=models.CASCADE,
-        related_name='archived_treatment_space'
+        related_name='contains_archive'
     )
     archived_at = models.DateTimeField(auto_now_add=True)
 
@@ -180,27 +180,27 @@ class ArchivedTreatment(models.Model):
         return self.name
 
 class Recipient(Person):
-    space = models.ForeignKey(Space, related_name='recipient_space', on_delete=models.CASCADE)
+    space = models.ForeignKey(Space, related_name='recipients', on_delete=models.CASCADE)
     medical_info = models.JSONField(blank=True, null=True)
-    treatments = models.ManyToManyField(Treatment, blank=True, related_name='treatments')
-    healthcare_professionals = models.ManyToManyField(HealthcareProfessional, blank=True, related_name='healthcare_professionnals')
-    caregivers = models.ManyToManyField(Caregiver, related_name="caregivers")
+    treatments = models.ManyToManyField(Treatment, blank=True, related_name='recipients')
+    healthcare_professionals = models.ManyToManyField(HealthcareProfessional, blank=True, related_name='recipients')
+    caregivers = models.ManyToManyField(Caregiver, related_name="care_for")
 
 class Agenda(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    space = models.ForeignKey('Space', on_delete=models.CASCADE, related_name='agenda_space')
+    space = models.ForeignKey('Space', on_delete=models.CASCADE, related_name='belongs_to')
 
 class AgendaItemCategory(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    agenda = models.ForeignKey(Agenda, on_delete=models.CASCADE, related_name='belongs_to')
+    agenda = models.ForeignKey(Agenda, on_delete=models.CASCADE, related_name='has')
     name = models.CharField(max_length=50)
     color = models.JSONField()
 
 class AgendaItem(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    agenda = models.ForeignKey(Agenda, on_delete=models.CASCADE, related_name='agenda')
+    agenda = models.ForeignKey(Agenda, on_delete=models.CASCADE, related_name='contains')
     private = models.BooleanField(default=False)
-    category = models.ForeignKey(AgendaItemCategory, on_delete=models.SET_NULL, null=True, blank=True, related_name="categories")
+    category = models.ForeignKey(AgendaItemCategory, on_delete=models.SET_NULL, null=True, blank=True, related_name="items")
     title = models.CharField(max_length=50)
     description = models.CharField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -208,20 +208,20 @@ class AgendaItem(models.Model):
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='creates')
-    participants = models.ManyToManyField(Caregiver, related_name='caregiver_participants')
-    recipients = models.ManyToManyField(Recipient, blank=True, related_name='recipients_participants')
+    participants = models.ManyToManyField(Caregiver, related_name='participates')
+    recipients = models.ManyToManyField(Recipient, blank=True, related_name='participates')
 
 
 class TodoList(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    space = models.ForeignKey(Space, on_delete=models.CASCADE, related_name='todo_space')
+    space = models.ForeignKey(Space, on_delete=models.CASCADE, related_name='todo')
     frequency = models.CharField(default="punctual")
     completed = models.BooleanField(default=False)
-    completed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='complete_by')
+    completed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='complete')
     title = models.CharField(max_length=50)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='todo_creator')
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='creates_todo')
 
 class Groceries(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

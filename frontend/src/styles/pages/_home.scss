@@ -3,8 +3,99 @@
     height: 100%;
     padding: 2vw;
     display: grid;
-    grid-template-columns: 40% 60%;
+    grid-template-columns: 30% 30% 40%;
     justify-items: center;
+
+    .middle-tab {
+      background: linear-gradient(225deg, $mediumGreen2, transparent);
+      width: 90%;
+      height: 100%;
+      border-radius: $borderRadius;
+      margin: 0 auto;
+      padding: 25px;
+      border: 1px solid $mediumGreen2;
+
+      h3 {
+        color: $white;
+      }
+
+      .list {
+        background: #00000029;
+        height: 89%;
+        width: 100%;
+        border-radius: $borderRadiusMedium;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 5px;
+
+        ul {
+          padding: 0;
+          display: flex;
+          flex-direction: column;
+          gap: 5px;
+        }
+
+        li {
+          background: white;
+          padding: 10px;
+          border-radius: 5px;
+        }
+
+        .add-to-list {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          margin-bottom: 5px;
+
+          input {
+            background: transparent;
+            border-bottom: 2px solid #fff;
+            border-top: none;
+            border-left: none;
+            border-right: none;
+            border-radius: 0;
+            color: $white;
+
+            &::placeholder {
+              color: $whiteGreen;
+            }
+
+            &:focus {
+              box-shadow: none;
+            }
+
+            &:focus-visible {
+              outline: 0;
+              border-bottom: 2px solid #fff;
+            }
+          }
+
+          .add-button {
+            border: 1px solid $white;
+            border-radius: $borderRadiusSmall;
+            width: max-content;
+            height: max-content;
+            display: flex;
+            align-items: center;
+            padding: 5px;
+            cursor: pointer;
+            transition: 0.2s ease-in-out;
+
+            svg {
+              color: $white;
+            }
+
+            &:active {
+              transform: scale(0.8);
+              background: #00000021;
+            }
+
+          }
+        }
+      }
+    }
 
     .right-tab {
       background: linear-gradient(142deg, #abd1c685, #004643a6);
@@ -13,6 +104,10 @@
       width: 100%;
       border: 1px solid #004643;
       border-radius: $borderRadius;
+
+      h3 {
+        color: $white;
+      }
     }
 
     .loading {
@@ -26,7 +121,6 @@
     }
 
     .left-tab {
-      padding: 0 2vw 0 0;
       width: 100%;
 
       .box {

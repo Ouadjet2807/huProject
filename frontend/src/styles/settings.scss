@@ -5,7 +5,7 @@ $success: #009365;
 $white: #ffffff;
 $whiteGreen: #e1e8e5;
 $aqua: #92cfbc75;
-$aquaOpac: #ABD1C6;
+$aquaOpac: #abd1c6;
 $greyGreen: #b1b7b8;
 $lightGreen: #b3c1b4;
 $lightGreen2: #88a590;
@@ -15,7 +15,7 @@ $green: #004643;
 $darkGreen: #163737;
 $blackGreen: #08181c;
 $pearl: rgb(244, 248, 248);
-$sand: #F0EDE5;
+$sand: #f0ede5;
 $charcoal: rgb(21, 22, 22);
 
 $font1: "Roboto";
@@ -92,45 +92,44 @@ button {
 }
 
 .btn-aqua {
-    background: $aquaOpac !important;
-    border: 1px solid $green !important;
-    color: $green !important;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    width: max-content;
-  }
+  background: $aquaOpac !important;
+  border: 1px solid $green !important;
+  color: $green !important;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: max-content;
+}
 
 .btn-outline-green {
-    background: transparent !important;
-    border: 1px solid $aquaOpac !important;
-    color: $aquaOpac !important;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin: auto;
-  }
+  background: transparent !important;
+  border: 1px solid $aquaOpac !important;
+  color: $aquaOpac !important;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: auto;
+}
 
 .btn-edit {
-     background: transparent !important;
-    color: $greyGreen !important;
-    border: 1px solid $whiteGreen !important;
-    border-radius: $borderRadius !important;
-    padding: 5px 15px !important;
-    font-size: 14px !important;
-    transition: 0.3s ease-in;
-    cursor: pointer;
+  background: transparent !important;
+  color: $greyGreen !important;
+  border: 1px solid $whiteGreen !important;
+  border-radius: $borderRadius !important;
+  padding: 5px 15px !important;
+  font-size: 14px !important;
+  transition: 0.3s ease-in;
+  cursor: pointer;
 
-    &:hover {
-      box-shadow: 0px 1px 6px 1px rgb(177 183 184 / 17%);
-    }
-
-    &.active {
-      background: $whiteGreen;
-      color: $darkGreen;
-    }
+  &:hover {
+    box-shadow: 0px 1px 6px 1px rgb(177 183 184 / 17%);
   }
 
+  &.active {
+    background: $whiteGreen;
+    color: $darkGreen;
+  }
+}
 
 input[type="email"],
 input[type="password"],
@@ -153,4 +152,10 @@ textarea {
 
 small {
   color: $greyGreen;
+}
+.form-control,
+.form-check,
+.form-range,
+.form-switch {
+  filter: hue-rotate(300deg);
 }

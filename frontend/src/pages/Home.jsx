@@ -9,6 +9,7 @@ import InviteUserModal from "../components/modals/InviteUserModal";
 import { TbUsersPlus } from "react-icons/tb";
 import { FaUserCircle } from "react-icons/fa";
 import Button from "react-bootstrap/esm/Button";
+import GroceryList from "../components/GroceryList";
 
 
 export default function Home({ setRefreshSpace }) {
@@ -38,11 +39,10 @@ export default function Home({ setRefreshSpace }) {
   console.log(space);
 
   useEffect(() => {
-    if(Object.keys(space).length <= 0) {
-      setRefreshSpace(true)
+    if (Object.keys(space).length <= 0) {
+      setRefreshSpace(true);
     }
-  }, [space])
-  
+  }, [space]);
 
   return (
     <div id="home">
@@ -88,7 +88,8 @@ export default function Home({ setRefreshSpace }) {
                 space.caregivers.map((item) => {
                   return (
                     <div
-                      className="caregiver" onClick={() => navigate(`/account/space`)}
+                      className="caregiver"
+                      onClick={() => navigate(`/account/space`)}
                     >
                       <span>
                         <div className="icon">
@@ -115,7 +116,10 @@ export default function Home({ setRefreshSpace }) {
             space={space}
             setRefreshRecipients={setRefreshSpace}
           />
-
+          <div className="middle-tab">
+            <h3>Liste de courses</h3>
+              <GroceryList />
+          </div>
           <div className="right-tab">
             <h3>Todo list</h3>
             <TodoList user={user} space={space} />

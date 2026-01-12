@@ -31,8 +31,8 @@ export default function RecipientTreatments({ formData, recipient }) {
   const [selectedMedication, setSelectedMedication] = useState({});
   const [selectedTreatment, setSelectedTreatment] = useState({});
   const [treatments, setTreatments] = useState([]);
-  const [archivedTreatments, setArchivedTreatments] = useState([])
-  const [archiveTab, setArchiveTab] = useState(false)
+  const [archivedTreatments, setArchivedTreatments] = useState([]);
+  const [archiveTab, setArchiveTab] = useState(false);
 
   const { width, height } = useContext(UseDimensionsContext);
   const { space } = useContext(AuthContext);
@@ -58,14 +58,14 @@ export default function RecipientTreatments({ formData, recipient }) {
 
   const getArchivedTreatments = async () => {
     try {
-      setArchivedTreatments([])
+      setArchivedTreatments([]);
       const response = await api.get(
         `http://127.0.0.1:8000/api/archived_treatments`
       );
 
-      response.data.forEach(doc => {
-        setArchivedTreatments(prev => ([...prev, doc.treatment]));
-      })
+      response.data.forEach((doc) => {
+        setArchivedTreatments((prev) => [...prev, doc.treatment]);
+      });
       setLoading(false);
     } catch (error) {
       console.log(error);
@@ -73,36 +73,38 @@ export default function RecipientTreatments({ formData, recipient }) {
   };
 
   const selectTreatment = (treatment) => {
-    setSelectedTreatment(treatment)
-    setShowMedicationDetails(true)
-  }
+    setSelectedTreatment(treatment);
+    setShowMedicationDetails(true);
+  };
 
   const archiveTreatment = async (treatment) => {
     console.log(space);
-    
-   if(!space) return
+
+    if (!space) return;
     try {
-      await api.post("http://127.0.0.1:8000/api/archived_treatments/", {name: treatment.name, treatment: treatment.id, space: space.id})
-      removeTreatement(treatment.id, true)
+      await api.post("http://127.0.0.1:8000/api/archived_treatments/", {
+        name: treatment.name,
+        treatment: treatment.id,
+        space: space.id,
+      });
+      removeTreatement(treatment.id, true);
     } catch (error) {
       console.log(error);
     }
 
-    getArchivedTreatments()
-  }
+    getArchivedTreatments();
+  };
 
   const checkForExpiredTreatments = () => {
-    if(treatments.length <= 0) return
+    if (treatments.length <= 0) return;
 
     treatments.forEach((item) => {
+      const end_date = moment(item.end_date);
 
-      const end_date = moment(item.end_date)
-
-      if(end_date < today && today.diff(end_date, 'weeks') > 2) {
-        archiveTreatment(item)
+      if (end_date < today && today.diff(end_date, "weeks") > 2) {
+        archiveTreatment(item);
       }
-    })
-
+    });
   };
 
   const checkTodaysIntake = (intake_number, intake_time_range) => {
@@ -172,24 +174,25 @@ export default function RecipientTreatments({ formData, recipient }) {
   };
 
   const removeTreatement = async (id, archiving) => {
-    if(!recipient.space_id) return
+    if (!recipient.space_id) return;
     if (
-      archiving || window.confirm("Êtes-vous sûr(e) de vouloir supprimer ce traitement ?")
+      archiving ||
+      window.confirm("Êtes-vous sûr(e) de vouloir supprimer ce traitement ?")
     ) {
-
-      recipient.treatments = recipient.treatments.filter(item => item.id !== id)
+      recipient.treatments = recipient.treatments.filter(
+        (item) => item.id !== id
+      );
       try {
-        await api.put(`http://127.0.0.1:8000/api/recipients/${recipient.id}/`, recipient);
+        await api.put(
+          `http://127.0.0.1:8000/api/recipients/${recipient.id}/`,
+          recipient
+        );
         console.log("success");
-
-   
-        setTreatments(treatments.filter((t) => t.id !== id));
-        setArchivedTreatments(treatments.filter((t) => t.id == id))
+        setArchivedTreatments(treatments.filter((t) => t.id == id));
       } catch (error) {
         console.log(error);
       }
     }
-
   };
 
   const getRemainingUnits = (item) => {
@@ -220,10 +223,7 @@ export default function RecipientTreatments({ formData, recipient }) {
 
     if (start_date > today) return totalUnits;
 
-    let todaysIntakeCount = checkTodaysIntake(
-      intake_number,
-      intake_time_range,
-    );
+    let todaysIntakeCount = checkTodaysIntake(intake_number, intake_time_range);
 
     let frequency = item.frequency.intake_frequency;
 
@@ -238,12 +238,14 @@ export default function RecipientTreatments({ formData, recipient }) {
 
   const renderTreatmentsList = () => {
     if (!treatments || treatments.length == 0) return;
+    
 
-    let array = archiveTab ? treatments.filter(item => archivedTreatments.includes(item.id)) : treatments
+    let array = archiveTab
+      ? treatments.filter((item) => archivedTreatments.includes(item.id))
+      : treatments.filter((item) => !archivedTreatments.includes(item.id));
 
     console.log(array);
     console.log(archivedTreatments);
-    
 
     let breakPoints = width > 1200 ? 3 : width > 800 ? 2 : 1;
 
@@ -264,8 +266,6 @@ export default function RecipientTreatments({ formData, recipient }) {
         rows.push(array.slice(firstIndex, i)); // store the remaining
       }
     }
-
-    console.log(rows);
 
     return rows.map((row) => {
       return (
@@ -345,7 +345,10 @@ export default function RecipientTreatments({ formData, recipient }) {
                     </div>
                   </Card.Body>
                   <Card.ImgOverlay>
-                    <Button variant="aqua" onClick={() => selectTreatment(item)}>
+                    <Button
+                      variant="aqua"
+                      onClick={() => selectTreatment(item)}
+                    >
                       <GrPowerCycle /> Renouveler le traitement
                     </Button>
                   </Card.ImgOverlay>
@@ -383,7 +386,7 @@ export default function RecipientTreatments({ formData, recipient }) {
     renderTreatmentsList();
   }, [width]);
 
-  
+  useEffect(() => {}, [archivedTreatments]);
 
   return (
     <div
@@ -406,7 +409,12 @@ export default function RecipientTreatments({ formData, recipient }) {
         treatment={selectedTreatment}
         setMedication={setSelectedMedication}
       />
-      <div className="header"><h3>Traitements médicaux </h3> <Button variant="aqua" onClick={() => setArchiveTab(!archiveTab)}><GoArchive /> {!archiveTab ? 'Archives' : 'Retour'}</Button></div>
+      <div className="header">
+        <h3>Traitements médicaux </h3>{" "}
+        <Button variant="aqua" onClick={() => setArchiveTab(!archiveTab)}>
+          <GoArchive /> {!archiveTab ? "Archives" : "Retour"}
+        </Button>
+      </div>
       {!loading ? (
         <Container
           className="treatments-list"

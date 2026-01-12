@@ -20,7 +20,7 @@ export default function GroceryList() {
         </li>
       </ul>
       <div className="add-to-list">
-        <Form.Control type="text" placeholder="Normal text" />
+        <Form.Control type="text" placeholder="(ex: Oeufs, Lait etc)" />
         <div className="add-button">
           <MdLibraryAdd />
         </div>

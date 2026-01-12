@@ -173,7 +173,7 @@ class RecipientViewSet(viewsets.ModelViewSet):
         if not user or not hasattr(user, 'caregiver'):
             return Recipient.objects.none()
         caregiver = user.caregiver
-        return Recipient.objects.filter(space__in=caregiver.spaces.all()).select_related('space')
+        return Recipient.objects.filter(space__in=caregiver.spaces.all()).prefetch_related('treatments')
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -307,7 +307,6 @@ class SpaceViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         """
         Return only spaces that the current caregiver belongs to.
-        This prevents caregivers from seeing spaces they aren't members of.
         """
         user = self.request.user
 
@@ -329,10 +328,6 @@ class SpaceViewSet(viewsets.ModelViewSet):
         space.save()
 
     def perform_update(self, serializer):
-        """
-        Default update, but could enforce extra rules (e.g. only owners can rename).
-        For now, just save.
-        """
         serializer.save()
 
     # -------------------------
@@ -503,7 +498,28 @@ class TodoListViewSet(viewsets.ModelViewSet):
 
         caregiver = user.caregiver
 
-        return TodoList.objects.filter(space__in=caregiver.spaces.all()).select_related('space')
+        return TodoList.objects.filter(space__in=caregiver.spaces.all()).select_related()
+
+    def perform_create(self, serializer):
+        serializer.save() 
+
+class GroceriesViewSet(viewsets.ModelViewSet):
+    serializer_class = TodoListSerializer
+    lookup_field = 'id'
+    queryset = Groceries.objects.all()
+    permission_classes = [permissions.IsAuthenticated] 
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['id', 'space', 'recipient', 'created_by']
+    ordering_fields = ['created_at', 'updated_at']
+
+    def get_queryset(self):
+        user = self.request.user
+
+        if not user or not hasattr(user, 'caregiver'):
+            return Groceries.objects.none()
+
+        caregiver = user.caregiver
+        return Groceries.objects.select_related('created_by').filter(space__in=caregiver.spaces.all())
 
     def perform_create(self, serializer):
         serializer.save() 

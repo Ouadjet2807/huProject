@@ -218,3 +218,11 @@ class TodoListSerializer(serializers.ModelSerializer):
         model = TodoList
         fields = ['id', 'space', 'frequency', 'completed', 'completed_by', 'title', 'updated_at', 'created_at', 'created_by']
         read_only_fields = ['id', 'space', 'created_at']
+
+class GrocerySerializer(serializers.ModelSerializer):
+    space = serializers.PrimaryKeyRelatedField(queryset=Space.objects.all())
+
+    class Meta:
+        model = TodoList
+        fields = ['id', 'space', 'recipient', 'content', 'updated_at', 'created_at', 'created_by']
+        read_only_fields = ['id', 'space', 'recipient', 'created_at']

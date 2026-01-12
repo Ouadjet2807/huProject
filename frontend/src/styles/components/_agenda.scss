@@ -94,6 +94,10 @@
       border-radius: 0 $borderRadius $borderRadius 0;
       margin: auto;
 
+      .rbc-current-time-indicator {
+        background-color: $mediumGreen2;
+      }
+
       .rbc-toolbar {
         .rbc-toolbar-label {
           font-family: $font3;

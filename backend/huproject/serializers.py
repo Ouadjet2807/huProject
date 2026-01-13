@@ -45,7 +45,7 @@ class UserLoginSerializer(serializers.Serializer):
         raise serializers.ValidationError("Email/Mot de passe incorrect")
 
 class UserUpdateSerializer(serializers.Serializer):
-    email = serializers.EmailField() 
+    email = serializers.EmailField()
     username = serializers.CharField()
     first_name = serializers.CharField()
     last_name = serializers.CharField()
@@ -57,7 +57,7 @@ class UserUpdateSerializer(serializers.Serializer):
 
     def validate(self, attrs):
         current_user = CustomUser.objects.get(id=self.initial_data['id'])
-    
+
         if attrs["email"] != current_user.email and CustomUser.objects.filter(email=attrs["email"]):
             raise serializers.ValidationError("Adresse email déjà utilisée, veuillez en choisir une autre")
         if attrs["username"] != current_user.username and CustomUser.objects.filter(username=attrs["username"]):
@@ -80,7 +80,7 @@ class CaregiverSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
 
         instance = super().update(instance, validated_data)
-        
+
         return instance
 
 class HealthcareProfessionalSerializer(serializers.ModelSerializer):
@@ -170,7 +170,7 @@ class SpaceSerializer(serializers.ModelSerializer):
 class SpaceMembershipSerializer(serializers.ModelSerializer):
     user = CustomUserSerializer(many=False, read_only=True)
     space = SpaceSerializer(many=False, read_only=True)
- 
+
     class Meta:
         model = SpaceMembership
         fields = ['id', 'user', 'space', 'role', 'created_at']
@@ -199,7 +199,7 @@ class AgendaItemCategorySerializer(serializers.ModelSerializer):
     agenda = AgendaSerializer(read_only=True)
     agenda_id = serializers.PrimaryKeyRelatedField(queryset=Agenda.objects.all(), source='agenda', write_only=True)
 
-    class Meta:
+    class Meta: 
         model = AgendaItemCategory
         fields = ['id', 'agenda', 'agenda_id', 'name', 'color']
         read_only_fields = ['id', 'agenda']
@@ -220,13 +220,14 @@ class AgendaItemSerializer(serializers.ModelSerializer):
 
 class TodoListSerializer(serializers.ModelSerializer):
     space = serializers.PrimaryKeyRelatedField(queryset=Space.objects.all())
-    created_by = CustomUserSerializer(read_only=True)
-    completed_by = CustomUserSerializer()
-
+    created_by = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
+    completed_by = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all(), allow_null=True)
     class Meta:
         model = TodoList
         fields = ['id', 'space', 'frequency', 'completed', 'completed_by', 'title', 'updated_at', 'created_at', 'created_by']
         read_only_fields = ['id', 'space', 'created_at']
+
+
 
 class GrocerySerializer(serializers.ModelSerializer):
     space = serializers.PrimaryKeyRelatedField(queryset=Space.objects.all())

@@ -13,6 +13,8 @@ import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 import moment from "moment";
 import { locale } from "moment";
+import { MdLibraryAdd } from "react-icons/md";
+
 gsap.registerPlugin(useGSAP);
 
 export default function TodoList({ user, space }) {
@@ -57,14 +59,14 @@ export default function TodoList({ user, space }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log();
+    console.log(newTask);
 
     try {
       let response = await api.post(
         "http://127.0.0.1:8000/api/todo_lists/",
         newTask
       );
-      console.log("success");
+      console.log("success", response);
 
       newTask.id = response.data.id;
       setTodoList((prev) => [...prev, newTask]);
@@ -131,6 +133,8 @@ export default function TodoList({ user, space }) {
   }, []);
 
   useEffect(() => {
+    if(!user && !space) return
+
     setNewTask({
       space: space && space.id,
       frequency: "punctual",
@@ -138,7 +142,7 @@ export default function TodoList({ user, space }) {
       completed_by: null,
       title: "",
       description: "",
-      created_by: user && user.id,
+      created_by: user.id,
     });
   }, [user, space]);
 
@@ -224,7 +228,7 @@ export default function TodoList({ user, space }) {
         action=""
         onKeyDown={(e) => e.key === "Enter" && handleSubmit(e)}
       >
-        <InputGroup className="mb-3">
+        <InputGroup>
           <Form.Control
             aria-label="Text input with dropdown button"
             type="text"
@@ -264,9 +268,9 @@ export default function TodoList({ user, space }) {
               })}
           </DropdownButton>
         </InputGroup>
-        <Button variant="aqua" onClick={(e) => handleSubmit(e)}>
-          Ajouter une tâche
-        </Button>
+        <div className="add-button" onClick={(e) => handleSubmit(e)}>
+          <MdLibraryAdd />
+        </div>
       </form>
     </div>
   );

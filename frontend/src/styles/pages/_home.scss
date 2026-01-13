@@ -87,9 +87,13 @@
               color: $white;
             }
 
-            &:active {
-              transform: scale(0.8);
+            &:hover {
               background: #00000021;
+            }
+
+            &:active {
+              background: #00000021;
+              transform: scale(0.8);
             }
 
           }
@@ -99,10 +103,10 @@
 
     .right-tab {
       background: linear-gradient(142deg, #abd1c685, #004643a6);
-      padding: 25px 45px 45px 45px;
+      padding: 25px;
       height: 100%;
       width: 100%;
-      border: 1px solid #004643;
+      border: 1px solid #81a4a1;
       border-radius: $borderRadius;
 
       h3 {

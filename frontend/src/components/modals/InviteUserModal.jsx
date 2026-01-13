@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
+import Form from "react-bootstrap/Form"
 import axios from "axios";
 import { IoIosSearch } from "react-icons/io";
 import { AuthContext } from "../../context/AuthContext";
@@ -87,20 +88,20 @@ export default function InviteUserModal({ show, setShow }) {
       <Modal.Body>
         <p>Saisissez l'adresse email de la personne que vous souhaitez inviter ainsi que son niveau d'accès</p>
        <form action="">
-        <input type="email" name="email" id="" onChange={(e) => handleChange(e)} placeholder="Email"/>
-        <select name="access_level" id="" onChange={(e) => handleChange(e)}>
+        <Form.Control type="email" size="sm" name="email" id="" aria-describedby="basic-addon" onChange={(e) => handleChange(e)} placeholder="Email"/>
+        <Form.Select name="access_level" id="" onChange={(e) => handleChange(e)}>
             <option disabled>Choisissez un rôle</option>
             {roles.map(item => {
                 return <option value={Object.values(item)[0]}>{Object.keys(item)[0]}</option>
             })}
-        </select> 
+        </Form.Select> 
        </form>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="primary" onClick={handleSubmit}>
+        <Button variant="aqua" onClick={handleSubmit}>
           Envoyer une invitation
         </Button>
-        <Button variant="secondary" onClick={handleClose}>
+        <Button variant="outline-secondary" onClick={handleClose}>
           Annuler
         </Button>
       </Modal.Footer>

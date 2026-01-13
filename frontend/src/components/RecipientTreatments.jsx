@@ -25,7 +25,7 @@ import "moment/locale/fr";
 import { UseDimensionsContext } from "../context/UseDimensionsContext";
 import { AuthContext } from "../context/AuthContext";
 
-export default function RecipientTreatments({ formData, recipient }) {
+export default function RecipientTreatments({ recipient }) {
   const [showAddTreatment, setShowAddTreatement] = useState(false);
   const [showMedicationDetails, setShowMedicationDetails] = useState(false);
   const [selectedMedication, setSelectedMedication] = useState({});
@@ -41,20 +41,6 @@ export default function RecipientTreatments({ formData, recipient }) {
   moment.locale("fr");
 
   const today = moment(new Date());
-
-  const getTreatments = async () => {
-    try {
-      const response = await api.get(
-        `http://127.0.0.1:8000/api/treatments/?recipient=${recipient.id}`
-      );
-
-      console.log("Success", response.data);
-      setTreatments(response.data);
-      setLoading(false);
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   const getArchivedTreatments = async () => {
     try {
@@ -96,9 +82,9 @@ export default function RecipientTreatments({ formData, recipient }) {
   };
 
   const checkForExpiredTreatments = () => {
-    if (treatments.length <= 0) return;
+    if (recipient.treatments.length <= 0) return;
 
-    treatments.forEach((item) => {
+    recipient.treatments.forEach((item) => {
       const end_date = moment(item.end_date);
 
       if (end_date < today && today.diff(end_date, "weeks") > 2) {
@@ -188,7 +174,7 @@ export default function RecipientTreatments({ formData, recipient }) {
           recipient
         );
         console.log("success");
-        setArchivedTreatments(treatments.filter((t) => t.id == id));
+        setArchivedTreatments(recipient.treatments.filter((t) => t.id == id));
       } catch (error) {
         console.log(error);
       }
@@ -209,7 +195,7 @@ export default function RecipientTreatments({ formData, recipient }) {
 
     const start_date = moment(new Date(item.start_date));
     const end_date = moment(new Date(item.end_date));
-    const time = moment(end_date - moment().subtract(1, "days"));
+    // const time = moment(end_date - moment().subtract(1, "days"));
 
     let totalUnits = 0;
 
@@ -237,19 +223,21 @@ export default function RecipientTreatments({ formData, recipient }) {
   };
 
   const renderTreatmentsList = () => {
-    if (!treatments || treatments.length == 0) return;
-    
+    let treatments = recipient.treatments;
+
+    if (!treatments || treatments.length == 0) {
+      return (
+        <small>
+          <CiMedicalClipboard /> Aucun traitement enregistré
+        </small>
+      );
+    }
 
     let array = archiveTab
       ? treatments.filter((item) => archivedTreatments.includes(item.id))
       : treatments.filter((item) => !archivedTreatments.includes(item.id));
 
-    console.log(array);
-    console.log(archivedTreatments);
-
     let breakPoints = width > 1200 ? 3 : width > 800 ? 2 : 1;
-
-    console.log(breakPoints);
 
     array.sort((a, b) => {
       return new Date(b.end_date) - new Date(a.end_date);
@@ -257,7 +245,10 @@ export default function RecipientTreatments({ formData, recipient }) {
 
     let rows = [];
 
-    // split the array in arrays of 3 maximum elements
+    console.log(recipient.treatments);
+    console.log(array);
+
+    // split the array in arrays of 3 elements maximum
     for (let i = 0; i <= array.length; i++) {
       if (i !== 0 && i % breakPoints == 0) {
         rows.push(array.slice(i - breakPoints, i));
@@ -375,18 +366,12 @@ export default function RecipientTreatments({ formData, recipient }) {
   }, [showMedicationDetails]);
 
   useEffect(() => {
-    getTreatments();
-  }, []);
-
-  useEffect(() => {
     checkForExpiredTreatments();
-  }, [treatments, space]);
+  }, [recipient.treatments, space]);
 
   useEffect(() => {
     renderTreatmentsList();
   }, [width]);
-
-  useEffect(() => {}, [archivedTreatments]);
 
   return (
     <div
@@ -419,16 +404,10 @@ export default function RecipientTreatments({ formData, recipient }) {
         <Container
           className="treatments-list"
           style={{
-            justifyContent: treatments.length > 0 ? "flex-start" : "center",
+            justifyContent: recipient.treatments.length > 0 ? "flex-start" : "center",
           }}
         >
-          {treatments.length > 0 ? (
-            renderTreatmentsList()
-          ) : (
-            <small>
-              <CiMedicalClipboard /> Aucun traitement enregistré
-            </small>
-          )}
+          {renderTreatmentsList()}
         </Container>
       ) : (
         <div>

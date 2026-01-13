@@ -501,7 +501,7 @@ class TodoListViewSet(viewsets.ModelViewSet):
         return TodoList.objects.filter(space__in=caregiver.spaces.all()).select_related()
 
     def perform_create(self, serializer):
-        serializer.save() 
+        serializer.save()
 
 class GroceriesViewSet(viewsets.ModelViewSet):
     serializer_class = TodoListSerializer

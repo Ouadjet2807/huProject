@@ -111,9 +111,8 @@
 
   form {
     display: flex;
-    flex-direction: column;
-    justify-items: center;
-    gap: 20px 0px;
+    align-items: center;
+    gap: 10px;
     background: rgba(255, 255, 255, 0.2);
     padding: 15px;
     border-radius: $borderRadiusMedium;
@@ -123,11 +122,36 @@
     input {
       width: 100%;
     }
+
+    input[type="text"] {
+      background: transparent;
+      border-bottom: 2px solid #fff;
+      border-top: none;
+      border-left: none;
+      border-right: none;
+      border-radius: 0;
+      color: $white;
+
+      &::placeholder {
+        color: $whiteGreen;
+      }
+
+      &:focus {
+        box-shadow: none;
+      }
+
+      &:focus-visible {
+        outline: 0;
+        border-bottom: 2px solid #fff;
+      }
+    }
     .input-group {
       flex-wrap: nowrap;
+      gap: 10px;
 
       button {
-        min-width: 15vw;
+        min-width: 10vw;
+        font-size: 0.9vw;
       }
 
       .dropdown-item {
@@ -146,5 +170,31 @@
       display: flex;
       justify-content: center;
     }
+
+    .add-button {
+            border: 1px solid $white;
+            border-radius: $borderRadiusSmall;
+            width: max-content;
+            height: max-content;
+            display: flex;
+            align-items: center;
+            padding: 5px;
+            cursor: pointer;
+            transition: 0.2s ease-in-out;
+
+            svg {
+              color: $white;
+            }
+
+            &:hover {
+              background: #00000021;
+            }
+
+            &:active {
+              background: #00000021;
+              transform: scale(0.8);
+            }
+
+          }
   }
 }

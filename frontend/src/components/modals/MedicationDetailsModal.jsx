@@ -32,7 +32,6 @@ export default function MedicationDetailsModal({
   const [dayTime, setDayTime] = useState([]);
   const [presentation, setPresentation] = useState([]);
   const [freeTake, setFreeTake] = useState(false);
-  const [prescriptorsOptions, setPrescriptorsOptions] = useState([]);
   const [formData, setFormData] = useState({
     cis_code: "",
     name: "",
@@ -58,7 +57,7 @@ export default function MedicationDetailsModal({
 
 
   const fetchMedication = async (code) => {
-    console.log(code);
+   if(!code) return
 
     try {
       const response = await axios.get(
@@ -115,8 +114,6 @@ export default function MedicationDetailsModal({
 
   const addImplicitOneIfNeeded = (s) => {
     let normalized = s.trim().toLowerCase();
-
-    console.log(s);
 
     const unitTypes = [
       "plaquette",
@@ -225,7 +222,7 @@ export default function MedicationDetailsModal({
     )) {
       push("pack", m, { n: parseInt(m[1], 10), type: m[2] }, m.index);
     }
-    // countable units (pills, patches)
+    // countable units
     for (const m of s.matchAll(
       /([0-9]+(?:\.[0-9]+)?)\s*(comprime|comprima©|comprima©s|comprimÃ©|comprimÃ©s|comprimes|comprimés|comprimé|gélule|gélules|gelule|gelules|patch|patchs|pastille|pastilles|pansement|pansements|suppositoire|suppositoires|bande|bandes?|ml|l|g|mg|μg)/g
     )) {
@@ -350,18 +347,6 @@ export default function MedicationDetailsModal({
     }
   };
 
-  const getPrescriptors = async () => {
-    try {
-      const res = await api.get(
-        `http://127.0.0.1:8000/api/healthcare_professionals/?recipient=${recipient.id}`
-      );
-      console.log(res.data);
-      setPrescriptorsOptions(res.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   useEffect(() => {
     if (Object.keys(medication).length > 0) {
       setFormData((prev) => ({
@@ -443,9 +428,6 @@ export default function MedicationDetailsModal({
 
   }, [treatment])
 
-  useEffect(() => {
-    getPrescriptors();
-  }, []);
 
   return (
     medication && (
@@ -678,7 +660,7 @@ export default function MedicationDetailsModal({
               <Form.Select aria-label="Default select example" onChange={(e) => setFormData(prev => ({...prev, prescribed_by: e.target.value}))}>
 
                   <option value="Non renseigné"> Non renseigné</option>
-                  {prescriptorsOptions.map((item) => {
+                  {recipient.healthcare_professionals.map((item) => {
                     return <option value={item.name} selected={formData.prescribed_by == item.name}>{item.name}</option>;
                   })}
                </Form.Select>

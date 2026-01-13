@@ -97,7 +97,7 @@ export default function Home({ setRefreshSpace }) {
                     </div>
                   );
                 })}
-              {space.created_by.id === user.id && (
+              {space.created_by && space.created_by.id === user.id && (
                 <Button variant="aqua" onClick={() => setShowInviteModal(true)}>
                   <TbUsersPlus /> Inviter une personne
                 </Button>

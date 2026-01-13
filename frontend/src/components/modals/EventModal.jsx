@@ -159,6 +159,7 @@ export default function EventModal({
   }, [editFormData.start_date]);
 
   useEffect(() => {
+    if(!user || !user.id) return
     setEventCreator(event.created_by.id === user.id ? 'vous' : `${event.created_by.first_name} ${event.created_by.first_name}`);
   }, [user])
 

@@ -153,9 +153,12 @@ textarea {
 small {
   color: $greyGreen;
 }
+
+.btn-close,
+.form-select,
 .form-control,
 .form-check,
 .form-range,
 .form-switch {
-  filter: hue-rotate(300deg);
+  filter: hue-rotate(300deg) !important;
 }

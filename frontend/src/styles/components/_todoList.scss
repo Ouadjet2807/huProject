@@ -29,6 +29,7 @@
       background: transparent;
       color: $green;
       transition: 0.3s ease-in;
+      font-size: 0.8vw;
       cursor: pointer;
       border: 1px solid transparent;
       justify-content: center;
@@ -55,11 +56,11 @@
 
     .todo-item {
       display: grid;
-      grid-template-columns: 5% 83% 5%;
-      gap: 15px;
+      grid-template-columns: 85% 12%;
+      gap: 5px;
       transition: 0.3s ease-in;
       background: #ffffffcc;
-      padding: 5px;
+      padding: 10px;
       border-radius: 5px;
 
       .field {
@@ -78,11 +79,6 @@
           color: $mediumGreen2;
           border-radius: $borderRadiusSmall;
         }
-
-        input {
-          opacity: 0;
-          cursor: pointer;
-        }
       }
 
       .delete {
@@ -98,8 +94,11 @@
 
       &.completed {
         font-style: italic;
-        text-decoration: line-through;
         color: $greyGreen;
+
+        label {
+          text-decoration: line-through;
+        }
 
         .field {
           svg {
@@ -132,7 +131,6 @@
       }
 
       .dropdown-item {
-
         &:active {
           background-color: $mediumGreen2;
         }

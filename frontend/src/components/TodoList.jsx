@@ -6,20 +6,19 @@ import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { FaRegSquare } from "react-icons/fa";
 import { TbSquareCheckFilled } from "react-icons/tb";
-import ButtonGroup from 'react-bootstrap/ButtonGroup';
-import Dropdown from 'react-bootstrap/Dropdown';
-import DropdownButton from 'react-bootstrap/DropdownButton';
-import Form from 'react-bootstrap/Form';
-import InputGroup from 'react-bootstrap/InputGroup';
+import ButtonGroup from "react-bootstrap/ButtonGroup";
+import Dropdown from "react-bootstrap/Dropdown";
+import DropdownButton from "react-bootstrap/DropdownButton";
+import Form from "react-bootstrap/Form";
+import InputGroup from "react-bootstrap/InputGroup";
 import moment from "moment";
 import { locale } from "moment";
 gsap.registerPlugin(useGSAP);
 
 export default function TodoList({ user, space }) {
+  moment.locale("fr");
 
-  moment.locale("fr")
-
-    const todoCategory = [
+  const todoCategory = [
     {
       name: "Toutes",
       value: "all",
@@ -42,7 +41,6 @@ export default function TodoList({ user, space }) {
     },
   ];
 
-
   const [todoList, setTodoList] = useState([]);
   const [filteredTodoList, setFilteredTodoList] = useState([]);
   const [activeCategory, setActiveCategory] = useState(todoCategory[0].value);
@@ -62,10 +60,13 @@ export default function TodoList({ user, space }) {
     console.log();
 
     try {
-      let response = await api.post("http://127.0.0.1:8000/api/todo_lists/", newTask);
+      let response = await api.post(
+        "http://127.0.0.1:8000/api/todo_lists/",
+        newTask
+      );
       console.log("success");
 
-      newTask.id = response.data.id
+      newTask.id = response.data.id;
       setTodoList((prev) => [...prev, newTask]);
       setFilteredTodoList((prev) => [...prev, newTask]);
       setNewTask({
@@ -85,16 +86,13 @@ export default function TodoList({ user, space }) {
   };
 
   const updateTodo = async (index, todo) => {
-
     todo.completed = !todo.completed;
     todo.completed_by = user.id;
-    todo.updated_at = moment(new Date).format();
+    todo.updated_at = moment(new Date()).format();
 
-    
     let filter = filteredTodoList.toSpliced(index, 1, todo);
 
     setFilteredTodoList(filter);
-
 
     try {
       await api.put(`http://127.0.0.1:8000/api/todo_lists/${todo.id}/`, todo);
@@ -147,43 +145,43 @@ export default function TodoList({ user, space }) {
   useEffect(() => {
     const filterCategories = () => {
       if (activeCategory !== "all") {
-        let filter = todoList.filter((item) => item.frequency === activeCategory);
+        let filter = todoList.filter(
+          (item) => item.frequency === activeCategory
+        );
         setFilteredTodoList(filter);
       } else {
         setFilteredTodoList(todoList);
       }
-    }
-    filterCategories()
+    };
+    filterCategories();
   }, [activeCategory, todoList]);
 
   useEffect(() => {
     const resetTodo = () => {
-
       const frequencies = {
-        daily: 'days',
-        weekly: 'weeks',
-        monthly: 'months',
-      }
+        daily: "days",
+        weekly: "weeks",
+        monthly: "months",
+      };
 
       todoList.forEach((todo, index) => {
         console.log(index);
-        const updated_date = moment(todo.updated_at)
-        if(!todo.completed) return
+        const updated_date = moment(todo.updated_at);
+        if (!todo.completed) return;
 
-        const frequency = frequencies[todo.frequency]
+        const frequency = frequencies[todo.frequency];
 
-        if(moment().diff(updated_date, frequency) >= 1) {
-          updateTodo(index, todo)
+        if (moment().diff(updated_date, frequency) >= 1) {
+          updateTodo(index, todo);
         }
-      })
-    }
+      });
+    };
 
-    resetTodo()
-  }, [todoList])
+    resetTodo();
+  }, [todoList]);
 
   console.log(newTask);
   console.log(todoList);
-
 
   return (
     <div id="todoList">
@@ -206,17 +204,14 @@ export default function TodoList({ user, space }) {
           filteredTodoList.map((todo, index) => {
             return (
               <div className={`todo-item ${todo.completed ? "completed" : ""}`}>
-                <div className="field">
-                {todo.completed ? <TbSquareCheckFilled /> : <FaRegSquare />}
-                <input
+                <Form.Check
                   type="checkbox"
-                  name=""
+                  label={todo.title}
                   id=""
                   checked={todo.completed}
                   onClick={() => updateTodo(index, todo)}
-                  />
-                  </div>
-                {todo.title}
+                />
+
                 <div className="delete" onClick={() => deleteTodo(index, todo)}>
                   <LuTrash2 />
                 </div>
@@ -224,34 +219,55 @@ export default function TodoList({ user, space }) {
             );
           })}
       </div>
-        <form
-          id="addTaskForm"
-          action=""
-          onKeyDown={(e) => e.key === "Enter" && handleSubmit(e)}
-        >
-            <InputGroup className="mb-3">
-        <Form.Control aria-label="Text input with dropdown button" type="text"
+      <form
+        id="addTaskForm"
+        action=""
+        onKeyDown={(e) => e.key === "Enter" && handleSubmit(e)}
+      >
+        <InputGroup className="mb-3">
+          <Form.Control
+            aria-label="Text input with dropdown button"
+            type="text"
             name="title"
             id=""
             value={newTask.title}
             placeholder="Nouvelle tâche"
-            onChange={(e) => handleChange(e)}/>
+            onChange={(e) => handleChange(e)}
+          />
 
-        <DropdownButton
-          variant="outline-secondary"
-          title={Object.keys(newTask).includes("frequency") ? todoCategory.find(cat => cat.value == newTask.frequency).name : "Fréquence"}
-          id="input-group-dropdown-2"
-          align="end"
-        >
-             {todoCategory
+          <DropdownButton
+            variant="outline-secondary"
+            title={
+              Object.keys(newTask).includes("frequency")
+                ? todoCategory.find((cat) => cat.value == newTask.frequency)
+                    .name
+                : "Fréquence"
+            }
+            id="input-group-dropdown-2"
+            align="end"
+          >
+            {todoCategory
               .filter((item) => item.value !== "all")
               .map((category) => {
-                return <Dropdown.Item onClick={() => setNewTask(prev => ({...prev, frequency: category.value}))}>{category.name}</Dropdown.Item>;
+                return (
+                  <Dropdown.Item
+                    onClick={() =>
+                      setNewTask((prev) => ({
+                        ...prev,
+                        frequency: category.value,
+                      }))
+                    }
+                  >
+                    {category.name}
+                  </Dropdown.Item>
+                );
               })}
-        </DropdownButton>
-      </InputGroup>
-          <Button variant="aqua" onClick={(e) => handleSubmit(e)}>Ajouter une tâche</Button>
-        </form>
+          </DropdownButton>
+        </InputGroup>
+        <Button variant="aqua" onClick={(e) => handleSubmit(e)}>
+          Ajouter une tâche
+        </Button>
+      </form>
     </div>
   );
 }

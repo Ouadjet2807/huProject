@@ -30,11 +30,6 @@ export default function Home({ setRefreshSpace }) {
   //   checkUserLoggedIn();
   // }, [loading, user, navigate]);
 
-  const isCreator = () => {
-    if (!user || !space) return false;
-
-    if (space.created_by === user.id) return true;
-  };
 
   console.log(space);
 
@@ -102,7 +97,7 @@ export default function Home({ setRefreshSpace }) {
                     </div>
                   );
                 })}
-              {isCreator() && (
+              {space.created_by.id === user.id && (
                 <Button variant="aqua" onClick={() => setShowInviteModal(true)}>
                   <TbUsersPlus /> Inviter une personne
                 </Button>

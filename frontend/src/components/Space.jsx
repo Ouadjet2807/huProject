@@ -18,6 +18,7 @@ import { TiDelete } from "react-icons/ti";
 export default function Space({ editMode, setEditMode, roles }) {
   const { space, user } = useContext(AuthContext);
   const [spaceMemberships, setSpaceMemberships] = useState([]);
+  const [spaceCreator, setSpaceCreator] = useState();
   const [deleteCaregiverModal, setDeleteCaregiverModal] = useState(false);
   const [selectedCaregiver, setSelectedCaregiver] = useState();
   const [selectedRecipient, setSelectedRecipient] = useState();
@@ -97,15 +98,6 @@ export default function Space({ editMode, setEditMode, roles }) {
     }
   };
 
-  const getSpaceCreator = () => {
-    if (!space.caregivers || !user) return;
-
-    if (space.caregivers.length > 1 && space.created_by !== user.id) {
-      let creator = space.caregivers.find((e) => e.user == space.created_by);
-      return creator.first_name + " " + creator.last_name;
-    } else return "vous";
-  };
-
   const getAccessLevel = (caregiver) => {
     if (!caregiver) return;
     const access_level = roles.find((r) => r[0] == caregiver.access_level);
@@ -176,7 +168,12 @@ export default function Space({ editMode, setEditMode, roles }) {
   }
 
   useEffect(() => {
+
+    if(!user && !space || Object.keys(space).length <= 0) return
     getSpaceMemberships();
+
+    setSpaceCreator(space.created_by.id === user.id ? 'vous' : `${space.created_by.first_name} ${space.last_name}`)
+
   }, [space]);
 
   useEffect(() => {
@@ -278,12 +275,12 @@ export default function Space({ editMode, setEditMode, roles }) {
         <strong>
           {new Date(space.created_at).toLocaleString().slice(0, 10)}
         </strong>{" "}
-        par <strong>{getSpaceCreator()}</strong>
+        par <strong>{spaceCreator}</strong>
       </small>
       <div className="box" id="caregivers">
         <div className="box-header">
           <strong>Membres</strong>
-          {isCreator(user.id) && (
+          {space.created_by.id === user.id && (
             <Button
               className={`edit-button
                ${
@@ -316,7 +313,7 @@ export default function Space({ editMode, setEditMode, roles }) {
                   }`}
                 >
                   <div className="status-badge">
-                    {isCreator(item.user) && <PiCrownSimpleDuotone />}
+                    {space.created_by.id === item.user && <PiCrownSimpleDuotone />}
                   </div>
                   <div className="info">
                     <p>
@@ -365,7 +362,7 @@ export default function Space({ editMode, setEditMode, roles }) {
               );
             })}
         </ul>
-        {isCreator(user.id) && (
+        {space.created_by.id == user.id && (
           <Button
             onClick={() => setShowInviteModal(true)}
             className="add-person"

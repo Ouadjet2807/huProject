@@ -173,8 +173,7 @@ export default function Agenda({ space }) {
                     <div
                       className="icon"
                       style={{
-                        borderLeftColor: getCategoryColor(event.category)
-                          .background,
+                        borderLeftColor: event.category && event.category.color.background,
                       }}
                     >
                       <MdOutlinePermContactCalendar />
@@ -219,12 +218,12 @@ export default function Agenda({ space }) {
 
               if (event.category) {
                 newStyle.backgroundColor = `${
-                  getCategoryColor(event.category).background
+                  event.category.color.background
                 }`;
                 newStyle.border = `1px solid ${
-                  getCategoryColor(event.category).text
+                  event.category.color.text
                 }`;
-                newStyle.color = getCategoryColor(event.category).text;
+                newStyle.color = event.category.color.text;
               }
 
               return {

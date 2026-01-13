@@ -194,17 +194,6 @@ class AgendaSerializer(serializers.ModelSerializer):
         read_only_fields = ['id','space']
 
 
-class AgendaItemSerializer(serializers.ModelSerializer):
-    agenda = AgendaSerializer(read_only=True)
-    agenda_id = serializers.PrimaryKeyRelatedField(queryset=Agenda.objects.all(), source='agenda', write_only=True)
-    created_by = CustomUserSerializer(read_only=True)
-    participants = CaregiverSerializer(many=True)
-    recipients = RecipientSerializer(many=True)
-
-    class Meta:
-        model = AgendaItem
-        fields = ['id', 'agenda', 'category', 'private', 'title', 'description', 'created_at', 'start_date','end_date', 'created_by', 'agenda_id', 'participants', 'recipients']
-        read_only_fields = ['id', 'agenda', 'created_at']
 
 class AgendaItemCategorySerializer(serializers.ModelSerializer):
     agenda = AgendaSerializer(read_only=True)
@@ -214,6 +203,19 @@ class AgendaItemCategorySerializer(serializers.ModelSerializer):
         model = AgendaItemCategory
         fields = ['id', 'agenda', 'agenda_id', 'name', 'color']
         read_only_fields = ['id', 'agenda']
+
+class AgendaItemSerializer(serializers.ModelSerializer):
+    agenda = AgendaSerializer(read_only=True)
+    agenda_id = serializers.PrimaryKeyRelatedField(queryset=Agenda.objects.all(), source='agenda', write_only=True)
+    created_by = CustomUserSerializer(read_only=True)
+    participants = CaregiverSerializer(many=True)
+    recipients = RecipientSerializer(many=True)
+    category = AgendaItemCategorySerializer()
+
+    class Meta:
+        model = AgendaItem
+        fields = ['id', 'agenda', 'category', 'private', 'title', 'description', 'created_at', 'start_date','end_date', 'created_by', 'agenda_id', 'participants', 'recipients']
+        read_only_fields = ['id', 'agenda', 'created_at']
 
 
 class TodoListSerializer(serializers.ModelSerializer):

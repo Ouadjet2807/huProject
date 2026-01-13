@@ -25,7 +25,6 @@ export default function AddEvent({ agenda, show, setShow }) {
 
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState();
-  const [minDate, setMinDate] = useState();
   const [showCreateCategory, setShowCreateCategory] = useState(false);
 
   let default_start_date = moment()

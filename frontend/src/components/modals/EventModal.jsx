@@ -49,7 +49,7 @@ export default function EventModal({
     day: "numeric",
     hour: "numeric",
     minute: "numeric",
-  };
+  }
 
   const selectCategory = (category) => {
     setEditFormData((prev) => ({
@@ -58,27 +58,6 @@ export default function EventModal({
     }));
 
     setSelectedCategory(category);
-  };
-
-  const getCreator = async (id) => {
-    let creator = ""
-
-    if(!id) return ""
-
-    try {
-      const res = await api.get(`http://127.0.0.1:8000/api/user/${id}`);
-
-      creator = res.data.first_name + " " + res.data.last_name;
-      if (user && event.created_by === user.id) creator = "vous";
-
-    } catch (error) {
-      console.log(error);
-    }
-    finally {
-
-
-      return creator;
-    }
   };
 
   const canEdit = () => {
@@ -91,16 +70,6 @@ export default function EventModal({
     return false
 
   }
-
-  const getParticipant = (key, id) => {
-    const person = space[key].filter((item) => item.id == id);
-
-    const name = person[0].first_name + " " + person[0].last_name;
-
-    console.log(name);
-
-    return name;
-  };
 
   const handleChange = (e) => {
     e.stopPropagation();
@@ -190,7 +159,7 @@ export default function EventModal({
   }, [editFormData.start_date]);
 
   useEffect(() => {
-    setEventCreator(getCreator(event.created_by));
+    setEventCreator(event.created_by.id === user.id ? 'vous' : `${event.created_by.first_name} ${event.created_by.first_name}`);
   }, [user])
 
 
@@ -202,7 +171,7 @@ export default function EventModal({
         setShow={setShowCreateCategory}
         agenda={agenda}
       />
-      <Modal show={show} onHide={handleClose} className="event-modal">
+      <Modal size="lg" show={show} onHide={handleClose} className="event-modal">
         {Object.keys(event).length > 0 && (
           <>
             {!editionMode ? (
@@ -230,8 +199,8 @@ export default function EventModal({
                   </div>
                   <div className="category">
                     <CiShoppingTag />
-                    {event.category && categories.length > 0
-                      ? categories.find((e) => e.id == event.category).name
+                    {event.category 
+                      ? event.category.name
                       : "Non catégorisé"}
                   </div>
                   <p className="description">
@@ -250,7 +219,7 @@ export default function EventModal({
                         <ul>
                           {event.participants.map((item) => {
                             return (
-                              <li>{getParticipant("caregivers", item)}</li>
+                              <li>{item.first_name} {item.last_name}</li>
                             );
                           })}
                         </ul>
@@ -260,7 +229,7 @@ export default function EventModal({
                         <ul>
                           {event.recipients.map((item) => {
                             return (
-                              <li>{getParticipant("recipients", item)}</li>
+                              <li>{item.first_name} {item.last_name}</li>
                             );
                           })}
                         </ul>
@@ -463,7 +432,7 @@ export default function EventModal({
               </form>
             )}
             <Modal.Footer>
-              {(event.created_by === user.id || canEdit()) && (
+              {(event.created_by.id === user.id || canEdit()) && (
                 <>
                   <Button variant="outline-danger" onClick={() => handleDelete()}>
                     <FaRegTrashAlt />

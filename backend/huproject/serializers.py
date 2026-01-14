@@ -11,7 +11,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
     confirm_password = serializers.CharField(write_only=True)
-    
+
     class Meta:
         model = CustomUser
         fields = ('id', 'username', 'email', 'last_name', 'first_name', 'password', 'confirm_password', 'invited')
@@ -71,6 +71,7 @@ class UserUpdateSerializer(serializers.Serializer):
 
 class CaregiverSerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
+    id = serializers.CharField()
 
     class Meta:
         model = Caregiver
@@ -110,7 +111,8 @@ class ArchivedTreatmentSerializer(serializers.ModelSerializer):
 
 
 class RecipientSerializer(serializers.ModelSerializer):
-    space_id = serializers.UUIDField(write_only=True)
+    id = serializers.CharField()
+    space_id = serializers.UUIDField()
     medical_info = serializers.JSONField(required=False)
     treatments = TreatmentSerializer(many=True)
     healthcare_professionals = HealthcareProfessionalSerializer(many=True)
@@ -197,34 +199,78 @@ class AgendaSerializer(serializers.ModelSerializer):
 
 class AgendaItemCategorySerializer(serializers.ModelSerializer):
     agenda = AgendaSerializer(read_only=True)
-    agenda_id = serializers.PrimaryKeyRelatedField(queryset=Agenda.objects.all(), source='agenda', write_only=True)
+    # agenda_id = serializers.PrimaryKeyRelatedField(queryset=Agenda.objects.all(), source='agenda', write_only=True)
 
     class Meta: 
         model = AgendaItemCategory
-        fields = ['id', 'agenda', 'agenda_id', 'name', 'color']
+        fields = ['id', 'agenda', 'name', 'color']
         read_only_fields = ['id', 'agenda']
 
 class AgendaItemSerializer(serializers.ModelSerializer):
     agenda = AgendaSerializer(read_only=True)
     agenda_id = serializers.PrimaryKeyRelatedField(queryset=Agenda.objects.all(), source='agenda', write_only=True)
+    created_by_id = serializers.UUIDField(write_only=True)
     created_by = CustomUserSerializer(read_only=True)
     participants = CaregiverSerializer(many=True)
     recipients = RecipientSerializer(many=True)
-    category = AgendaItemCategorySerializer()
+    category = AgendaItemCategorySerializer(read_only=True)
 
     class Meta:
         model = AgendaItem
-        fields = ['id', 'agenda', 'category', 'private', 'title', 'description', 'created_at', 'start_date','end_date', 'created_by', 'agenda_id', 'participants', 'recipients']
+        fields = ['id', 'agenda', 'agenda_id', 'category', 'private', 'title', 'description', 'created_at', 'start_date','end_date', 'created_by', 'created_by_id', 'participants', 'recipients']
         read_only_fields = ['id', 'agenda', 'created_at']
+
+    def create(self, validated_data):
+        print(validated_data)
+        participants_data = validated_data.pop('participants', None)
+        recipients_data = validated_data.pop('recipients', None)
+
+
+        agenda_item = AgendaItem.objects.create(**validated_data)
+        for recipient in recipients_data:
+            agenda_item.recipients.add(recipient['id'])
+
+        for participant in participants_data:
+            agenda_item.participants.add(participant['id'])
+
+        return agenda_item
+
+    def update(self, instance, validated_data):
+        participants_data = validated_data.pop('participants')
+        recipients_data = validated_data.pop('recipients')
+
+        participants = []
+        recipients = []
+
+        for participant in participants_data:
+            participants.append(participant['id'])
+
+        for recipient in recipients_data:
+            participants.append(recipient['id'])
+
+        instance = instance = super().update(instance, validated_data)
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        instance.save()
+        if recipients_data is not None:
+            instance.recipients.set(recipients)
+
+        if participants is not None:
+            instance.participants.set(participants)
+
+        return instance
 
 
 class TodoListSerializer(serializers.ModelSerializer):
     space = serializers.PrimaryKeyRelatedField(queryset=Space.objects.all())
-    created_by = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
-    completed_by = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all(), allow_null=True)
+    created_by_id = serializers.UUIDField(write_only=True)
+    created_by = CustomUserSerializer(read_only=True)
+    completed_by = CustomUserSerializer(read_only=True, allow_null=True)
+
     class Meta:
         model = TodoList
-        fields = ['id', 'space', 'frequency', 'completed', 'completed_by', 'title', 'updated_at', 'created_at', 'created_by']
+        fields = ['id', 'space', 'frequency', 'completed', 'completed_by', 'title', 'updated_at', 'created_at', 'created_by', 'created_by_id']
         read_only_fields = ['id', 'space', 'created_at']
 
 

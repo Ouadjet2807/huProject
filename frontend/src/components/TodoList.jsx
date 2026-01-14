@@ -89,8 +89,12 @@ export default function TodoList({ user, space }) {
 
   const updateTodo = async (index, todo) => {
     todo.completed = !todo.completed;
-    todo.completed_by = user.id;
+    todo.completed_by = user;
+    todo.completed_by_id = user.id;
     todo.updated_at = moment(new Date()).format();
+    
+    console.log(todo);
+    
 
     let filter = filteredTodoList.toSpliced(index, 1, todo);
 
@@ -140,9 +144,11 @@ export default function TodoList({ user, space }) {
       frequency: "punctual",
       completed: false,
       completed_by: null,
+      completed_by_id: null,
       title: "",
       description: "",
-      created_by: user.id,
+      created_by: user,
+      created_by_id: user.id,
     });
   }, [user, space]);
 

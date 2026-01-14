@@ -44,13 +44,13 @@ class UserLoginAPIView(GenericAPIView):
                           "access": str(token.access_token)}
 
         return Response(data, status=status.HTTP_200_OK)
-    
+
 class UserUpdateAPIView(GenericAPIView):
     permission_classes= (IsAuthenticated,)
     serializer_class = UserUpdateSerializer
 
     def post(self, request, *args, **kwargs):
-       
+
        if request.method=='POST':
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -66,7 +66,6 @@ class UserUpdateAPIView(GenericAPIView):
                 return Response(request.data, status=status.HTTP_200_OK)
         except Exception as e:
             return Response(e.args, status=status.HTTP_400_BAD_REQUEST)
-            
 
 class UserLogoutAPIView(GenericAPIView):
     permission_classes = (AllowAny,)

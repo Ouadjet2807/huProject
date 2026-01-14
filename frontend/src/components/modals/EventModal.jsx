@@ -1,5 +1,6 @@
 import React, { use, useEffect } from "react";
 import Button from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
 import Modal from "react-bootstrap/Modal";
 import { CiClock2 } from "react-icons/ci";
 import { RxTextAlignLeft } from "react-icons/rx";
@@ -29,7 +30,7 @@ export default function EventModal({
 }) {
   moment.locale("fr");
   const { space, user } = useContext(AuthContext);
-    const { setShowToast, setMessage, setColor } = useContext(ToastContext);
+  const { setShowToast, setMessage, setColor } = useContext(ToastContext);
 
   const [eventCreator, setEventCreator] = useState();
   const [editionMode, setEditionMode] = useState(false);
@@ -49,7 +50,7 @@ export default function EventModal({
     day: "numeric",
     hour: "numeric",
     minute: "numeric",
-  }
+  };
 
   const selectCategory = (category) => {
     setEditFormData((prev) => ({
@@ -61,41 +62,43 @@ export default function EventModal({
   };
 
   const canEdit = () => {
+    if (!user || !space) return;
+    let caregiver = space.caregivers.find((e) => e.user === user.id);
 
-    if(!user || !space) return
-    let caregiver = space.caregivers.find(e => e.user === user.id)
+    if (caregiver && caregiver.access_level < 3) return true;
 
-    if (caregiver && caregiver.access_level < 3) return true
-
-    return false
-
-  }
+    return false;
+  };
 
   const handleChange = (e) => {
     e.stopPropagation();
-    e.preventDefault();
-    let value = e.target.value;
+    let value = ''
     let key = e.target.name;
 
     if (e.target.type === "date" || e.target.type === "time") {
       key = `${e.target.name.split("_")[0]}_date`;
-      console.log(editFormData[key]);
+      console.log('date');
       let initialDate = moment(editFormData[key]).format();
 
       value =
         e.target.name.split("_")[1] === "time"
           ? moment(`${initialDate.slice(0, 10)} ${e.target.value}`)
-          : moment(`${e.target.value} ${initialDate.slice(11, 16)}`)
-    } else if (e.target.type === "select-multiple") {
-      let intValue = parseInt(e.target.value);
+          : moment(`${e.target.value} ${initialDate.slice(11, 16)}`);
+    }  else if (e.target.type === "checkbox") {
+        console.log(e.target.value);
 
-      value = !editFormData[key].includes(intValue)
-        ? [intValue]
-        : editFormData[key].splice(editFormData[key].indexOf(intValue), 1);
-    } else if (e.target.type === "checkbox") {
-       value = e.target.checked
+        const parsed_value = JSON.parse(e.target.value)
+        if(e.target.checked && !editFormData[key].some(e => e.id == parsed_value.id)) {
+          editFormData[key].push(parsed_value)
+          value = editFormData[key]
+        } else {
+            console.log('uncheck');
+            value = editFormData[key].filter(item => item.id !== parsed_value.id)
+        }
     }
-
+    console.log(e.target.type);
+    console.log(key);
+    console.log(value);
     setEditFormData((prev) => ({
       ...prev,
       [key]: value,
@@ -117,21 +120,26 @@ export default function EventModal({
   };
 
   const handleUpdate = async () => {
+    editFormData.created_by_id = editFormData.created_by.id;
+
+    console.log(editFormData);
     try {
       await api.put(
         `http://127.0.0.1:8000/api/agenda_items/${event.id}/`,
         editFormData
       );
       console.log("Success");
-       setShowToast(true)
-      setMessage("Événement modifié avec succès")
-      setColor("success")
+      setShowToast(true);
+      setMessage("Événement modifié avec succès");
+      setColor("success");
       handleClose();
     } catch (error) {
       console.log(error);
-      setShowToast(true)
-      setMessage("Une erreur s'est produite lors de la modification de l'événement")
-      setColor("danger")
+      setShowToast(true);
+      setMessage(
+        "Une erreur s'est produite lors de la modification de l'événement"
+      );
+      setColor("danger");
     }
   };
 
@@ -143,7 +151,7 @@ export default function EventModal({
 
   useEffect(() => {
     console.log(event);
-    
+
     setEditFormData(event);
   }, [editionMode]);
 
@@ -159,11 +167,16 @@ export default function EventModal({
   }, [editFormData.start_date]);
 
   useEffect(() => {
-    if(!user || !user.id) return
-    setEventCreator(event.created_by.id === user.id ? 'vous' : `${event.created_by.first_name} ${event.created_by.first_name}`);
-  }, [user])
+    if (!user || !user.id || !event.created_by) return;
+    setEventCreator(
+      event.created_by.id === user.id
+        ? "vous"
+        : `${event.created_by.first_name} ${event.created_by.first_name}`
+    );
+  }, [user]);
 
-
+  console.log(editFormData);
+  
 
   return (
     <>
@@ -200,9 +213,7 @@ export default function EventModal({
                   </div>
                   <div className="category">
                     <CiShoppingTag />
-                    {event.category 
-                      ? event.category.name
-                      : "Non catégorisé"}
+                    {event.category ? event.category.name : "Non catégorisé"}
                   </div>
                   <p className="description">
                     <RxTextAlignLeft />
@@ -220,7 +231,9 @@ export default function EventModal({
                         <ul>
                           {event.participants.map((item) => {
                             return (
-                              <li>{item.first_name} {item.last_name}</li>
+                              <li>
+                                {item.first_name} {item.last_name}
+                              </li>
                             );
                           })}
                         </ul>
@@ -230,7 +243,9 @@ export default function EventModal({
                         <ul>
                           {event.recipients.map((item) => {
                             return (
-                              <li>{item.first_name} {item.last_name}</li>
+                              <li>
+                                {item.first_name} {item.last_name}
+                              </li>
                             );
                           })}
                         </ul>
@@ -270,9 +285,7 @@ export default function EventModal({
                         id=""
                         value={
                           Object.keys(editFormData).length > 0 &&
-                          moment(editFormData.start_date)
-                            .format()
-                            .slice(0, 10)
+                          moment(editFormData.start_date).format().slice(0, 10)
                         }
                         onChange={(e) => handleChange(e)}
                       />
@@ -282,9 +295,7 @@ export default function EventModal({
                         id=""
                         value={
                           Object.keys(editFormData).length > 0 &&
-                          moment(editFormData.start_date)
-                            .format()
-                            .slice(11, 16)
+                          moment(editFormData.start_date).format().slice(11, 16)
                         }
                         onChange={(e) => handleChange(e)}
                       />
@@ -294,9 +305,7 @@ export default function EventModal({
                         id=""
                         value={
                           Object.keys(editFormData).length > 0 &&
-                          moment(editFormData.end_date)
-                            .format()
-                            .slice(11, 16)
+                          moment(editFormData.end_date).format().slice(11, 16)
                         }
                         onChange={(e) => handleChange(e)}
                       />
@@ -359,53 +368,44 @@ export default function EventModal({
                     <div className="columns">
                       <div className="column">
                         <span>Participants</span>
-                        <select
-                          name="participants"
-                          multiple
-                          onChange={(e) => handleChange(e)}
-                        >
+                        <div className="participants-list">
                           {Object.keys(space).length > 0 &&
                             space.caregivers.map((item) => {
                               return (
-                                <option
-                                  value={item.id}
-                                  className={`${
-                                    Object.keys(editFormData).length > 0 &&
-                                    editFormData.participants.includes(item.id)
-                                      ? "selected"
-                                      : ""
-                                  }`}
-                                >
-                                  {item.first_name} {item.last_name}
-                                </option>
+                                <Form.Check
+                                  inline
+                                  value={JSON.stringify(item)}
+                                  checked={editFormData.participants && editFormData.participants.some(e => e.id == item.id)}
+                                  name="participants"
+                                  label={`${item.first_name} ${item.last_name}`}
+                                  type="checkbox"
+                                  onChange={(e) => handleChange(e)}
+                                  id={`inline-checkbox-3`}
+                                />
                               );
                             })}
-                        </select>
+                        </div>
                       </div>
                       <div className="column">
                         <span>Aidé</span>
-                        <select
-                          name="recipients"
-                          multiple
-                          onChange={(e) => handleChange(e)}
-                        >
-                          {Object.keys(space).length > 0 &&
-                            space.recipients.map((item) => {
-                              return (
-                                <option
-                                  value={item.id}
-                                  className={`${
-                                    Object.keys(editFormData).length > 0 &&
-                                    editFormData.recipients.includes(item.id)
-                                      ? "selected"
-                                      : ""
-                                  }`}
-                                >
-                                  {item.first_name} {item.last_name}
-                                </option>
-                              );
-                            })}
-                        </select>
+                        <div className="recipients-list">
+
+                        {Object.keys(space).length > 0 &&
+                          space.recipients.map((item) => {
+                            return (
+                              <Form.Check
+                              inline
+                              value={JSON.stringify(item)}
+                              checked={editFormData.recipients && editFormData.recipients.some(e => e.id == item.id)}
+                              name="recipients"
+                              label={`${item.first_name} ${item.last_name}`}
+                              onChange={(e) => handleChange(e)}
+                              type="checkbox"
+                              id={`inline-checkbox-3`}
+                              />
+                            );
+                          })}
+                          </div>
                       </div>
                     </div>
                   </div>
@@ -433,14 +433,20 @@ export default function EventModal({
               </form>
             )}
             <Modal.Footer>
-              {(event.created_by.id === user.id || canEdit()) && (
+              {(event.created_by && event.created_by.id === user.id || canEdit()) && (
                 <>
-                  <Button variant="outline-danger" onClick={() => handleDelete()}>
+                  <Button
+                    variant="outline-danger"
+                    onClick={() => handleDelete()}
+                  >
                     <FaRegTrashAlt />
                     Supprimer
                   </Button>
                   {editionMode ? (
-                    <Button variant="outline-primary" onClick={() => handleUpdate()}>
+                    <Button
+                      variant="outline-primary"
+                      onClick={() => handleUpdate()}
+                    >
                       <CiEdit />
                       Enregistrer
                     </Button>

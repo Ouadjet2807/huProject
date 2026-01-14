@@ -50,8 +50,10 @@ export default function AddEvent({ agenda, show, setShow }) {
     description: "",
     start_date: default_start_date,
     end_date: default_end_date,
-    created_by: "",
+    created_by: {},
+    created_by_id: '',
     agenda_id: "",
+    agenda: {},
     participants: [],
     recipients: [],
   });
@@ -116,7 +118,7 @@ export default function AddEvent({ agenda, show, setShow }) {
   const selectCategory = (category) => {
     setFormData((prev) => ({
       ...prev,
-      category: category.id,
+      category: category,
     }));
 
     setSelectedCategory(category);
@@ -187,9 +189,11 @@ export default function AddEvent({ agenda, show, setShow }) {
     ) {
       setFormData((prev) => ({
         ...prev,
+        agenda: agenda,
         agenda_id: agenda.id,
-        created_by: user.id,
-        participants: [user.id],
+        created_by_id: user.id,
+        created_by: user,
+        participants: [user],
       }));
     }
     if (space && Object.keys(space).includes("caregivers")) {
@@ -197,7 +201,7 @@ export default function AddEvent({ agenda, show, setShow }) {
         if (user && element.user == user.id) {
           setFormData((prev) => ({
             ...prev,
-            participants: [element.id],
+            participants: [element],
           }));
         }
       });
@@ -354,7 +358,7 @@ export default function AddEvent({ agenda, show, setShow }) {
                     {space.recipients.map((item) => {
                       return (
                         <option
-                          value={item.id}
+                          value={item}
                           className={`${
                             formData.recipients.includes(item.id)
                               ? "selected"
@@ -379,7 +383,7 @@ export default function AddEvent({ agenda, show, setShow }) {
                     {space.caregivers.map((item) => {
                       return (
                         <option
-                          value={item.id}
+                          value={item}
                           className={`${
                             formData.participants.includes(item.id)
                               ? "selected"

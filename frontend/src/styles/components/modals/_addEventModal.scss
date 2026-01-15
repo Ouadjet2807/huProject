@@ -5,9 +5,8 @@
     gap: 20px;
     align-items: flex-end;
 
-    input,
-    textarea,
-    label {
+    input:not(.form-check-input), .form-floating,
+    textarea {
       width: 100%;
     }
 
@@ -140,37 +139,38 @@
       gap: 10px;
       align-items: end;
     }
-
-    .participants {
+    .lists {
       display: grid;
       grid-template-columns: 49% 49%;
       gap: 10px;
-      margin: auto;
       width: 100%;
+      padding: 0px 20px;
 
-      select {
-        option {
-          padding: 5px 10px;
-          border-radius: $borderRadiusSmall;
-          cursor: pointer;
+      .participants {
+        select {
+          option {
+            padding: 5px 10px;
+            border-radius: $borderRadiusSmall;
+            cursor: pointer;
 
-          &:checked,
+            &:checked,
+            &:focus,
+            &:active {
+              background: transparent !important;
+            }
+
+            &.selected {
+              background: $aqua !important;
+              border: 1px solid $green;
+              color: $green;
+            }
+          }
+
           &:focus,
           &:active {
-            background: transparent !important;
-          }
-
-          &.selected {
-            background: $aqua !important;
-            border: 1px solid $green;
-            color: $green;
-          }
-        }
-
-        &:focus,
-        &:active {
-          option {
-            background-color: transparent;
+            option {
+              background-color: transparent;
+            }
           }
         }
       }

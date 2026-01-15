@@ -6,11 +6,15 @@ import "moment/locale/fr";
 import EventModal from "./modals/EventModal";
 import AddEvent from "./modals/AddEvent";
 import Button from "react-bootstrap/esm/Button";
+import Badge from "react-bootstrap/Badge";
 import { LuCalendarPlus } from "react-icons/lu";
 import { MdOutlinePermContactCalendar } from "react-icons/md";
 import { LuCalendarCheck2 } from "react-icons/lu";
 import api from "../api/api";
 import Loader from "./Loader";
+import { TiArrowBackOutline } from "react-icons/ti";
+import { IoLockClosedOutline } from "react-icons/io5";
+import ListGroup from "react-bootstrap/ListGroup";
 
 export default function Agenda({ space }) {
   const [agenda, setAgenda] = useState();
@@ -50,21 +54,11 @@ export default function Agenda({ space }) {
     event: "Événement",
   };
 
-  const getCategoryColor = (id) => {
-    let category = eventCategories.find((item) => item.id == id);
-
-    if (category) {
-      return category.color;
-    } else {
-      return { background: "#92cfbc75", text: "#2A534C" };
-    }
-  };
-
   const handleSelectEvent = (event) => {
     console.log("event", event);
 
     setSelectedEvent(event);
-    setShowEvent(true);
+    // setShowEvent(true);
   };
 
   const fetchAgenda = async () => {
@@ -113,6 +107,22 @@ export default function Agenda({ space }) {
     }
   };
 
+  const displayDate = (start_date, end_date) => {
+    const start = moment(start_date);
+    const end = moment(end_date);
+
+    let str = "";
+
+    if (end.diff(start, "days") > 0) {
+      str = `${start.local().format("dddd Do MMMM - HH:mm")} | ${end.local().format(
+        "dddd, MMMM, YYYY HH:mm:ss"
+      )}`;
+    } else {
+      str = `${start.local().format("dddd Do MMMM - HH:mm")} | ${end.local().format("HH:mm")}`;
+    }
+    return str;
+  };
+
   useEffect(() => {
     fetchCategories();
     fetchAgenda();
@@ -146,62 +156,108 @@ export default function Agenda({ space }) {
 
   return (
     <div id="agenda">
-      <EventModal
-        event={selectedEvent}
-        setShow={setShowEvent}
-        show={showEvent}
-        categories={eventCategories}
-        agenda={agenda}
-      />
       <AddEvent
         agenda={agenda}
         space={space}
         setShow={setShowEventForm}
         show={showEventForm}
+        preloadedEvent={selectedEvent}
       />
       <div className="left-tab">
-        <h3>Aujourd'hui</h3>
-        <div className="date">
-          {today.toLocaleDateString("fr-Fr", date_options)}
-        </div>
-        <div className="todays-events">
-          {todayAgendaItems.length > 0 ? (
-            <ul>
-              {todayAgendaItems.map((event) => {
-                return (
-                  <li onClick={() => handleSelectEvent(event)}>
-                    <div
-                      className="icon"
-                      style={{
-                        borderLeftColor: event.category && event.category.color.background,
-                      }}
-                    >
-                      <MdOutlinePermContactCalendar />
-                    </div>
-                    <div className="event-info">
-                      <div className="time">
-                        {event.start_date.toTimeString().slice(0, 5)}-
-                        {event.end_date.toTimeString().slice(0, 5)}
-                      </div>
-                      <span>{event.title}</span>
-                    </div>
-                  </li>
-                );
+        {Object.keys(selectedEvent).length > 0 ? (
+          <div className="selected-event">
+            <Button
+              variant="aqua"
+              size="sm"
+              onClick={() => setSelectedEvent({})}
+            >
+              <TiArrowBackOutline />
+              Retour
+            </Button>
+            <div className="header">
+              <h3>{selectedEvent.title}</h3>
+              {!selectedEvent.private && (
+                <span className="private-tag">
+                  <Badge bg="secondary">
+                    <IoLockClosedOutline /> privé
+                  </Badge>
+                </span>
+              )}
+            </div>
+
+            <small>
+              {displayDate(selectedEvent.start_date, selectedEvent.end_date)}
+            </small>
+
+            <div className="description">{selectedEvent.description}</div>
+
+            <ListGroup className="participants">
+              {selectedEvent.participants.map(item => {
+                return <ListGroup.Item>{item.first_name} {item.last_name}</ListGroup.Item>
               })}
-            </ul>
-          ) : (
-            <p className="no-events">
-              <LuCalendarCheck2 /> Aucun événement aujourd'hui
-            </p>
-          )}
-        </div>
-        <Button
-          variant="aqua"
-          className="add-event-btn"
-          onClick={() => setShowEventForm(true)}
-        >
-          <LuCalendarPlus /> Ajouter un événement
-        </Button>
+            </ListGroup>
+            <ListGroup className="recipients">
+              {selectedEvent.recipients.map(item => {
+                return <ListGroup.Item>{item.first_name} {item.last_name}</ListGroup.Item>
+              })}
+            </ListGroup>
+                <Button
+              variant="aqua"
+              className="add-event-btn"
+              style={{ margin: "0 auto" }}
+              onClick={() => setShowEventForm(true)}
+            >
+              <LuCalendarPlus /> Modifier l'événement
+            </Button>
+          </div>
+        ) : (
+          <>
+            <h3>Aujourd'hui</h3>
+            <div className="date">
+              {today.toLocaleDateString("fr-Fr", date_options)}
+            </div>
+            <div className="todays-events">
+              {todayAgendaItems.length > 0 ? (
+                <ul>
+                  {todayAgendaItems.map((event) => {
+                    return (
+                      <li onClick={() => handleSelectEvent(event)}>
+                        <div
+                          className="icon"
+                          style={{
+                            borderLeftColor:
+                              event.category && event.category.color.background,
+                          }}
+                        >
+                          <MdOutlinePermContactCalendar />
+                        </div>
+                        <div className="event-info">
+                          <div className="time">
+                            {event.start_date.toTimeString().slice(0, 5)}-
+                            {event.end_date.toTimeString().slice(0, 5)}
+                          </div>
+                          <span>{event.title}</span>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              ) : (
+                <p className="no-events">
+                  <LuCalendarCheck2 /> Aucun événement aujourd'hui
+                </p>
+              )}
+            </div>
+            <Button
+              variant="aqua"
+              className="add-event-btn"
+              style={{ margin: "0 auto" }}
+              onClick={() => setShowEventForm(true)}
+            >
+              <LuCalendarPlus /> Ajouter un événement
+            </Button>
+          </>
+        )}
       </div>
       <div className="right-tab">
         {!isLoading ? (
@@ -217,12 +273,8 @@ export default function Agenda({ space }) {
               };
 
               if (event.category) {
-                newStyle.backgroundColor = `${
-                  event.category.color.background
-                }`;
-                newStyle.border = `1px solid ${
-                  event.category.color.text
-                }`;
+                newStyle.backgroundColor = `${event.category.color.background}`;
+                newStyle.border = `1px solid ${event.category.color.text}`;
                 newStyle.color = event.category.color.text;
               }
 

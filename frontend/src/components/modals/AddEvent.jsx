@@ -6,6 +6,7 @@ import Agenda from "../Agenda";
 import { IoIosCheckmark } from "react-icons/io";
 import { IoLockClosedOutline } from "react-icons/io5";
 import { IoLockOpenOutline } from "react-icons/io5";
+import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Dropdown from "react-bootstrap/Dropdown";
@@ -16,8 +17,10 @@ import { CiShoppingTag } from "react-icons/ci";
 import CreateCategory from "./CreateCategory";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { ToastContext } from "../../context/ToastContext";
+import ListGroup from "react-bootstrap/ListGroup";
+import FloatingLabel from "react-bootstrap/FloatingLabel";
 
-export default function AddEvent({ agenda, show, setShow }) {
+export default function AddEvent({ agenda, show, setShow, preloadedEvent }) {
   moment.locale("fr");
   const { user, space } = useContext(AuthContext);
 
@@ -51,7 +54,7 @@ export default function AddEvent({ agenda, show, setShow }) {
     start_date: default_start_date,
     end_date: default_end_date,
     created_by: {},
-    created_by_id: '',
+    created_by_id: "",
     agenda_id: "",
     agenda: {},
     participants: [],
@@ -72,47 +75,34 @@ export default function AddEvent({ agenda, show, setShow }) {
 
   const handleChange = (e) => {
     // handling different input types
+    let key = [e.target.name];
+    let value = "";
     if (e.target.type == "text" || e.target.type == "textarea") {
-      setFormData((prev) => ({
-        ...prev,
-        [e.target.name]: e.target.value,
-      }));
-    } else if (e.target.tagName == "OPTION") {
-      const value = parseInt(e.target.value);
-      console.log(e.target);
-
+      value = e.target.value;
+    } else if (e.target.type === "checkbox") {
+      console.log(e.target.value);
+      const parsed_value = JSON.parse(e.target.value);
       if (
-        !formData[e.target.parentElement.name].includes(value) &&
-        e.target.selected
+        e.target.checked &&
+        !formData[key].some((e) => e.id == parsed_value.id)
       ) {
-        setFormData((prev) => ({
-          ...prev,
-          [e.target.parentElement.name]: [...prev.recipients, value],
-        }));
+        formData[key].push(parsed_value);
+        value = formData[key];
       } else {
-        setFormData((prev) => ({
-          ...prev,
-          [e.target.parentElement.name]: [
-            ...prev.recipients.filter((item) => item !== value),
-          ],
-        }));
+        console.log("uncheck");
+        value = formData[key].filter((item) => item.id !== parsed_value.id);
       }
-    } else if (e.target.type == "checkbox") {
-      setFormData((prev) => ({
-        ...prev,
-        [e.target.name]: e.target.checked,
-      }));
     } else if (e.target.type == "time" || e.target.type == "date") {
-      let key = e.target.name.split("_")[0] + "_date";
-      let date =
+      key = e.target.name.split("_")[0] + "_date";
+      value =
         e.target.type == "time"
           ? `${formData[key].slice(0, 10)} ${e.target.value}`
           : `${e.target.value} ${formData[key].slice(11, 16)}`;
-      setFormData((prev) => ({
-        ...prev,
-        [key]: date,
-      }));
     }
+    setFormData((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
   };
 
   const selectCategory = (category) => {
@@ -134,15 +124,17 @@ export default function AddEvent({ agenda, show, setShow }) {
         "http://127.0.0.1:8000/api/agenda_items/",
         formData
       );
-      setShowToast(true)
-      setMessage("Événement crée avec succès")
-      setColor("success")
+      setShowToast(true);
+      setMessage("Événement crée avec succès");
+      setColor("success");
       handleClose();
     } catch (error) {
       console.log(error);
-      setShowToast(true)
-      setMessage("Une erreur s'est produite lors de la création de l'événement")
-      setColor("danger")
+      setShowToast(true);
+      setMessage(
+        "Une erreur s'est produite lors de la création de l'événement"
+      );
+      setColor("danger");
     }
   };
 
@@ -210,25 +202,33 @@ export default function AddEvent({ agenda, show, setShow }) {
 
   useEffect(() => {
     if (formData.start_date) {
-      let start_date = moment(formData.start_date)
-        
-        setFormData((prev) => ({
-          ...prev,
-          end_date: start_date.add(1, "hours").format(),
-        }));
-      
+      let start_date = moment(formData.start_date);
+
+      setFormData((prev) => ({
+        ...prev,
+        end_date: start_date.add(1, "hours").format(),
+      }));
     }
   }, [formData.start_date]);
-
-  useEffect(() => {
-    fetchCategory();
-  }, []);
 
   useEffect(() => {
     if (!showCreateCategory) {
       fetchCategory();
     }
   }, [showCreateCategory]);
+
+  useEffect(() => {
+    if (Object.keys(preloadedEvent).length <= 0) return;
+    console.log(preloadedEvent);
+    preloadedEvent.start_date = moment(preloadedEvent.start_date).format();
+    preloadedEvent.end_date = moment(preloadedEvent.end_date).format();
+    setFormData(preloadedEvent);
+    console.log(preloadedEvent);
+  }, [preloadedEvent]);
+
+  useEffect(() => {
+    fetchCategory();
+  }, []);
 
   console.log(formData);
 
@@ -239,27 +239,43 @@ export default function AddEvent({ agenda, show, setShow }) {
         setShow={setShowCreateCategory}
         agenda={agenda}
       />
-      <Modal size="lg" show={show} onHide={handleClose} className="add-event-modal">
+      <Modal
+        size="lg"
+        show={show}
+        onHide={handleClose}
+        className="add-event-modal"
+      >
         <Modal.Header closeButton>
           <Modal.Title>Ajouter un événement</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <form action="" className="add-event">
-            <input
-              type="text"
-              name="title"
-              id=""
-              value={formData.title}
-              onChange={handleChange}
-              placeholder="Titre de l'événement"
-            />
-            <textarea
-              name="description"
-              id=""
-              value={formData.description}
-              onChange={handleChange}
-              placeholder="Description"
-            />
+            <FloatingLabel
+              controlId="floatingInput"
+              label="Titre de l'événement"
+              className=""
+            >
+              <Form.Control
+                type="text"
+                name="title"
+                id=""
+                value={formData.title}
+                onChange={handleChange}
+              />
+            </FloatingLabel>
+            <FloatingLabel
+              controlId="floatingInput"
+              label="Description"
+              className=""
+            >
+              <Form.Control
+                as="textarea"
+                name="description"
+                rows={3}
+                onChange={handleChange}
+                value={formData.description}
+              />
+            </FloatingLabel>
 
             <Dropdown className="categories-dropdown">
               <Dropdown.Toggle id="dropdown-basic">
@@ -341,82 +357,68 @@ export default function AddEvent({ agenda, show, setShow }) {
                 />
               </div>
             </div>
-            {space &&
-              Object.keys(space).includes("recipients") &&
-              Object.keys(space).includes("caregivers") && (
-                <div className="participants">
-                  <select
-                    name="recipients"
-                    id=""
-                    onClick={(e) => handleChange(e)}
-                    onDoubleClick={(e) => handleChange(e)}
-                    multiple
-                  >
-                    <option value="" disabled>
-                      Choose a recipients
-                    </option>
-                    {space.recipients.map((item) => {
-                      return (
-                        <option
-                          value={item}
-                          className={`${
-                            formData.recipients.includes(item.id)
-                              ? "selected"
-                              : ""
-                          }`}
-                        >
-                          {item.first_name} {item.last_name}
-                        </option>
-                      );
-                    })}
-                  </select>
-                  <select
-                    name="participants"
-                    id=""
-                    onClick={(e) => handleChange(e)}
-                    onDoubleClick={(e) => handleChange(e)}
-                    multiple
-                  >
-                    <option value="" disabled>
-                      Participants
-                    </option>
-                    {space.caregivers.map((item) => {
-                      return (
-                        <option
-                          value={item}
-                          className={`${
-                            formData.participants.includes(item.id)
-                              ? "selected"
-                              : ""
-                          }`}
-                        >
-                          {item.first_name} {item.last_name}
-                        </option>
-                      );
-                    })}
-                  </select>
-                </div>
-              )}
-            <div
-              className={`field ${formData.private ? "checked" : ""}`}
-              id="private"
-            >
-              <input
-                type="checkbox"
-                name="private"
-                id=""
-                checked={formData.private}
-                onChange={handleChange}
-              />
-              <label htmlFor="">
-                {formData.private ? (
-                  <IoLockClosedOutline />
-                ) : (
-                  <IoLockOpenOutline />
-                )}{" "}
-                Privé
-              </label>
+            <div className="lists">
+              <ListGroup className="recipients">
+                {Object.keys(space).length > 0 &&
+                  space.recipients.map((item) => {
+                    return (
+                      <ListGroup.Item>
+                        <Form.Check
+                          inline
+                          value={JSON.stringify(item)}
+                          checked={
+                            formData.recipients &&
+                            formData.recipients.some((e) => e.id == item.id)
+                          }
+                          name="recipients"
+                          label={`${item.first_name} ${item.last_name}`}
+                          onChange={(e) => handleChange(e)}
+                          type="checkbox"
+                          id={`inline-checkbox-3`}
+                        />
+                      </ListGroup.Item>
+                    );
+                  })}
+              </ListGroup>
+              <ListGroup className="participants">
+                {Object.keys(space).length > 0 &&
+                  space.caregivers.map((item) => {
+                    return (
+                      <ListGroup.Item>
+                        <Form.Check
+                          inline
+                          value={JSON.stringify(item)}
+                          checked={
+                            formData.participants &&
+                            formData.participants.some((e) => e.id == item.id)
+                          }
+                          name="participants"
+                          label={`${item.first_name} ${item.last_name}`}
+                          type="checkbox"
+                          onChange={(e) => handleChange(e)}
+                          id={`inline-checkbox-3`}
+                        />
+                      </ListGroup.Item>
+                    );
+                  })}
+              </ListGroup>
             </div>
+
+            <Form.Check // prettier-ignore
+              type="switch"
+              id="custom-switch"
+              label={
+                formData.private ? (
+                  <>
+                    <IoLockClosedOutline /> Privé
+                  </>
+                ) : (
+                  <>
+                    <IoLockOpenOutline /> Privé
+                  </>
+                )
+              }
+            />
           </form>
         </Modal.Body>
         <Modal.Footer>

@@ -20,6 +20,7 @@ import { FaTag } from "react-icons/fa6";
 import { IoLockClosedOutline } from "react-icons/io5";
 import { IoLockOpenOutline } from "react-icons/io5";
 import { ToastContext } from "../../context/ToastContext";
+import ListGroup from "react-bootstrap/ListGroup";
 
 export default function EventModal({
   event,
@@ -72,29 +73,32 @@ export default function EventModal({
 
   const handleChange = (e) => {
     e.stopPropagation();
-    let value = ''
+    let value = "";
     let key = e.target.name;
 
     if (e.target.type === "date" || e.target.type === "time") {
       key = `${e.target.name.split("_")[0]}_date`;
-      console.log('date');
+      console.log("date");
       let initialDate = moment(editFormData[key]).format();
 
       value =
         e.target.name.split("_")[1] === "time"
           ? moment(`${initialDate.slice(0, 10)} ${e.target.value}`)
           : moment(`${e.target.value} ${initialDate.slice(11, 16)}`);
-    }  else if (e.target.type === "checkbox") {
-        console.log(e.target.value);
+    } else if (e.target.type === "checkbox") {
+      console.log(e.target.value);
 
-        const parsed_value = JSON.parse(e.target.value)
-        if(e.target.checked && !editFormData[key].some(e => e.id == parsed_value.id)) {
-          editFormData[key].push(parsed_value)
-          value = editFormData[key]
-        } else {
-            console.log('uncheck');
-            value = editFormData[key].filter(item => item.id !== parsed_value.id)
-        }
+      const parsed_value = JSON.parse(e.target.value);
+      if (
+        e.target.checked &&
+        !editFormData[key].some((e) => e.id == parsed_value.id)
+      ) {
+        editFormData[key].push(parsed_value);
+        value = editFormData[key];
+      } else {
+        console.log("uncheck");
+        value = editFormData[key].filter((item) => item.id !== parsed_value.id);
+      }
     }
     console.log(e.target.type);
     console.log(key);
@@ -150,21 +154,19 @@ export default function EventModal({
   }, []);
 
   useEffect(() => {
-    console.log(event);
-
     setEditFormData(event);
   }, [editionMode]);
 
-  useEffect(() => {
-    if (editFormData.start_date) {
-      let end_date = moment(editFormData.start_date).add(1, "hours").local();
+  // useEffect(() => {
+  //   if (editFormData.start_date) {
+  //     let end_date = moment(editFormData.start_date).add(1, "hours").local();
 
-      setEditFormData((prev) => ({
-        ...prev,
-        end_date: end_date.format(),
-      }));
-    }
-  }, [editFormData.start_date]);
+  //     setEditFormData((prev) => ({
+  //       ...prev,
+  //       end_date: end_date.format(),
+  //     }));
+  //   }
+  // }, [editFormData.start_date]);
 
   useEffect(() => {
     if (!user || !user.id || !event.created_by) return;
@@ -176,7 +178,6 @@ export default function EventModal({
   }, [user]);
 
   console.log(editFormData);
-  
 
   return (
     <>
@@ -368,44 +369,57 @@ export default function EventModal({
                     <div className="columns">
                       <div className="column">
                         <span>Participants</span>
-                        <div className="participants-list">
+                        <ListGroup className="participants">
                           {Object.keys(space).length > 0 &&
                             space.caregivers.map((item) => {
                               return (
-                                <Form.Check
-                                  inline
-                                  value={JSON.stringify(item)}
-                                  checked={editFormData.participants && editFormData.participants.some(e => e.id == item.id)}
-                                  name="participants"
-                                  label={`${item.first_name} ${item.last_name}`}
-                                  type="checkbox"
-                                  onChange={(e) => handleChange(e)}
-                                  id={`inline-checkbox-3`}
-                                />
+                                <ListGroup.Item>
+                                  <Form.Check
+                                    inline
+                                    value={JSON.stringify(item)}
+                                    checked={
+                                      editFormData.participants &&
+                                      editFormData.participants.some(
+                                        (e) => e.id == item.id
+                                      )
+                                    }
+                                    name="participants"
+                                    label={`${item.first_name} ${item.last_name}`}
+                                    type="checkbox"
+                                    onChange={(e) => handleChange(e)}
+                                    id={`inline-checkbox-3`}
+                                  />
+                                </ListGroup.Item>
                               );
                             })}
-                        </div>
+                        </ListGroup>
                       </div>
                       <div className="column">
                         <span>Aidé</span>
-                        <div className="recipients-list">
-
-                        {Object.keys(space).length > 0 &&
-                          space.recipients.map((item) => {
-                            return (
-                              <Form.Check
-                              inline
-                              value={JSON.stringify(item)}
-                              checked={editFormData.recipients && editFormData.recipients.some(e => e.id == item.id)}
-                              name="recipients"
-                              label={`${item.first_name} ${item.last_name}`}
-                              onChange={(e) => handleChange(e)}
-                              type="checkbox"
-                              id={`inline-checkbox-3`}
-                              />
-                            );
-                          })}
-                          </div>
+                        <ListGroup className="recipients">
+                          {Object.keys(space).length > 0 &&
+                            space.recipients.map((item) => {
+                              return (
+                                <ListGroup.Item>
+                                  <Form.Check
+                                    inline
+                                    value={JSON.stringify(item)}
+                                    checked={
+                                      editFormData.recipients &&
+                                      editFormData.recipients.some(
+                                        (e) => e.id == item.id
+                                      )
+                                    }
+                                    name="recipients"
+                                    label={`${item.first_name} ${item.last_name}`}
+                                    onChange={(e) => handleChange(e)}
+                                    type="checkbox"
+                                    id={`inline-checkbox-3`}
+                                  />
+                                </ListGroup.Item>
+                              );
+                            })}
+                        </ListGroup>
                       </div>
                     </div>
                   </div>
@@ -433,7 +447,8 @@ export default function EventModal({
               </form>
             )}
             <Modal.Footer>
-              {(event.created_by && event.created_by.id === user.id || canEdit()) && (
+              {((event.created_by && event.created_by.id === user.id) ||
+                canEdit()) && (
                 <>
                   <Button
                     variant="outline-danger"

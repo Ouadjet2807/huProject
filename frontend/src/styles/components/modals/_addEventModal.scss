@@ -5,7 +5,8 @@
     gap: 20px;
     align-items: flex-end;
 
-    input:not(.form-check-input), .form-floating,
+    input:not(.form-check-input),
+    .form-floating,
     textarea {
       width: 100%;
     }
@@ -28,6 +29,16 @@
         background: transparent;
         border: 1px solid #b1b7b8;
         color: $charcoal;
+
+        svg {
+          transform: rotateY(180deg);
+        }
+        label {
+          display: flex;
+          align-items: center;
+          gap: 5;
+
+        }
       }
 
       .dropdown-menu {

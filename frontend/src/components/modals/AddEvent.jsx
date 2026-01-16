@@ -12,8 +12,7 @@ import Modal from "react-bootstrap/Modal";
 import Dropdown from "react-bootstrap/Dropdown";
 import moment from "moment";
 import "moment/locale/fr";
-import { FaTag } from "react-icons/fa6";
-import { CiShoppingTag } from "react-icons/ci";
+import { PiTagDuotone } from "react-icons/pi";
 import CreateCategory from "./CreateCategory";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { ToastContext } from "../../context/ToastContext";
@@ -60,6 +59,7 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent }) {
     participants: [],
     recipients: [],
   });
+
 
   const fetchCategory = async () => {
     try {
@@ -282,8 +282,8 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent }) {
                 {selectedCategory ? (
                   <>
                     <div className="label">
-                      <CiShoppingTag
-                        style={{ color: selectedCategory.color.text }}
+                      <PiTagDuotone
+                        style={{ color: selectedCategory.color.text, transform: "rotateZ(180deg)"}}
                       />
                       {selectedCategory.name}
                     </div>
@@ -291,7 +291,7 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent }) {
                 ) : (
                   <>
                     <div className="label">
-                      <CiShoppingTag /> Catégorie
+                      <PiTagDuotone /> Catégorie
                     </div>
                   </>
                 )}
@@ -307,7 +307,7 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent }) {
                         }}
                       >
                         <div className="tag">
-                          <FaTag style={{ color: category.color.background }} />
+                          <PiTagDuotone style={{ color: category.color.background }} />
                           {category.name}
                         </div>
                         <div
@@ -407,6 +407,7 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent }) {
             <Form.Check // prettier-ignore
               type="switch"
               id="custom-switch"
+              onChange={() => setFormData(prev => ({...prev, private: !prev.private}))}
               label={
                 formData.private ? (
                   <>

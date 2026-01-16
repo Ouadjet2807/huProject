@@ -47,7 +47,8 @@
         }
 
         &.selected {
-          border: 2px solid rgb(0, 72, 255);
+          border: 2px solid $mediumGreen2;
+
           .center {
             transform: scale(0.8);
           }

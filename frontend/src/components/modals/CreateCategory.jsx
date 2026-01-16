@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import api from "../../api/api";
+import Form from "react-bootstrap/Form"
+
 export default function CreateCategory({ show, setShow, agenda }) {
   let colors = [
     {background: "#ffcabde6", text:"#d49687ff"},
@@ -57,9 +59,9 @@ export default function CreateCategory({ show, setShow, agenda }) {
         <Modal.Title>Créer une catégorie</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <form action="" className="add-event">
+        <Form action="" className="add-event">
           <label htmlFor="category">Nom</label>
-          <input
+          <Form.Control
             type="text"
             name="category"
             id=""
@@ -85,11 +87,11 @@ export default function CreateCategory({ show, setShow, agenda }) {
               );
             })}
           </div>
-        </form>
+        </Form>
       </Modal.Body>
       <Modal.Footer>
-        <Button onClick={handleSubmit}>Créer</Button>
-        <Button variant="secondary" onClick={handleClose}>
+        <Button variant="md-green" onClick={handleSubmit}>Créer</Button>
+        <Button variant="outline-secondary" onClick={handleClose}>
           Annuler
         </Button>
       </Modal.Footer>

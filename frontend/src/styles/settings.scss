@@ -131,6 +131,11 @@ button {
   }
 }
 
+.btn-md-green {
+  background: $mediumGreen2 !important;
+  color: $white !important;
+}
+
 input[type="email"],
 input[type="password"],
 input[type="search"],

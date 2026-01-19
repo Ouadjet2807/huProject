@@ -1,24 +1,28 @@
 .add-event-modal {
-  .add-event {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    align-items: flex-end;
+  .modal-header {
+    gap: 40px;
 
-    input:not(.form-check-input),
-    .form-floating,
-    textarea {
-      width: 100%;
+    .modal-title {
+      display: flex;
+      gap: 5px;
+      align-items: center;
+      width: 80%;
     }
 
-    label {
-      display: flex;
-      align-items: center;
-      gap: 5px;
+    h4 {
+      width: 50%;
+    }
+
+    .form-switch {
+      label {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
     }
 
     .categories-dropdown {
-      width: 100%;
+      width: 35%;
 
       button {
         width: 100%;
@@ -27,22 +31,28 @@
         justify-content: space-between;
         align-items: center;
         background: transparent;
-        border: 1px solid #b1b7b8;
+        border: 1px solid $bsInputBorderColor;
         color: $charcoal;
 
         svg {
           transform: rotateY(180deg);
+          color: $greyGreen;
         }
-        label {
-          display: flex;
-          align-items: center;
-          gap: 5;
+      }
 
-        }
+      .label {
+        display: flex;
+        align-items: center;
+        gap: 5px;
       }
 
       .dropdown-menu {
         width: 100%;
+        border-color: $bsInputBorderColor;
+
+        .dropdown-divider {
+          border-color: $bsInputBorderColor;
+        }
 
         .dropdown-item {
           cursor: pointer;
@@ -64,7 +74,7 @@
             cursor: pointer;
 
             svg {
-              color: lightgray;
+              color: $whiteGreen;
               transition: 0.3s ease-in;
             }
 
@@ -76,6 +86,53 @@
           }
         }
       }
+    }
+  }
+
+  .add-event {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: flex-end;
+
+    .add-participants {
+      position: relative;
+
+      .field {
+        display: flex;
+        justify-content: center;
+        position: relative;
+
+        .participants {
+          position: absolute;
+          z-index: 6;
+          display: flex;
+          gap: 5px;
+          margin-left: 8px;
+
+          span {
+            padding: 2px 5px;
+            border: 1px solid #ddd;
+          }
+        }
+      }
+
+      .list-group {
+        width: 100%;
+      }
+    }
+
+    input:not(.form-check-input),
+    .form-floating,
+    textarea {
+      width: 100%;
+    }
+
+    label:not(.form-floating > label),
+    .label {
+      display: flex;
+      align-items: center;
+      gap: 5px;
     }
 
     .field {
@@ -92,55 +149,6 @@
         grid-template-columns: 48% 48%;
         gap: 20px;
         width: 100%;
-      }
-    }
-
-    #private {
-      position: relative;
-      width: max-content;
-      padding: 5px 10px;
-      color: $charcoal;
-      border-radius: $borderRadiusSmall;
-      border-width: 1px;
-      border-style: solid;
-      cursor: pointer;
-      transition: 0.2s ease-in;
-      background: transparent;
-
-      label {
-        display: grid;
-        grid-template-columns: 25% 75%;
-        align-items: center;
-        gap: 10px;
-        font-weight: 400;
-
-        svg {
-          font-size: 1.2vw;
-        }
-      }
-
-      input {
-        cursor: pointer;
-        position: absolute;
-        opacity: 0;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-      }
-
-      &:hover,
-      &.checked {
-        border-color: $charcoal;
-        background: lightgray;
-      }
-
-      &.checked {
-        &:hover {
-          box-shadow: none;
-          background: transparent;
-          border-color: transparent;
-        }
       }
     }
 

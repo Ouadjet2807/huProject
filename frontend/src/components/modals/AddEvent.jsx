@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import axios from "axios";
 import api from "../../api/api";
@@ -6,6 +6,7 @@ import Agenda from "../Agenda";
 import { IoIosCheckmark } from "react-icons/io";
 import { IoLockClosedOutline } from "react-icons/io5";
 import { IoLockOpenOutline } from "react-icons/io5";
+import { LuClock3 } from "react-icons/lu";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
@@ -16,8 +17,10 @@ import { PiTagDuotone } from "react-icons/pi";
 import CreateCategory from "./CreateCategory";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { ToastContext } from "../../context/ToastContext";
+import { LuCalendarPlus } from "react-icons/lu";
 import ListGroup from "react-bootstrap/ListGroup";
 import FloatingLabel from "react-bootstrap/FloatingLabel";
+import { IoIosClose } from "react-icons/io";
 
 export default function AddEvent({ agenda, show, setShow, preloadedEvent }) {
   moment.locale("fr");
@@ -26,8 +29,13 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent }) {
   const { setShowToast, setMessage, setColor } = useContext(ToastContext);
 
   const [categories, setCategories] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState();
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const [showCreateCategory, setShowCreateCategory] = useState(false);
+  const [showCaregivers, setShowCaregivers] = useState(false);
+  const [participants, setParticipants] = useState([])
+  const [participantsListWidth, setParticipantsListWidth] = useState(0)
+
+  const participantsListRef = useRef()
 
   let default_start_date = moment()
     .minutes(0)
@@ -60,11 +68,10 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent }) {
     recipients: [],
   });
 
-
   const fetchCategory = async () => {
     try {
       const res = await api.get(
-        "http://127.0.0.1:8000/api/agenda_item_categories/"
+        "http://127.0.0.1:8000/api/agenda_item_categories/",
       );
       console.log("Success ", res.data);
       setCategories(res.data);
@@ -105,6 +112,33 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent }) {
     }));
   };
 
+  const deselectParticipant = (item) => {
+    let key = ""
+
+    if (space.caregivers.some(e => e.id == item.id)) {
+      key = 'participants'
+    } else key = 'recipients'
+
+    let filter = formData[key].filter(e => e.id !== item.id) 
+    setFormData(prev => ({...prev, [key]: filter}))
+    setParticipants(prev => [...prev, item])
+  }
+
+  const selectParticipant = (e, item) => {
+    e.preventDefault()
+    e.stopPropagation()
+    let key = ""
+
+    if (space.caregivers.some(e => e.id == item.id)) {
+      key = 'participants'
+    } else key = 'recipients'
+
+    console.log(formData[key]);
+    let filter = participants.filter(e => e.id !== item.id) 
+    setParticipants(filter)
+    formData[key].push(item)
+  }
+
   const selectCategory = (category) => {
     setFormData((prev) => ({
       ...prev,
@@ -122,7 +156,7 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent }) {
     try {
       const response = await api.post(
         "http://127.0.0.1:8000/api/agenda_items/",
-        formData
+        formData,
       );
       setShowToast(true);
       setMessage("Événement crée avec succès");
@@ -132,7 +166,7 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent }) {
       console.log(error);
       setShowToast(true);
       setMessage(
-        "Une erreur s'est produite lors de la création de l'événement"
+        "Une erreur s'est produite lors de la création de l'événement",
       );
       setColor("danger");
     }
@@ -148,7 +182,7 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent }) {
 
     try {
       await api.delete(
-        `http://127.0.0.1:8000/api/agenda_item_categories/${id}`
+        `http://127.0.0.1:8000/api/agenda_item_categories/${id}`,
       );
     } catch (error) {
       console.log(error);
@@ -197,7 +231,11 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent }) {
           }));
         }
       });
+
+      setParticipants(space.caregivers.filter(e => e.user !== user.id).concat(space.recipients))
     }
+
+    
   }, [user, agenda, space]);
 
   useEffect(() => {
@@ -227,10 +265,18 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent }) {
   }, [preloadedEvent]);
 
   useEffect(() => {
+    if(participantsListRef.current) {
+      const width = participantsListRef.current.getBoundingClientRect().width
+      setParticipantsListWidth(width)
+    }
+  }, [participants])
+
+  useEffect(() => {
     fetchCategory();
   }, []);
 
   console.log(formData);
+  
 
   return (
     <>
@@ -246,10 +292,85 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent }) {
         className="add-event-modal"
       >
         <Modal.Header closeButton>
-          <Modal.Title>Ajouter un événement</Modal.Title>
+          <Modal.Title>
+            <LuCalendarPlus /> Ajouter un événement
+          </Modal.Title>{" "}
+          <Dropdown className="categories-dropdown">
+            <Dropdown.Toggle id="dropdown-basic">
+              {selectedCategory ? (
+                <>
+                  <div className="label">
+                    <PiTagDuotone
+                      style={{ color: selectedCategory.color.text }}
+                    />
+                    {selectedCategory.name}
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="label">
+                    <PiTagDuotone /> Catégorie
+                  </div>
+                </>
+              )}
+            </Dropdown.Toggle>
+
+            <Dropdown.Menu>
+              {categories.length > 0 &&
+                categories.map((category) => {
+                  return (
+                    <Dropdown.Item
+                      onClick={() => {
+                        selectCategory(category);
+                      }}
+                    >
+                      <div className="tag">
+                        <PiTagDuotone
+                          style={{ color: category.color.background }}
+                        />
+                        {category.name}
+                      </div>
+                      <div
+                        className="delete"
+                        onClick={(e) => handleDelete(e, category.id)}
+                      >
+                        <FaRegTrashAlt />
+                      </div>
+                    </Dropdown.Item>
+                  );
+                })}
+              <Dropdown.Divider />
+              <Dropdown.Item onClick={() => setShowCreateCategory(true)}>
+                Nouvelle catégorie
+              </Dropdown.Item>
+              {selectedCategory && (
+                <Dropdown.Item onClick={() => setSelectedCategory(null)}>
+                  Effacer
+                </Dropdown.Item>
+              )}
+            </Dropdown.Menu>
+          </Dropdown>
+          <Form.Check
+            type="switch"
+            id="custom-switch"
+            onChange={() =>
+              setFormData((prev) => ({ ...prev, private: !prev.private }))
+            }
+            label={
+              formData.private ? (
+                <>
+                  <IoLockClosedOutline /> Privé
+                </>
+              ) : (
+                <>
+                  <IoLockOpenOutline /> Privé
+                </>
+              )
+            }
+          />
         </Modal.Header>
         <Modal.Body>
-          <form action="" className="add-event">
+          <Form action="" className="add-event">
             <FloatingLabel
               controlId="floatingInput"
               label="Titre de l'événement"
@@ -258,77 +379,62 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent }) {
               <Form.Control
                 type="text"
                 name="title"
+                size="sm"
                 id=""
+                placeholder="Titre de l'événement"
                 value={formData.title}
                 onChange={handleChange}
               />
+              <div className="add-participants">
+                <div className="field">
+
+                {formData.participants.length > 0 | formData.recipients.length > 0 &&
+                 <div className="participants" ref={participantsListRef} style={{width: 'max-content'}}>
+                  {formData.participants.concat(formData.recipients).map(participant => {
+                    return <span>{participant.first_name} {participant.last_name} <IoIosClose onClick={() => deselectParticipant(participant)}/></span>
+                  })}
+                 </div>
+                }
+                <Form.Control
+                  type="text"
+                  name="title"
+                  size="sm"
+                  id=""
+                  style={{paddingLeft: `${participantsListWidth + 10}px`}}
+                  placeholder="Participants"
+                  onFocus={() => setShowCaregivers(true)}
+                  onBlur={()  => setTimeout(() => {setShowCaregivers(false)}, 500)}
+                  onChange={handleChange}
+                  />
+                  </div>
+                {showCaregivers && (
+                  <ListGroup>
+                    {participants.sort((a, b) => (a.first_name > b.first_name) ? 1 : ((b.first_name > a.first_name) ? -1 : 0)).map(item => {
+                    return <ListGroup.Item onClick={(e) => selectParticipant(e, item)}>{item.first_name} {item.last_name}</ListGroup.Item>
+                    })}
+                  </ListGroup>
+                )}
+              </div>
             </FloatingLabel>
             <FloatingLabel
-              controlId="floatingInput"
+              controlId="floatingTextarea"
               label="Description"
               className=""
             >
               <Form.Control
                 as="textarea"
+                size="sm"
                 name="description"
-                rows={3}
                 onChange={handleChange}
+                placeholder="Description"
+                style={{ height: "100px" }}
                 value={formData.description}
               />
             </FloatingLabel>
 
-            <Dropdown className="categories-dropdown">
-              <Dropdown.Toggle id="dropdown-basic">
-                {selectedCategory ? (
-                  <>
-                    <div className="label">
-                      <PiTagDuotone
-                        style={{ color: selectedCategory.color.text, transform: "rotateZ(180deg)"}}
-                      />
-                      {selectedCategory.name}
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div className="label">
-                      <PiTagDuotone /> Catégorie
-                    </div>
-                  </>
-                )}
-              </Dropdown.Toggle>
-
-              <Dropdown.Menu>
-                {categories.length > 0 &&
-                  categories.map((category) => {
-                    return (
-                      <Dropdown.Item
-                        onClick={() => {
-                          selectCategory(category);
-                        }}
-                      >
-                        <div className="tag">
-                          <PiTagDuotone style={{ color: category.color.background }} />
-                          {category.name}
-                        </div>
-                        <div
-                          className="delete"
-                          onClick={(e) => handleDelete(e, category.id)}
-                        >
-                          <FaRegTrashAlt />
-                        </div>
-                      </Dropdown.Item>
-                    );
-                  })}
-                <Dropdown.Divider />
-                <Dropdown.Item onClick={() => setShowCreateCategory(true)}>
-                  Nouvelle catégorie
-                </Dropdown.Item>
-              </Dropdown.Menu>
-            </Dropdown>
-
             <div className="field dates">
               <div className="date-field">
-                <label htmlFor="title">Date</label>
+                <LuClock3 />
                 <input
                   type="date"
                   name="start_date"
@@ -357,7 +463,7 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent }) {
                 />
               </div>
             </div>
-            <div className="lists">
+            {/* <div className="lists">
               <ListGroup className="recipients">
                 {Object.keys(space).length > 0 &&
                   space.recipients.map((item) => {
@@ -402,25 +508,8 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent }) {
                     );
                   })}
               </ListGroup>
-            </div>
-
-            <Form.Check // prettier-ignore
-              type="switch"
-              id="custom-switch"
-              onChange={() => setFormData(prev => ({...prev, private: !prev.private}))}
-              label={
-                formData.private ? (
-                  <>
-                    <IoLockClosedOutline /> Privé
-                  </>
-                ) : (
-                  <>
-                    <IoLockOpenOutline /> Privé
-                  </>
-                )
-              }
-            />
-          </form>
+            </div> */}
+          </Form>
         </Modal.Body>
         <Modal.Footer>
           <Button onClick={handleSubmit}>Créer</Button>

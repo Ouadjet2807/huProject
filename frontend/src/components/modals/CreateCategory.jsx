@@ -3,6 +3,7 @@ import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import api from "../../api/api";
 import Form from "react-bootstrap/Form"
+import FloatingLabel from "react-bootstrap/FloatingLabel";
 
 export default function CreateCategory({ show, setShow, agenda }) {
   let colors = [
@@ -60,16 +61,23 @@ export default function CreateCategory({ show, setShow, agenda }) {
       </Modal.Header>
       <Modal.Body>
         <Form action="" className="add-event">
-          <label htmlFor="category">Nom</label>
+            <FloatingLabel
+              controlId="floatingInput"
+              label="Nouvelle catégorie"
+              className=""
+            >
+
           <Form.Control
             type="text"
             name="category"
             id=""
-            placeholder="Ex : médical, administratif..."
+            size="sm"
+            // placeholder="Ex : médical, administratif..."
             onChange={(e) =>
               setNewCategory((prev) => ({ ...prev, name: e.target.value.trim() }))
             }
-          />
+            />
+            </FloatingLabel>
           <label>Couleur</label>
           <div className="colors">
             {colors.map((color) => {

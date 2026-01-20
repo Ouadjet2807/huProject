@@ -32,10 +32,12 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent }) {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [showCreateCategory, setShowCreateCategory] = useState(false);
   const [showCaregivers, setShowCaregivers] = useState(false);
-  const [participants, setParticipants] = useState([])
-  const [participantsListWidth, setParticipantsListWidth] = useState(0)
+  const [searchParticipants, setSearchParticipants] = useState();
+  const [participantsList, setParticipantsList] = useState([]);
+  const [selectedParticipants, setSelectedParticipants] = useState([]);
+  const [participantsListWidth, setParticipantsListWidth] = useState(0);
 
-  const participantsListRef = useRef()
+  const participantsListRef = useRef();
 
   let default_start_date = moment()
     .minutes(0)
@@ -113,31 +115,30 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent }) {
   };
 
   const deselectParticipant = (item) => {
-    let key = ""
+    let key = "";
 
-    if (space.caregivers.some(e => e.id == item.id)) {
-      key = 'participants'
-    } else key = 'recipients'
+    if (space.caregivers.some((e) => e.id == item.id)) {
+      key = "participants";
+    } else key = "recipients";
 
-    let filter = formData[key].filter(e => e.id !== item.id) 
-    setFormData(prev => ({...prev, [key]: filter}))
-    setParticipants(prev => [...prev, item])
-  }
+    let filter = formData[key].filter((e) => e.id !== item.id);
+    setFormData((prev) => ({ ...prev, [key]: filter }));
+    setParticipantsList((prev) => [...prev, item]);
+  };
 
   const selectParticipant = (e, item) => {
-    e.preventDefault()
-    e.stopPropagation()
-    let key = ""
+    e.preventDefault();
+    e.stopPropagation();
+    let key = "";
 
-    if (space.caregivers.some(e => e.id == item.id)) {
-      key = 'participants'
-    } else key = 'recipients'
+    if (space.caregivers.some((e) => e.id == item.id)) {
+      key = "participants";
+    } else key = "recipients";
 
-    console.log(formData[key]);
-    let filter = participants.filter(e => e.id !== item.id) 
-    setParticipants(filter)
-    formData[key].push(item)
-  }
+    let filter = participantsList.filter((e) => e.id !== item.id);
+    setParticipantsList(filter);
+    setFormData((prev) => ({ ...prev, [key]: [...prev[key], item] }));
+  };
 
   const selectCategory = (category) => {
     setFormData((prev) => ({
@@ -211,7 +212,9 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent }) {
       agenda &&
       Object.keys(agenda).includes("id") &&
       user &&
-      Object.keys(user).includes("id")
+      Object.keys(user).includes("id") &&
+      space &&
+     Object.keys(space).includes("caregivers")
     ) {
       setFormData((prev) => ({
         ...prev,
@@ -219,23 +222,13 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent }) {
         agenda_id: agenda.id,
         created_by_id: user.id,
         created_by: user,
-        participants: [user],
       }));
+       setParticipantsList(
+        space.caregivers
+          .filter((e) => e.user !== user.id)
+          .concat(space.recipients),
+      );
     }
-    if (space && Object.keys(space).includes("caregivers")) {
-      space.caregivers.forEach((element) => {
-        if (user && element.user == user.id) {
-          setFormData((prev) => ({
-            ...prev,
-            participants: [element],
-          }));
-        }
-      });
-
-      setParticipants(space.caregivers.filter(e => e.user !== user.id).concat(space.recipients))
-    }
-
-    
   }, [user, agenda, space]);
 
   useEffect(() => {
@@ -265,11 +258,33 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent }) {
   }, [preloadedEvent]);
 
   useEffect(() => {
-    if(participantsListRef.current) {
-      const width = participantsListRef.current.getBoundingClientRect().width
-      setParticipantsListWidth(width)
+    if (participantsListRef.current) {
+      const width = participantsListRef.current.getBoundingClientRect().width;
+      setParticipantsListWidth(width);
     }
-  }, [participants])
+  }, [selectedParticipants]);
+
+  useEffect(() => {
+    setSelectedParticipants(formData.participants.concat(formData.recipients));
+  }, [formData.participants, formData.recipients]);
+
+  useEffect(() => {
+    if (searchParticipants !== "") {
+      console.log(searchParticipants);
+
+      let filter = participantsList.filter((e) =>
+        e.first_name.toLowerCase().startsWith(searchParticipants),
+      );
+      console.log(filter);
+      setParticipantsList(filter);
+    } else {
+      setParticipantsList(
+        space.caregivers
+          .filter((e) => e.user !== user.id)
+          .concat(space.recipients),
+      );
+    }
+  }, [searchParticipants]);
 
   useEffect(() => {
     fetchCategory();
@@ -385,37 +400,71 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent }) {
                 value={formData.title}
                 onChange={handleChange}
               />
-              <div className="add-participants">
-                <div className="field">
-
-                {formData.participants.length > 0 | formData.recipients.length > 0 &&
-                 <div className="participants" ref={participantsListRef} style={{width: 'max-content'}}>
-                  {formData.participants.concat(formData.recipients).map(participant => {
-                    return <span>{participant.first_name} {participant.last_name} <IoIosClose onClick={() => deselectParticipant(participant)}/></span>
-                  })}
-                 </div>
-                }
+            </FloatingLabel>
+            <div className="add-participants">
+              <div className="field">
+                {selectedParticipants.length > 0 && (
+                  <div
+                    className="participants"
+                    ref={participantsListRef}
+                    style={{ width: "max-content" }}
+                  >
+                    {selectedParticipants.map((participant) => {
+                      return (
+                        <span>
+                          {participant.first_name} {participant.last_name}{" "}
+                          <IoIosClose
+                            onClick={() => deselectParticipant(participant)}
+                          />
+                        </span>
+                      );
+                    })}
+                  </div>
+                )}
                 <Form.Control
                   type="text"
-                  name="title"
+                  name="participants"
                   size="sm"
                   id=""
-                  style={{paddingLeft: `${participantsListWidth + 10}px`}}
-                  placeholder="Participants"
+                  style={{ paddingLeft: `${participantsListWidth + 10}px` }}
+                  placeholder={
+                    selectedParticipants.length > 0
+                      ? ""
+                      : "Participants"
+                  }
                   onFocus={() => setShowCaregivers(true)}
-                  onBlur={()  => setTimeout(() => {setShowCaregivers(false)}, 500)}
-                  onChange={handleChange}
-                  />
-                  </div>
-                {showCaregivers && (
-                  <ListGroup>
-                    {participants.sort((a, b) => (a.first_name > b.first_name) ? 1 : ((b.first_name > a.first_name) ? -1 : 0)).map(item => {
-                    return <ListGroup.Item onClick={(e) => selectParticipant(e, item)}>{item.first_name} {item.last_name}</ListGroup.Item>
-                    })}
-                  </ListGroup>
-                )}
+                  onBlur={() =>
+                    setTimeout(() => {
+                      setShowCaregivers(false);
+                    }, 500)
+                  }
+                  onChange={(e) =>
+                    setSearchParticipants(e.target.value.toLowerCase())
+                  }
+                />
               </div>
-            </FloatingLabel>
+              {showCaregivers && (
+                <ListGroup style={{ left: `${participantsListWidth + 5}px` }}>
+                  {participantsList
+                    .sort((a, b) =>
+                      a.first_name > b.first_name
+                        ? 1
+                        : b.first_name > a.first_name
+                          ? -1
+                          : 0,
+                    )
+                    .map((item) => {
+                      return (
+                        <ListGroup.Item
+                          onClick={(e) => selectParticipant(e, item)}
+                        >
+                          {item.first_name} {item.last_name}
+                        </ListGroup.Item>
+                      );
+                    })}
+                </ListGroup>
+              )}
+            </div>
             <FloatingLabel
               controlId="floatingTextarea"
               label="Description"
@@ -463,52 +512,6 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent }) {
                 />
               </div>
             </div>
-            {/* <div className="lists">
-              <ListGroup className="recipients">
-                {Object.keys(space).length > 0 &&
-                  space.recipients.map((item) => {
-                    return (
-                      <ListGroup.Item>
-                        <Form.Check
-                          inline
-                          value={JSON.stringify(item)}
-                          checked={
-                            formData.recipients &&
-                            formData.recipients.some((e) => e.id == item.id)
-                          }
-                          name="recipients"
-                          label={`${item.first_name} ${item.last_name}`}
-                          onChange={(e) => handleChange(e)}
-                          type="checkbox"
-                          id={`inline-checkbox-3`}
-                        />
-                      </ListGroup.Item>
-                    );
-                  })}
-              </ListGroup>
-              <ListGroup className="participants">
-                {Object.keys(space).length > 0 &&
-                  space.caregivers.map((item) => {
-                    return (
-                      <ListGroup.Item>
-                        <Form.Check
-                          inline
-                          value={JSON.stringify(item)}
-                          checked={
-                            formData.participants &&
-                            formData.participants.some((e) => e.id == item.id)
-                          }
-                          name="participants"
-                          label={`${item.first_name} ${item.last_name}`}
-                          type="checkbox"
-                          onChange={(e) => handleChange(e)}
-                          id={`inline-checkbox-3`}
-                        />
-                      </ListGroup.Item>
-                    );
-                  })}
-              </ListGroup>
-            </div> */}
           </Form>
         </Modal.Body>
         <Modal.Footer>

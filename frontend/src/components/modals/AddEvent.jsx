@@ -1,9 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
-import axios from "axios";
 import api from "../../api/api";
 import Agenda from "../Agenda";
-import { IoIosCheckmark } from "react-icons/io";
 import { IoLockClosedOutline } from "react-icons/io5";
 import { IoLockOpenOutline } from "react-icons/io5";
 import { LuClock3 } from "react-icons/lu";
@@ -14,6 +12,7 @@ import Dropdown from "react-bootstrap/Dropdown";
 import moment from "moment";
 import "moment/locale/fr";
 import { PiTagDuotone } from "react-icons/pi";
+import { MdOutlineTitle } from "react-icons/md";
 import CreateCategory from "./CreateCategory";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { ToastContext } from "../../context/ToastContext";
@@ -21,6 +20,8 @@ import { LuCalendarPlus } from "react-icons/lu";
 import ListGroup from "react-bootstrap/ListGroup";
 import FloatingLabel from "react-bootstrap/FloatingLabel";
 import { IoIosClose } from "react-icons/io";
+import { MdOutlineGroupAdd } from "react-icons/md";
+import { HiOutlineBars3BottomLeft } from "react-icons/hi2";
 
 export default function AddEvent({ agenda, show, setShow, preloadedEvent }) {
   moment.locale("fr");
@@ -214,7 +215,7 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent }) {
       user &&
       Object.keys(user).includes("id") &&
       space &&
-     Object.keys(space).includes("caregivers")
+      Object.keys(space).includes("caregivers")
     ) {
       setFormData((prev) => ({
         ...prev,
@@ -223,7 +224,7 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent }) {
         created_by_id: user.id,
         created_by: user,
       }));
-       setParticipantsList(
+      setParticipantsList(
         space.caregivers
           .filter((e) => e.user !== user.id)
           .concat(space.recipients),
@@ -291,7 +292,6 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent }) {
   }, []);
 
   console.log(formData);
-  
 
   return (
     <>
@@ -386,6 +386,7 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent }) {
         </Modal.Header>
         <Modal.Body>
           <Form action="" className="add-event">
+            <MdOutlineTitle />
             <FloatingLabel
               controlId="floatingInput"
               label="Titre de l'événement"
@@ -401,6 +402,7 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent }) {
                 onChange={handleChange}
               />
             </FloatingLabel>
+            <MdOutlineGroupAdd />
             <div className="add-participants">
               <div className="field">
                 {selectedParticipants.length > 0 && (
@@ -428,9 +430,7 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent }) {
                   id=""
                   style={{ paddingLeft: `${participantsListWidth + 10}px` }}
                   placeholder={
-                    selectedParticipants.length > 0
-                      ? ""
-                      : "Participants"
+                    selectedParticipants.length > 0 ? "" : "Participants"
                   }
                   onFocus={() => setShowCaregivers(true)}
                   onBlur={() =>
@@ -465,6 +465,7 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent }) {
                 </ListGroup>
               )}
             </div>
+            <HiOutlineBars3BottomLeft />
             <FloatingLabel
               controlId="floatingTextarea"
               label="Description"
@@ -480,10 +481,9 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent }) {
                 value={formData.description}
               />
             </FloatingLabel>
-
+            <LuClock3 />
             <div className="field dates">
               <div className="date-field">
-                <LuClock3 />
                 <input
                   type="date"
                   name="start_date"

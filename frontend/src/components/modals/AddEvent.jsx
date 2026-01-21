@@ -256,6 +256,12 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent }) {
     preloadedEvent.end_date = moment(preloadedEvent.end_date).format();
     setFormData(preloadedEvent);
     console.log(preloadedEvent);
+    if (preloadedEvent.recipients || preloadedEvent.participants) {
+
+      let filterParticipants = space.caregivers.concat(space.recipients).filter(e => preloadedEvent.participants.concat(preloadedEvent.recipients).some(elem => elem.id !== e.id) )
+      console.log(filterParticipants);
+    }
+    
   }, [preloadedEvent]);
 
   useEffect(() => {

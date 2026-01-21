@@ -90,10 +90,15 @@
   }
 
   .add-event {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    align-items: flex-end;
+    display: grid;
+    grid-template-columns: 5% 95%;
+    align-items: center;
+    justify-items: center;
+    gap: 20px 0;
+
+    > svg {
+      color: $greyGreen;
+    }
 
     .add-participants {
       position: relative;
@@ -158,6 +163,14 @@
       gap: 5px;
     }
 
+    .form-floating {
+
+      > label {
+        color: $greyGreen;
+        font-size: 14px;
+      }
+    }
+
     .field {
       display: flex;
       flex-direction: column;
@@ -169,7 +182,7 @@
 
       &.dates {
         display: grid;
-        grid-template-columns: 48% 48%;
+        grid-template-columns: 49% 49%;
         gap: 20px;
         width: 100%;
       }

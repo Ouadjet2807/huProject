@@ -231,7 +231,7 @@ class AgendaItemSerializer(serializers.ModelSerializer):
             agenda_item.recipients.add(recipient['id'])
 
         for caregiver in caregivers_data:
-            agenda_item.participants.add(caregiver['id'])
+            agenda_item.caregivers.add(caregiver['id'])
 
         return agenda_item
 
@@ -257,7 +257,7 @@ class AgendaItemSerializer(serializers.ModelSerializer):
             instance.recipients.set(recipients)
 
         if caregivers is not None:
-            instance.participants.set(caregivers)
+            instance.caregivers.set(caregivers)
 
         return instance
 

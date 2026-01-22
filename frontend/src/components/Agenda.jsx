@@ -98,7 +98,7 @@ export default function Agenda({ space }) {
   const fetchCategories = async () => {
     try {
       const res = await api.get(
-        "http://127.0.0.1:8000/api/agenda_item_categories/"
+        "http://127.0.0.1:8000/api/agenda_item_categories/",
       );
 
       setEventCategories(res.data);
@@ -114,9 +114,9 @@ export default function Agenda({ space }) {
     let str = "";
 
     if (end.diff(start, "days") > 0) {
-      str = `${start.local().format("dddd Do MMMM - HH:mm")} | ${end.local().format(
-        "dddd, MMMM, YYYY HH:mm:ss"
-      )}`;
+      str = `${start.local().format("dddd Do MMMM - HH:mm")} | ${end
+        .local()
+        .format("dddd, MMMM, YYYY HH:mm:ss")}`;
     } else {
       str = `${start.local().format("dddd Do MMMM - HH:mm")} | ${end.local().format("HH:mm")}`;
     }
@@ -139,7 +139,7 @@ export default function Agenda({ space }) {
       let searchTodaysEvent = agendaItems.filter(
         (item) =>
           item.start_date.toLocaleDateString() == today.toLocaleDateString() ||
-          item.end_date.toLocaleDateString() == today.toLocaleDateString()
+          item.end_date.toLocaleDateString() == today.toLocaleDateString(),
       );
       setTodayAgendaItems(searchTodaysEvent);
     }
@@ -162,6 +162,8 @@ export default function Agenda({ space }) {
         setShow={setShowEventForm}
         show={showEventForm}
         preloadedEvent={selectedEvent}
+        fetchAgendaItems={fetchAgendaItems}
+        setSelectedEvent={setSelectedEvent}
       />
       <div className="left-tab">
         {Object.keys(selectedEvent).length > 0 ? (
@@ -176,7 +178,7 @@ export default function Agenda({ space }) {
             </Button>
             <div className="header">
               <h3>{selectedEvent.title}</h3>
-              {!selectedEvent.private && (
+              {selectedEvent.private && (
                 <span className="private-tag">
                   <Badge bg="secondary">
                     <IoLockClosedOutline /> privé
@@ -192,29 +194,24 @@ export default function Agenda({ space }) {
             <div className="description">{selectedEvent.description}</div>
 
             <ListGroup className="participants">
-              {selectedEvent.caregivers.map(item => {
-                return <ListGroup.Item>{item.first_name} {item.last_name}</ListGroup.Item>
-              })}
+              {selectedEvent.caregivers
+                .concat(selectedEvent.recipients)
+                .map((item) => {
+                  return (
+                    <ListGroup.Item>
+                      {item.first_name} {item.last_name}
+                    </ListGroup.Item>
+                  );
+                })}
             </ListGroup>
-            <ListGroup className="recipients">
-              {selectedEvent.recipients.map(item => {
-                return <ListGroup.Item>{item.first_name} {item.last_name}</ListGroup.Item>
-              })}
-            </ListGroup>
-                <Button
-              variant="aqua"
-              className="add-event-btn"
-              style={{ margin: "0 auto" }}
-              onClick={() => setShowEventForm(true)}
-            >
-              <LuCalendarPlus /> Modifier l'événement
-            </Button>
           </div>
         ) : (
           <>
-            <h3>Aujourd'hui</h3>
-            <div className="date">
-              {today.toLocaleDateString("fr-Fr", date_options)}
+            <div className="header">
+              <h3>Aujourd'hui</h3>
+              <div className="date">
+                {today.toLocaleDateString("fr-Fr", date_options)}
+              </div>
             </div>
             <div className="todays-events">
               {todayAgendaItems.length > 0 ? (
@@ -248,16 +245,18 @@ export default function Agenda({ space }) {
                 </p>
               )}
             </div>
-            <Button
-              variant="aqua"
-              className="add-event-btn"
-              style={{ margin: "0 auto" }}
-              onClick={() => setShowEventForm(true)}
-            >
-              <LuCalendarPlus /> Ajouter un événement
-            </Button>
           </>
         )}
+        <Button
+          variant="aqua"
+          className="add-event-btn"
+          style={{ margin: "0 auto" }}
+          onClick={() => setShowEventForm(true)}
+        >
+          <LuCalendarPlus />{" "}
+          {Object.keys(selectedEvent).length > 0 ? "Modifier l'" : "Ajouter un"}{" "}
+          événement
+        </Button>
       </div>
       <div className="right-tab">
         {!isLoading ? (

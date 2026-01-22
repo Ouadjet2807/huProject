@@ -119,7 +119,7 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent }) {
     let key = "";
 
     if (space.caregivers.some((elem) => elem.id == item.id)) {
-      key = "participants";
+      key = "caregivers";
     } else key = "recipients";
 
     let filter = formData[key].filter((elem) => elem.id !== item.id);
@@ -188,19 +188,22 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent }) {
   };
 
   const handleClose = () => {
-    setFormData({
-      title: "",
-      item_type: "random category",
-      private: false,
-      category: "",
-      description: "",
-      start_date: default_start_date,
-      end_date: default_end_date,
-      created_by: "",
-      agenda_id: "",
-      caregivers: [],
-      recipients: [],
-    });
+    if(!preloadedEvent) {
+
+      setFormData({
+        title: "",
+        item_type: "random category",
+        private: false,
+        category: "",
+        description: "",
+        start_date: default_start_date,
+        end_date: default_end_date,
+        created_by: "",
+        agenda_id: "",
+        caregivers: [],
+        recipients: [],
+      });
+    }
     setShow(false);
   };
 
@@ -255,10 +258,27 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent }) {
   }, [preloadedEvent]);
 
   useEffect(() => {
+    if (!user || !user.id) return;
+    const all_participants = space.caregivers
+      .filter((e) => e.user !== user.id)
+      .concat(space.recipients);
+    console.log(
+      all_participants.filter(
+        (elem) => !selectedParticipants.some((e) => e.id == elem.id),
+      ),
+    );
+
+    setParticipantsList(
+      all_participants.filter((elem) =>
+        !selectedParticipants.some((e) => e.id == elem.id),
+      ),
+    );
 
     if (participantsListRef.current) {
       const width = participantsListRef.current.getBoundingClientRect().width;
       setParticipantsListWidth(width);
+    } else {
+      setParticipantsListWidth(0);
     }
   }, [selectedParticipants]);
 
@@ -267,14 +287,13 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent }) {
   }, [formData.caregivers, formData.recipients]);
 
   useEffect(() => {
-    if(!user || !user.id) return 
+    if (!user || !user.id) return;
 
-    let initial_participants =  space.caregivers
-          .filter((e) => e.user !== user.id)
-          .concat(space.recipients)
+    let initial_participants = space.caregivers
+      .filter((e) => e.user !== user.id)
+      .concat(space.recipients);
 
     if (searchParticipants) {
-
       let filter = initial_participants.filter((e) =>
         e.first_name.toLowerCase().startsWith(searchParticipants),
       );

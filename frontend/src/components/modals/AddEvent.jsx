@@ -67,7 +67,7 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent }) {
     created_by_id: "",
     agenda_id: "",
     agenda: {},
-    participants: [],
+    caregivers: [],
     recipients: [],
   });
 
@@ -118,13 +118,12 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent }) {
   const deselectParticipant = (item) => {
     let key = "";
 
-    if (space.caregivers.some((e) => e.id == item.id)) {
+    if (space.caregivers.some((elem) => elem.id == item.id)) {
       key = "participants";
     } else key = "recipients";
 
-    let filter = formData[key].filter((e) => e.id !== item.id);
+    let filter = formData[key].filter((elem) => elem.id !== item.id);
     setFormData((prev) => ({ ...prev, [key]: filter }));
-    setParticipantsList((prev) => [...prev, item]);
   };
 
   const selectParticipant = (e, item) => {
@@ -132,12 +131,9 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent }) {
     e.stopPropagation();
     let key = "";
 
-    if (space.caregivers.some((e) => e.id == item.id)) {
-      key = "participants";
+    if (space.caregivers.some((elem) => elem.id == item.id)) {
+      key = "caregivers";
     } else key = "recipients";
-
-    let filter = participantsList.filter((e) => e.id !== item.id);
-    setParticipantsList(filter);
     setFormData((prev) => ({ ...prev, [key]: [...prev[key], item] }));
   };
 
@@ -202,7 +198,7 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent }) {
       end_date: default_end_date,
       created_by: "",
       agenda_id: "",
-      participants: [],
+      caregivers: [],
       recipients: [],
     });
     setShow(false);
@@ -224,6 +220,7 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent }) {
         created_by_id: user.id,
         created_by: user,
       }));
+
       setParticipantsList(
         space.caregivers
           .filter((e) => e.user !== user.id)
@@ -255,16 +252,10 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent }) {
     preloadedEvent.start_date = moment(preloadedEvent.start_date).format();
     preloadedEvent.end_date = moment(preloadedEvent.end_date).format();
     setFormData(preloadedEvent);
-    console.log(preloadedEvent);
-    if (preloadedEvent.recipients || preloadedEvent.participants) {
-
-      let filterParticipants = space.caregivers.concat(space.recipients).filter(e => preloadedEvent.participants.concat(preloadedEvent.recipients).some(elem => elem.id !== e.id) )
-      console.log(filterParticipants);
-    }
-    
   }, [preloadedEvent]);
 
   useEffect(() => {
+
     if (participantsListRef.current) {
       const width = participantsListRef.current.getBoundingClientRect().width;
       setParticipantsListWidth(width);
@@ -272,24 +263,24 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent }) {
   }, [selectedParticipants]);
 
   useEffect(() => {
-    setSelectedParticipants(formData.participants.concat(formData.recipients));
-  }, [formData.participants, formData.recipients]);
+    setSelectedParticipants(formData.caregivers.concat(formData.recipients));
+  }, [formData.caregivers, formData.recipients]);
 
   useEffect(() => {
-    if (searchParticipants !== "") {
-      console.log(searchParticipants);
+    if(!user || !user.id) return 
 
-      let filter = participantsList.filter((e) =>
+    let initial_participants =  space.caregivers
+          .filter((e) => e.user !== user.id)
+          .concat(space.recipients)
+
+    if (searchParticipants) {
+
+      let filter = initial_participants.filter((e) =>
         e.first_name.toLowerCase().startsWith(searchParticipants),
       );
-      console.log(filter);
       setParticipantsList(filter);
     } else {
-      setParticipantsList(
-        space.caregivers
-          .filter((e) => e.user !== user.id)
-          .concat(space.recipients),
-      );
+      setParticipantsList(initial_participants);
     }
   }, [searchParticipants]);
 

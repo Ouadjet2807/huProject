@@ -208,7 +208,7 @@ class AgendaItem(models.Model):
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='creates')
-    participants = models.ManyToManyField(Caregiver, related_name='participates')
+    caregivers = models.ManyToManyField(Caregiver, related_name='participates')
     recipients = models.ManyToManyField(Recipient, blank=True, related_name='participates')
 
 

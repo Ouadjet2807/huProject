@@ -211,53 +211,53 @@ class AgendaItemSerializer(serializers.ModelSerializer):
     agenda_id = serializers.PrimaryKeyRelatedField(queryset=Agenda.objects.all(), source='agenda', write_only=True)
     created_by_id = serializers.UUIDField(write_only=True)
     created_by = CustomUserSerializer(read_only=True)
-    participants = CaregiverSerializer(many=True)
+    caregivers = CaregiverSerializer(many=True)
     recipients = RecipientSerializer(many=True)
     category = AgendaItemCategorySerializer(read_only=True)
 
     class Meta:
         model = AgendaItem
-        fields = ['id', 'agenda', 'agenda_id', 'category', 'private', 'title', 'description', 'created_at', 'start_date','end_date', 'created_by', 'created_by_id', 'participants', 'recipients']
+        fields = ['id', 'agenda', 'agenda_id', 'category', 'private', 'title', 'description', 'created_at', 'start_date','end_date', 'created_by', 'created_by_id', 'caregivers', 'recipients']
         read_only_fields = ['id', 'agenda', 'created_at']
 
     def create(self, validated_data):
         print(validated_data)
-        participants_data = validated_data.pop('participants', None)
+        caregivers_data = validated_data.pop('caregivers', None)
         recipients_data = validated_data.pop('recipients', None)
 
-
         agenda_item = AgendaItem.objects.create(**validated_data)
+
         for recipient in recipients_data:
             agenda_item.recipients.add(recipient['id'])
 
-        for participant in participants_data:
-            agenda_item.participants.add(participant['id'])
+        for caregiver in caregivers_data:
+            agenda_item.participants.add(caregiver['id'])
 
         return agenda_item
 
     def update(self, instance, validated_data):
-        participants_data = validated_data.pop('participants')
+        caregivers_data = validated_data.pop('caregivers')
         recipients_data = validated_data.pop('recipients')
 
-        participants = []
+        caregivers = []
         recipients = []
 
-        for participant in participants_data:
-            participants.append(participant['id'])
+        for caregiver in caregivers_data:
+            caregivers.append(caregiver['id'])
 
         for recipient in recipients_data:
-            participants.append(recipient['id'])
+            recipients.append(recipient['id'])
 
         instance = instance = super().update(instance, validated_data)
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
 
         instance.save()
-        if recipients_data is not None:
+        if recipients is not None:
             instance.recipients.set(recipients)
 
-        if participants is not None:
-            instance.participants.set(participants)
+        if caregivers is not None:
+            instance.participants.set(caregivers)
 
         return instance
 

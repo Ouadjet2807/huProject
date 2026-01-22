@@ -23,7 +23,7 @@ import { IoIosClose } from "react-icons/io";
 import { MdOutlineGroupAdd } from "react-icons/md";
 import { HiOutlineBars3BottomLeft } from "react-icons/hi2";
 
-export default function AddEvent({ agenda, show, setShow, preloadedEvent }) {
+export default function AddEvent({ agenda, show, setShow, preloadedEvent, fetchAgendaItems, setSelectedEvent }) {
   moment.locale("fr");
   const { user, space } = useContext(AuthContext);
 
@@ -138,13 +138,29 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent }) {
   };
 
   const selectCategory = (category) => {
+    console.log('select category');
+
     setFormData((prev) => ({
       ...prev,
-      category: category,
+      category: category.id,
     }));
 
     setSelectedCategory(category);
   };
+
+  const deleteEvent = async () => {
+    if(!preloadedEvent.id) return
+    if(window.confirm('Supprimer cet événement ?')) {
+      try {
+        await api.delete(`http://127.0.0.1:8000/api/agenda_items/${preloadedEvent.id}`)
+        handleClose()
+        fetchAgendaItems()
+        setSelectedEvent({})
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -188,8 +204,7 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent }) {
   };
 
   const handleClose = () => {
-    if(!preloadedEvent) {
-
+    if (!preloadedEvent) {
       setFormData({
         title: "",
         item_type: "random category",
@@ -250,15 +265,34 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent }) {
   }, [showCreateCategory]);
 
   useEffect(() => {
-    if (Object.keys(preloadedEvent).length <= 0) return;
-    console.log(preloadedEvent);
-    preloadedEvent.start_date = moment(preloadedEvent.start_date).format();
-    preloadedEvent.end_date = moment(preloadedEvent.end_date).format();
-    setFormData(preloadedEvent);
+    if (Object.keys(preloadedEvent).length <= 0) {
+      setFormData({
+        title: "",
+        item_type: "random category",
+        private: false,
+        category: "",
+        description: "",
+        start_date: default_start_date,
+        end_date: default_end_date,
+        agenda: agenda && agenda,
+        agenda_id: (agenda && agenda.id) && agenda.id,
+        created_by_id: (user && user.id) && user.id,
+        created_by: user && user,
+        caregivers: [],
+        recipients: [],
+      });
+    } else {
+      preloadedEvent.start_date = moment(preloadedEvent.start_date).format();
+      preloadedEvent.end_date = moment(preloadedEvent.end_date).format();
+      preloadedEvent.created_by_id = preloadedEvent.created_by.id
+      setFormData(preloadedEvent);
+    }
   }, [preloadedEvent]);
 
+  
+
   useEffect(() => {
-    if (!user || !user.id) return;
+    if (!user || !user.id || !space) return;
     const all_participants = space.caregivers
       .filter((e) => e.user !== user.id)
       .concat(space.recipients);
@@ -269,8 +303,8 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent }) {
     );
 
     setParticipantsList(
-      all_participants.filter((elem) =>
-        !selectedParticipants.some((e) => e.id == elem.id),
+      all_participants.filter(
+        (elem) => !selectedParticipants.some((e) => e.id == elem.id),
       ),
     );
 
@@ -308,6 +342,7 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent }) {
   }, []);
 
   console.log(formData);
+  console.log(preloadedEvent);
 
   return (
     <>
@@ -324,7 +359,7 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent }) {
       >
         <Modal.Header closeButton>
           <Modal.Title>
-            <LuCalendarPlus /> Ajouter un événement
+            <LuCalendarPlus /> {Object.keys(preloadedEvent).length > 0 ? "Modifier" : "Ajouter"} un événement
           </Modal.Title>{" "}
           <Dropdown className="categories-dropdown">
             <Dropdown.Toggle id="dropdown-basic">
@@ -384,6 +419,7 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent }) {
           <Form.Check
             type="switch"
             id="custom-switch"
+            checked={formData.private}
             onChange={() =>
               setFormData((prev) => ({ ...prev, private: !prev.private }))
             }
@@ -531,8 +567,13 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent }) {
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={handleSubmit}>Créer</Button>
-          <Button variant="secondary" onClick={handleClose}>
+          <Button onClick={handleSubmit}>{Object.keys(preloadedEvent).length > 0 ? "Modifier" : "Créer"}</Button>
+          {Object.keys(preloadedEvent).length > 0 && 
+          <Button variant="outline-danger" onClick={deleteEvent}>
+            Supprimer
+          </Button>
+          }
+          <Button variant="outline-secondary" onClick={handleClose}>
             Annuler
           </Button>
         </Modal.Footer>

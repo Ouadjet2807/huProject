@@ -192,7 +192,7 @@ export default function Agenda({ space }) {
             <div className="description">{selectedEvent.description}</div>
 
             <ListGroup className="participants">
-              {selectedEvent.participants.map(item => {
+              {selectedEvent.caregivers.map(item => {
                 return <ListGroup.Item>{item.first_name} {item.last_name}</ListGroup.Item>
               })}
             </ListGroup>

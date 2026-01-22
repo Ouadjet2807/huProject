@@ -218,7 +218,7 @@ class AgendaItemViewSet(viewsets.ModelViewSet):
     queryset = AgendaItem.objects.all()
     permission_classes = [permissions.IsAuthenticated] 
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
-    search_fields = ['agenda', 'title', 'start_date', 'end_date', 'created_by', 'participants', 'recipients']
+    search_fields = ['agenda', 'title', 'start_date', 'end_date', 'created_by', 'caregivers', 'recipients']
     ordering_fields = ['start_date', 'end_date']
 
     def get_queryset(self):
@@ -226,7 +226,7 @@ class AgendaItemViewSet(viewsets.ModelViewSet):
 
         if not user or not hasattr(user, 'caregiver'):
             return AgendaItem.objects.none()
-        
+
         caregiver = user.caregiver
 
         qs = AgendaItem.objects.filter(agenda__space__caregivers=caregiver).filter(private=False) | AgendaItem.objects.filter(agenda__space__caregivers=caregiver).filter(created_by=user) 

@@ -188,28 +188,28 @@ class Recipient(Person):
 
 class Agenda(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    space = models.ForeignKey('Space', on_delete=models.CASCADE, related_name='belongs_to')
+    space = models.ForeignKey('Space', on_delete=models.CASCADE, related_name='agenda_space')
 
 class AgendaItemCategory(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    agenda = models.ForeignKey(Agenda, on_delete=models.CASCADE, related_name='has')
+    agenda = models.ForeignKey(Agenda, on_delete=models.CASCADE, related_name='agenda_category')
     name = models.CharField(max_length=50)
     color = models.JSONField()
 
 class AgendaItem(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    agenda = models.ForeignKey(Agenda, on_delete=models.CASCADE, related_name='contains')
+    agenda = models.ForeignKey(Agenda, on_delete=models.CASCADE, related_name='agenda_item')
     private = models.BooleanField(default=False)
-    category = models.ForeignKey(AgendaItemCategory, on_delete=models.SET_NULL, null=True, blank=True, related_name="items")
+    category = models.ForeignKey(AgendaItemCategory, on_delete=models.SET_NULL, null=True, blank=True, related_name="category_item")
     title = models.CharField(max_length=50)
     description = models.CharField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
-    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='creates')
-    caregivers = models.ManyToManyField(Caregiver, related_name='participates')
-    recipients = models.ManyToManyField(Recipient, blank=True, related_name='participates')
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='agenda_creator')
+    caregivers = models.ManyToManyField(Caregiver, related_name='agenda_caregivers')
+    recipients = models.ManyToManyField(Recipient, blank=True, related_name='agenda_recipients')
 
 
 class TodoList(models.Model):

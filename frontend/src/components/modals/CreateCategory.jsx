@@ -29,8 +29,10 @@ export default function CreateCategory({ show, setShow, agenda }) {
   };
 
   const handleSubmit = async () => {
+    console.log(newCategory);
+    
     try {
-      await api.post(
+      let response = await api.post(
         "http://127.0.0.1:8000/api/agenda_item_categories/",
         newCategory
       );
@@ -38,6 +40,8 @@ export default function CreateCategory({ show, setShow, agenda }) {
         name: "",
         color: colors[0],
       });
+      console.log(response);
+      
       handleClose();
     } catch (error) {
       console.log(error);

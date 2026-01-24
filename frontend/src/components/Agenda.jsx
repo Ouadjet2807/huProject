@@ -58,7 +58,6 @@ export default function Agenda({ space }) {
     console.log("event", event);
 
     setSelectedEvent(event);
-    // setShowEvent(true);
   };
 
   const fetchAgenda = async () => {
@@ -153,6 +152,7 @@ export default function Agenda({ space }) {
 
   console.log(eventCategories);
   console.log(agendaItems);
+  console.log(agenda);
 
   return (
     <div id="agenda">

@@ -57,7 +57,6 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent, fetchA
 
   const [formData, setFormData] = useState({
     title: "",
-    item_type: "random category",
     private: false,
     category: "",
     description: "",
@@ -142,7 +141,7 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent, fetchA
 
     setFormData((prev) => ({
       ...prev,
-      category: category.id,
+      category: category,
     }));
 
     setSelectedCategory(category);
@@ -162,16 +161,26 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent, fetchA
     }
   }
 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     console.log(formData);
 
     try {
-      const response = await api.post(
-        "http://127.0.0.1:8000/api/agenda_items/",
-        formData,
-      );
+      let response = ""
+      if(Object.keys(preloadedEvent).length > 0) {
+        response = await api.put(
+          `http://127.0.0.1:8000/api/agenda_items/${preloadedEvent.id}/`,
+          formData,
+        );
+      } else {
+        response = await api.post(
+          "http://127.0.0.1:8000/api/agenda_items/",
+          formData,
+        );
+      }
+      console.log(response);
       setShowToast(true);
       setMessage("Événement crée avec succès");
       setColor("success");
@@ -207,7 +216,6 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent, fetchA
     if (!preloadedEvent) {
       setFormData({
         title: "",
-        item_type: "random category",
         private: false,
         category: "",
         description: "",
@@ -268,7 +276,6 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent, fetchA
     if (Object.keys(preloadedEvent).length <= 0) {
       setFormData({
         title: "",
-        item_type: "random category",
         private: false,
         category: "",
         description: "",

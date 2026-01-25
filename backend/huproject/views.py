@@ -192,7 +192,7 @@ class RecipientViewSet(viewsets.ModelViewSet):
         recipient.caregivers.add(caregiver) if hasattr(recipient, 'caregivers') else None
         out_serializer = self.get_serializer(recipient)
         return Response(out_serializer.data, status=status.HTTP_201_CREATED)
-    
+
 class AgendaViewSet(viewsets.ModelViewSet):
     queryset = Agenda.objects.all()
     serializer_class = AgendaSerializer
@@ -206,7 +206,7 @@ class AgendaViewSet(viewsets.ModelViewSet):
         if not user or not hasattr(user, "caregiver"):
             return Agenda.objects.none()
         caregiver = user.caregiver
-        return Agenda.objects.filter(space__caregivers=caregiver).select_related('space',)
+        return Agenda.objects.get(space__caregivers=caregiver).select_related('space',)
 
     def perform_create(self, serializer):
         serializer.save() 
@@ -229,26 +229,19 @@ class AgendaItemViewSet(viewsets.ModelViewSet):
 
         caregiver = user.caregiver
 
-        qs = AgendaItem.objects.filter(agenda__space__caregivers=caregiver).filter(private=False) | AgendaItem.objects.filter(agenda__space__caregivers=caregiver).filter(created_by=user) 
+        AgendaItems = AgendaItem.objects.filter(agenda__space__caregivers=caregiver).filter(private=False) | AgendaItem.objects.filter(agenda__space__caregivers=caregiver).filter(created_by=user) 
 
-        qs = qs.select_related('agenda', 'created_by').order_by('start_date')
+        AgendaItems = AgendaItems.select_related('agenda', 'created_by').order_by('start_date')
 
-        space_id = self.request.query_params.get('space_id')
-        if space_id:
-            qs = qs.filter(agenda__space__id=space_id)
-
-        agenda_id = self.request.query_params.get('agenda_id')
-        if agenda_id:
-            qs = qs.filter(agenda__id=agenda_id)
 
         start_after = self.request.query_params.get('start_after') 
         start_before = self.request.query_params.get('start_before')
         if start_after:
-            qs = qs.filter(start__gte=start_after)
+            AgendaItems = AgendaItems.filter(start__gte=start_after)
         if start_before:
-            qs = qs.filter(start__lte=start_before)
+            AgendaItems = AgendaItems.filter(start__lte=start_before)
 
-        return qs.distinct()
+        return AgendaItems.distinct()
 
     def perform_create(self, serializer):
         serializer.save() 
@@ -311,7 +304,7 @@ class SpaceViewSet(viewsets.ModelViewSet):
 
         if not user or not hasattr(user, "caregiver"):
             return Space.objects.none()
-        return user.caregiver.spaces.all().prefetch_related("recipients", "caregivers")
+        return user.caregiver.spaces.all().prefetch_related("recipients", "caregivers", "agenda_space")
 
     # -------------------------
     # Creation / update hooks

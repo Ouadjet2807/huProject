@@ -188,7 +188,7 @@ class Recipient(Person):
 
 class Agenda(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    space = models.ForeignKey('Space', on_delete=models.CASCADE, related_name='agenda_space')
+    space = models.OneToOneField(Space, on_delete=models.CASCADE, related_name='agenda_space')
 
 class AgendaItemCategory(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -207,9 +207,9 @@ class AgendaItem(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
-    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='agenda_creator')
-    caregivers = models.ManyToManyField(Caregiver, related_name='agenda_caregivers')
-    recipients = models.ManyToManyField(Recipient, blank=True, related_name='agenda_recipients')
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='creator_item')
+    caregivers = models.ManyToManyField(Caregiver, related_name='caregivers_item')
+    recipients = models.ManyToManyField(Recipient, blank=True, related_name='recipients_item')
 
 
 class TodoList(models.Model):

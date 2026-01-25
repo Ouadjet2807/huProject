@@ -23,13 +23,12 @@ import { IoIosClose } from "react-icons/io";
 import { MdOutlineGroupAdd } from "react-icons/md";
 import { HiOutlineBars3BottomLeft } from "react-icons/hi2";
 
-export default function AddEvent({ agenda, show, setShow, preloadedEvent, fetchAgendaItems, setSelectedEvent }) {
+export default function AddEvent({ agenda, setAgenda, show, setShow, preloadedEvent, fetchAgenda, setSelectedEvent }) {
   moment.locale("fr");
   const { user, space } = useContext(AuthContext);
 
   const { setShowToast, setMessage, setColor } = useContext(ToastContext);
 
-  const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [showCreateCategory, setShowCreateCategory] = useState(false);
   const [showCaregivers, setShowCaregivers] = useState(false);
@@ -58,29 +57,15 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent, fetchA
   const [formData, setFormData] = useState({
     title: "",
     private: false,
-    category: "",
+    category: {},
     description: "",
     start_date: default_start_date,
     end_date: default_end_date,
-    created_by: {},
-    created_by_id: "",
-    agenda_id: "",
-    agenda: {},
+    created_by: "",
+    agenda: "",
     caregivers: [],
     recipients: [],
   });
-
-  const fetchCategory = async () => {
-    try {
-      const res = await api.get(
-        "http://127.0.0.1:8000/api/agenda_item_categories/",
-      );
-      console.log("Success ", res.data);
-      setCategories(res.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   const handleChange = (e) => {
     // handling different input types
@@ -141,7 +126,7 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent, fetchA
 
     setFormData((prev) => ({
       ...prev,
-      category: category,
+      category: category.id,
     }));
 
     setSelectedCategory(category);
@@ -153,7 +138,6 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent, fetchA
       try {
         await api.delete(`http://127.0.0.1:8000/api/agenda_items/${preloadedEvent.id}`)
         handleClose()
-        fetchAgendaItems()
         setSelectedEvent({})
       } catch (error) {
         console.log(error);
@@ -180,7 +164,8 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent, fetchA
           formData,
         );
       }
-      console.log(response);
+      setAgenda(prev => ({...prev, "items": [...prev.items, response.data] }))
+      // agenda.items.push(response.data)
       setShowToast(true);
       setMessage("Événement crée avec succès");
       setColor("success");
@@ -199,14 +184,17 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent, fetchA
     e.stopPropagation();
 
     if (!id) return;
-
-    let filter = categories.filter((item) => item.id !== id);
-    setCategories(filter);
-
     try {
       await api.delete(
         `http://127.0.0.1:8000/api/agenda_item_categories/${id}`,
       );
+      let filterCategories = agenda.categories.filter(cat => cat.id !== id)
+      console.log(filterCategories);
+      setAgenda(prev => ({...prev, categories: filterCategories}))
+      if (selectedCategory.id === id) {
+        setSelectedCategory(null)
+        setFormData(prev => ({...prev, category: ""}))
+      }
     } catch (error) {
       console.log(error);
     }
@@ -235,16 +223,12 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent, fetchA
       agenda &&
       Object.keys(agenda).includes("id") &&
       user &&
-      Object.keys(user).includes("id") &&
-      space &&
-      Object.keys(space).includes("caregivers")
+      Object.keys(user).includes("id")
     ) {
       setFormData((prev) => ({
         ...prev,
-        agenda: agenda,
-        agenda_id: agenda.id,
-        created_by_id: user.id,
-        created_by: user,
+        agenda: agenda.id,
+        created_by: user.id,
       }));
 
       setParticipantsList(
@@ -267,31 +251,22 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent, fetchA
   }, [formData.start_date]);
 
   useEffect(() => {
-    if (!showCreateCategory) {
-      fetchCategory();
-    }
-  }, [showCreateCategory]);
-
-  useEffect(() => {
     if (Object.keys(preloadedEvent).length <= 0) {
       setFormData({
         title: "",
         private: false,
-        category: "",
+        category: {},
         description: "",
         start_date: default_start_date,
         end_date: default_end_date,
-        agenda: agenda && agenda,
-        agenda_id: (agenda && agenda.id) && agenda.id,
-        created_by_id: (user && user.id) && user.id,
-        created_by: user && user,
+        agenda: (agenda && agenda.id) && agenda.id,
+        created_by: user && user.id,
         caregivers: [],
         recipients: [],
       });
     } else {
       preloadedEvent.start_date = moment(preloadedEvent.start_date).format();
       preloadedEvent.end_date = moment(preloadedEvent.end_date).format();
-      preloadedEvent.created_by_id = preloadedEvent.created_by.id
       setFormData(preloadedEvent);
     }
   }, [preloadedEvent]);
@@ -344,18 +319,15 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent, fetchA
     }
   }, [searchParticipants]);
 
-  useEffect(() => {
-    fetchCategory();
-  }, []);
-
-  console.log(formData);
-  console.log(preloadedEvent);
+  console.log(selectedCategory);
+  
 
   return (
     <>
       <CreateCategory
         show={showCreateCategory}
         setShow={setShowCreateCategory}
+        selectCategory={selectCategory}
         agenda={agenda}
       />
       <Modal
@@ -389,8 +361,8 @@ export default function AddEvent({ agenda, show, setShow, preloadedEvent, fetchA
             </Dropdown.Toggle>
 
             <Dropdown.Menu>
-              {categories.length > 0 &&
-                categories.map((category) => {
+              {agenda && agenda.categories && agenda.categories.length > 0 &&
+                agenda.categories.map((category) => {
                   return (
                     <Dropdown.Item
                       onClick={() => {

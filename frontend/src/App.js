@@ -19,6 +19,7 @@ function App() {
   const { showToast, setShowToast, message, color } = useContext(ToastContext);
 
   console.log("user ", user);
+  console.log("space ", space);
 
 
   return (
@@ -36,7 +37,7 @@ function App() {
               <Home setRefreshSpace={setRefreshSpace} />
             }
           />
-          <Route path="calendar" element={<Agenda />} />
+          <Route path="calendar" element={<Agenda space={space}/>} />
           <Route path="create_recipient" element={<CreateRecipient />} />
           <Route path="accept-invite/:token" element={<AcceptInvite />} />
           <Route

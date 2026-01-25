@@ -160,22 +160,7 @@ class RecipientSerializer(serializers.ModelSerializer):
             instance.healthcare_professionals.set(professionals)
         return instance
 
-class SpaceSerializer(serializers.ModelSerializer):
-    caregivers = CaregiverSerializer(many=True, read_only=True)
-    recipients = RecipientSerializer(many=True, read_only=True)
-    created_by =  CustomUserSerializer(read_only=True)
 
-    class Meta:
-        model = Space
-        fields = ['id', 'name', 'description', 'created_by', 'caregivers', 'recipients', 'created_at', 'updated_at']
-
-class SpaceMembershipSerializer(serializers.ModelSerializer):
-    user = CustomUserSerializer(many=False, read_only=True)
-    space = SpaceSerializer(many=False, read_only=True)
-
-    class Meta:
-        model = SpaceMembership
-        fields = ['id', 'user', 'space', 'role', 'created_at']
 
 
 class InvitationSerializer(serializers.ModelSerializer):
@@ -187,11 +172,8 @@ class InvitationSerializer(serializers.ModelSerializer):
         fields = ['email', 'space', 'role', 'token', 'created_at', 'expires_at', 'accepted', 'sender']
 
 
-
-
-
-
 class AgendaItemCategorySerializer(serializers.ModelSerializer):
+    agenda =  serializers.PrimaryKeyRelatedField(queryset=Agenda.objects.all())
 
     class Meta: 
         model = AgendaItemCategory
@@ -199,16 +181,11 @@ class AgendaItemCategorySerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'agenda']
 
     def validate(self, data):
-        agenda = data["agenda"]
-        if not "agenda_id" in data or not data["agenda_id"]:
-            data["agenda_id"] = agenda["id"]
-
         validated_data = data
 
         return validated_data
 
     def create(self, validated_data):
-        agenda = validated_data.pop("agenda")
         category = AgendaItemCategory.objects.create(**validated_data)
 
         return category
@@ -216,30 +193,20 @@ class AgendaItemCategorySerializer(serializers.ModelSerializer):
 
 class AgendaItemSerializer(serializers.ModelSerializer):
     title = serializers.CharField()
-    created_by_id = serializers.UUIDField(write_only=True)
-    created_by = CustomUserSerializer(read_only=True)
+    created_by = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
     caregivers = CaregiverSerializer(many=True)
     recipients = RecipientSerializer(many=True)
-    # category = AgendaItemCategorySerializer(source="category_item")
+    category = serializers.PrimaryKeyRelatedField(queryset=AgendaItemCategory.objects.all())
 
     class Meta:
         model = AgendaItem
-        fields = ['id', 'agenda', 'category', 'private', 'title', 'description', 'created_at', 'start_date','end_date', 'created_by', 'created_by_id', 'caregivers', 'recipients']
-        read_only_fields = ['id', 'agenda', 'created_at']
-
-    def validate(self, data):
-
-        print(data["category"])
-        data["category"] = AgendaItemCategory.objects.get(id=data["category"].id)
-        print(data)
-
-        validated_data = data
-        return validated_data
+        fields = ['id', 'agenda', 'category', 'private', 'title', 'description', 'created_at', 'start_date','end_date', 'created_by', 'caregivers', 'recipients']
+        read_only_fields = ['id', 'created_at', 'created_by']
 
     def create(self, validated_data):
+
         caregivers_data = validated_data.pop('caregivers', None)
         recipients_data = validated_data.pop('recipients', None)
-
 
         agenda_item = AgendaItem.objects.create(**validated_data)
 
@@ -255,8 +222,6 @@ class AgendaItemSerializer(serializers.ModelSerializer):
         caregivers_data = validated_data.pop('caregivers')
         recipients_data = validated_data.pop('recipients')
 
-        print(instance.category)
-
         caregivers = []
         recipients = []
 
@@ -271,6 +236,7 @@ class AgendaItemSerializer(serializers.ModelSerializer):
             setattr(instance, attr, value)
 
         instance.save()
+
         if recipients is not None:
             instance.recipients.set(recipients)
 
@@ -281,8 +247,6 @@ class AgendaItemSerializer(serializers.ModelSerializer):
 
 
 class AgendaSerializer(serializers.ModelSerializer):
-    id = serializers.UUIDField()
-    space = serializers.PrimaryKeyRelatedField(queryset=Space.objects.all())
     items = AgendaItemSerializer(many=True, source="agenda_item")
     categories = AgendaItemCategorySerializer(many=True, source="agenda_category")
 
@@ -290,6 +254,25 @@ class AgendaSerializer(serializers.ModelSerializer):
         model = Agenda
         fields = ['id', 'space', 'items', 'categories']
         read_only_fields = ['id','space']
+
+class SpaceSerializer(serializers.ModelSerializer):
+    caregivers = CaregiverSerializer(many=True, read_only=True)
+    recipients = RecipientSerializer(many=True, read_only=True)
+    created_by =  CustomUserSerializer(read_only=True)
+    agenda = AgendaSerializer(read_only=True, source="agenda_space")
+
+    class Meta:
+        model = Space
+        fields = ['id', 'name', 'description', 'created_by', 'caregivers', 'recipients', 'created_at', 'updated_at', 'agenda']
+        read_only_fields = ['id',]
+
+class SpaceMembershipSerializer(serializers.ModelSerializer):
+    user = CustomUserSerializer(many=False, read_only=True)
+    space = SpaceSerializer(many=False, read_only=True)
+
+    class Meta:
+        model = SpaceMembership
+        fields = ['id', 'user', 'space', 'role', 'created_at']
 
 class TodoListSerializer(serializers.ModelSerializer):
     space = serializers.PrimaryKeyRelatedField(queryset=Space.objects.all())

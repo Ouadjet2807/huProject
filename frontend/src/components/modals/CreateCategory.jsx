@@ -5,7 +5,7 @@ import api from "../../api/api";
 import Form from "react-bootstrap/Form"
 import FloatingLabel from "react-bootstrap/FloatingLabel";
 
-export default function CreateCategory({ show, setShow, agenda }) {
+export default function CreateCategory({ show, setShow, agenda, selectCategory }) {
   let colors = [
     {background: "#ffcabde6", text:"#d49687ff"},
     {background: "#ffdb87d7", text: "#bd9947ff"},
@@ -36,6 +36,8 @@ export default function CreateCategory({ show, setShow, agenda }) {
         "http://127.0.0.1:8000/api/agenda_item_categories/",
         newCategory
       );
+      agenda.categories.push(response.data)
+      selectCategory(response.data)
       setNewCategory({
         name: "",
         color: colors[0],
@@ -53,8 +55,7 @@ export default function CreateCategory({ show, setShow, agenda }) {
 
     setNewCategory((prev) => ({
       ...prev,
-      agenda_id: agenda.id,
-      agenda: agenda,
+      agenda: agenda.id,
     }));
   }, [agenda]);
 

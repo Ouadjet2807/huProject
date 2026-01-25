@@ -18,15 +18,14 @@ import ListGroup from "react-bootstrap/ListGroup";
 
 export default function Agenda({ space }) {
   const [agenda, setAgenda] = useState();
-  const [agendaItems, setAgendaItems] = useState([]);
-  const [eventCategories, setEventCategories] = useState([]);
+  const [events, setEvents] = useState([])
   const [todayAgendaItems, setTodayAgendaItems] = useState([]);
   const [error, setError] = useState();
   const [selectedEvent, setSelectedEvent] = useState({});
   const [showEvent, setShowEvent] = useState(false);
   const [showEventForm, setShowEventForm] = useState(false);
 
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const today = new Date();
 
@@ -60,51 +59,6 @@ export default function Agenda({ space }) {
     setSelectedEvent(event);
   };
 
-  const fetchAgenda = async () => {
-    setIsLoading(true);
-    try {
-      const res = await api.get("http://127.0.0.1:8000/api/agendas/");
-      setAgenda(res.data[0]);
-    } catch (err) {
-      console.error(err);
-      if (err.response) {
-        setError(err.response.data);
-      } else {
-        setError({ detail: "Network error" });
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const fetchAgendaItems = async () => {
-    setIsLoading(true);
-    try {
-      const res = await api.get("http://127.0.0.1:8000/api/agenda_items/");
-      setAgendaItems(res.data);
-    } catch (err) {
-      console.error(err);
-      if (err.response) {
-        setError(err.response.data);
-      } else {
-        setError({ detail: "Network error" });
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const fetchCategories = async () => {
-    try {
-      const res = await api.get(
-        "http://127.0.0.1:8000/api/agenda_item_categories/",
-      );
-
-      setEventCategories(res.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   const displayDate = (start_date, end_date) => {
     const start = moment(start_date);
@@ -123,46 +77,58 @@ export default function Agenda({ space }) {
   };
 
   useEffect(() => {
-    fetchCategories();
-    fetchAgenda();
-    fetchAgendaItems();
-  }, []);
+    console.log(space);
+    if(space && Object.keys(space).length > 0) {
+      console.log(space.agenda);
+      setAgenda(space.agenda)
+      setIsLoading(false)
+    }
+  }, [space]);
 
   useEffect(() => {
-    if (agendaItems.length > 0) {
-      agendaItems.forEach((item) => {
+    if(!agenda) return
+
+    setIsLoading(true)
+    if (agenda.items && agenda.items.length > 0) {
+      console.log("agenda change");
+      agenda.items.forEach((item) => {
+        console.log(item);
+        console.log(item.category);
+        console.log(agenda.categories);
+        
+        let find_category = agenda.categories.find(c => c.id == item.category)
+        item.category = find_category ? find_category : item.category
+        console.log(item);
         item.start_date = new Date(item.start_date);
         item.end_date = new Date(item.end_date);
         item.agenda_id = item.agenda.id;
       });
-      let searchTodaysEvent = agendaItems.filter(
+      let searchTodaysEvent = agenda.items.filter(
         (item) =>
           item.start_date.toLocaleDateString() == today.toLocaleDateString() ||
           item.end_date.toLocaleDateString() == today.toLocaleDateString(),
       );
+      setEvents(agenda.items)
       setTodayAgendaItems(searchTodaysEvent);
     }
-  }, [agendaItems]);
+    setIsLoading(false)
+  }, [agenda]);
 
-  useEffect(() => {
-    if (!showEvent || !showEventForm) {
-      fetchAgendaItems();
-    }
-  }, [showEvent, showEventForm]);
 
-  console.log(eventCategories);
-  console.log(agendaItems);
   console.log(agenda);
+  console.log(events);
+  
 
   return (
     <div id="agenda">
       <AddEvent
         agenda={agenda}
+        setAgenda={setAgenda}
         space={space}
         setShow={setShowEventForm}
         show={showEventForm}
         preloadedEvent={selectedEvent}
-        fetchAgendaItems={fetchAgendaItems}
+        // fetchAgenda={fetchAgenda}
         setSelectedEvent={setSelectedEvent}
       />
       <div className="left-tab">
@@ -262,20 +228,14 @@ export default function Agenda({ space }) {
         {!isLoading ? (
           <Calendar
             localizer={localizer}
-            events={agendaItems}
+            events={events}
             eventPropGetter={(event, start, end, isSelected) => {
               let newStyle = {
-                backgroundColor: "#92cfbc75",
-                color: "#2A534C",
+                backgroundColor: event.category ? event.category.color.background : "#92cfbc75",
+                color: event.category ? event.category.color.text : "#2A534C",
                 borderRadius: "5px",
-                border: "1px solid #2A534C",
+                border: event.category ? `1px solid ${event.category.color.text}` : "1px solid #2A534C",
               };
-
-              if (event.category) {
-                newStyle.backgroundColor = `${event.category.color.background}`;
-                newStyle.border = `1px solid ${event.category.color.text}`;
-                newStyle.color = event.category.color.text;
-              }
 
               return {
                 className: "",

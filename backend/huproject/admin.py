@@ -7,8 +7,13 @@ from .forms import CustomUserChangeForm, CustomUserCreationForm
 
 @admin.register(TodoList)
 class TodoListAdmin(admin.ModelAdmin):
-    list_display = ('id', 'title', 'frequency', 'completed', 'created_at')
-    search_fields = ('title', 'frequency', 'completed', 'created_at')
+    list_display = ('id', 'space')
+    search_fields = ('space',)
+    
+@admin.register(TodoListItem)
+class TodoListAdmin(admin.ModelAdmin):
+    list_display = ('id', 'todo_list', 'created_by', 'created_at', 'completed')
+    search_fields = ('todo_list', 'title', 'created_by')
 
 @admin.register(Treatment)
 class TreatmentAdmin(admin.ModelAdmin):

@@ -63,16 +63,15 @@ export default function TodoList({ user, space }) {
 
     try {
       let response = await api.post(
-        "http://127.0.0.1:8000/api/todo_lists/",
-        newTask
+        "http://127.0.0.1:8000/api/todo_list_items/",
+        newTask,
       );
       console.log("success", response);
 
       newTask.id = response.data.id;
       setTodoList((prev) => [...prev, newTask]);
-      setFilteredTodoList((prev) => [...prev, newTask]);
       setNewTask({
-        space: space && space.id,
+        todo_list: Object.keys(space).length > 0 && space.todos.id,
         frequency: "punctual",
         completed: false,
         completed_by: null,
@@ -92,16 +91,18 @@ export default function TodoList({ user, space }) {
     todo.completed_by = user;
     todo.completed_by_id = user.id;
     todo.updated_at = moment(new Date()).format();
-    
+
     console.log(todo);
-    
 
     let filter = filteredTodoList.toSpliced(index, 1, todo);
 
-    setFilteredTodoList(filter);
+    setTodoList(filter);
 
     try {
-      await api.put(`http://127.0.0.1:8000/api/todo_lists/${todo.id}/`, todo);
+      await api.put(
+        `http://127.0.0.1:8000/api/todo_list_items/${todo.id}/`,
+        todo,
+      );
     } catch (error) {
       console.log(error);
     }
@@ -112,51 +113,41 @@ export default function TodoList({ user, space }) {
 
     try {
       await api.delete(
-        `http://127.0.0.1:8000/api/todo_lists/${todo.id}/`,
-        todo
+        `http://127.0.0.1:8000/api/todo_list_items/${todo.id}/`,
+        todo,
       );
-      setFilteredTodoList(filter);
+      setTodoList(filter);
     } catch (error) {
       console.log(error);
     }
   };
 
-  const fetchTodoList = async () => {
-    try {
-      const response = await api.get("http://127.0.0.1:8000/api/todo_lists");
-
-      setTodoList(response.data);
-      setFilteredTodoList(response.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  useEffect(() => {}, [space]);
 
   useEffect(() => {
-    fetchTodoList();
-  }, []);
+    if (!user || !Object.keys(space).length > 0 || !space.todos) return;
 
-  useEffect(() => {
-    if(!user && !space) return
+    setTodoList(space.todos.items);
 
     setNewTask({
-      space: space && space.id,
+      todo_list: space.todos.id,
       frequency: "punctual",
       completed: false,
       completed_by: null,
       completed_by_id: null,
       title: "",
       description: "",
-      created_by: user,
-      created_by_id: user.id,
+      created_by: user.id,
     });
   }, [user, space]);
 
   useEffect(() => {
+    console.log(todoList);
+
     const filterCategories = () => {
       if (activeCategory !== "all") {
         let filter = todoList.filter(
-          (item) => item.frequency === activeCategory
+          (item) => item.frequency === activeCategory,
         );
         setFilteredTodoList(filter);
       } else {
@@ -192,6 +183,7 @@ export default function TodoList({ user, space }) {
 
   console.log(newTask);
   console.log(todoList);
+  console.log(filteredTodoList);
 
   return (
     <div id="todoList">

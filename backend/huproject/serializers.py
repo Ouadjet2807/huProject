@@ -255,15 +255,36 @@ class AgendaSerializer(serializers.ModelSerializer):
         fields = ['id', 'space', 'items', 'categories']
         read_only_fields = ['id','space']
 
+
+class TodoListItemSerializer(serializers.ModelSerializer):
+    todo_list = serializers.PrimaryKeyRelatedField(queryset=TodoList.objects.all())
+    created_by = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
+    completed_by = CustomUserSerializer(read_only=True, allow_null=True)
+
+    class Meta:
+        model = TodoListItem
+        fields = ['id', 'todo_list', 'frequency', 'completed', 'completed_by', 'title', 'updated_at', 'created_at', 'created_by']
+        read_only_fields = ['id', 'space', 'created_at']
+
+class TodoListSerializer(serializers.ModelSerializer):
+    space = serializers.PrimaryKeyRelatedField(queryset=Space.objects.all())
+    items = TodoListItemSerializer(many=True, source="item_todo")
+
+    class Meta:
+        model = TodoList
+        fields = ['id', 'space', 'items']
+        read_only_fields = ['id', 'space']
+
 class SpaceSerializer(serializers.ModelSerializer):
     caregivers = CaregiverSerializer(many=True, read_only=True)
     recipients = RecipientSerializer(many=True, read_only=True)
     created_by =  CustomUserSerializer(read_only=True)
     agenda = AgendaSerializer(read_only=True, source="agenda_space")
+    todos = TodoListSerializer(read_only=True, source="todo_space")
 
     class Meta:
         model = Space
-        fields = ['id', 'name', 'description', 'created_by', 'caregivers', 'recipients', 'created_at', 'updated_at', 'agenda']
+        fields = ['id', 'name', 'description', 'created_by', 'caregivers', 'recipients', 'created_at', 'updated_at', 'agenda', 'todos']
         read_only_fields = ['id',]
 
 class SpaceMembershipSerializer(serializers.ModelSerializer):
@@ -273,18 +294,6 @@ class SpaceMembershipSerializer(serializers.ModelSerializer):
     class Meta:
         model = SpaceMembership
         fields = ['id', 'user', 'space', 'role', 'created_at']
-
-class TodoListSerializer(serializers.ModelSerializer):
-    space = serializers.PrimaryKeyRelatedField(queryset=Space.objects.all())
-    created_by_id = serializers.UUIDField(write_only=True)
-    created_by = CustomUserSerializer(read_only=True)
-    completed_by = CustomUserSerializer(read_only=True, allow_null=True)
-
-    class Meta:
-        model = TodoList
-        fields = ['id', 'space', 'frequency', 'completed', 'completed_by', 'title', 'updated_at', 'created_at', 'created_by', 'created_by_id']
-        read_only_fields = ['id', 'space', 'created_at']
-
 
 
 class GrocerySerializer(serializers.ModelSerializer):

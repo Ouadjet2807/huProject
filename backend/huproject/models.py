@@ -214,7 +214,11 @@ class AgendaItem(models.Model):
 
 class TodoList(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    space = models.ForeignKey(Space, on_delete=models.CASCADE, related_name='todo')
+    space = models.OneToOneField(Space, on_delete=models.CASCADE, related_name='todo_space')
+
+class TodoListItem(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    todo_list = models.ForeignKey(TodoList, on_delete=models.CASCADE, related_name='item_todo')
     frequency = models.CharField(default="punctual")
     completed = models.BooleanField(default=False)
     completed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='complete')

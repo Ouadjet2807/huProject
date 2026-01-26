@@ -304,7 +304,8 @@ class SpaceViewSet(viewsets.ModelViewSet):
 
         if not user or not hasattr(user, "caregiver"):
             return Space.objects.none()
-        return user.caregiver.spaces.all().prefetch_related("recipients", "caregivers", "agenda_space")
+
+        return user.caregiver.spaces.all().prefetch_related("recipients", "caregivers", "agenda_space", 'todo_space')
 
     # -------------------------
     # Creation / update hooks
@@ -473,14 +474,37 @@ class ArchivedTreatmentViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save()
 
+class TodoListItemViewSet(viewsets.ModelViewSet):
+    serializer_class = TodoListItemSerializer
+    lookup_field = 'id'
+    queryset = TodoListItem.objects.all()
+    permission_classes = [permissions.IsAuthenticated] 
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['id', 'todo_list', 'title', 'created_at', 'completed']
+    ordering_fields = ['id', 'todo_list', 'created_at', 'completed']
+
+    def get_queryset(self):
+        user = self.request.user
+
+        if not user or not hasattr(user, 'caregiver'):
+            return TodoListItem.objects.none()
+
+        space = user.caregiver.spaces.all()
+        todolist = TodoList.objects.get(space=space[0].id)
+
+        return TodoListItem.objects.filter(todo_list=todolist.id)
+
+    def perform_create(self, serializer):
+        serializer.save()
+
 class TodoListViewSet(viewsets.ModelViewSet):
     serializer_class = TodoListSerializer
     lookup_field = 'id'
     queryset = TodoList.objects.all()
     permission_classes = [permissions.IsAuthenticated] 
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
-    search_fields = ['title', 'space', 'frequency', 'completed']
-    ordering_fields = ['title', 'space', 'frequency', 'completed']
+    search_fields = ['id', 'space']
+    ordering_fields = ['id', 'space']
 
     def get_queryset(self):
         user = self.request.user

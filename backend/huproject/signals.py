@@ -37,7 +37,7 @@ def send_invitation(sender, instance, created, **kwargs):
 
 
 @receiver(post_save, sender=Space)
-def create_caregiver_agenda(sender, instance, created, **kwargs):
+def create_caregiver_agenda_and_todolist(sender, instance, created, **kwargs):
     """
     Create an Agenda when a new Space is created and link the space to it.
     """
@@ -48,9 +48,12 @@ def create_caregiver_agenda(sender, instance, created, **kwargs):
         agenda = Agenda.objects.create(
             space=instance 
         )
-        logger.info(f"Space created for space {instance!s}: agenda id={agenda.id}")
+        todolist = TodoList.objects.create(
+            space=instance 
+        )
+        logger.info(f"Agenda and Todo created for space {instance!s}: agenda id={agenda.id}, todolist id={todolist.id}")
     except Exception as e:
-        logger.exception(f"Failed to create Agenda for space {instance!s}: {e}")
+        logger.exception(f"Failed to create Agenda and Todo for space {instance!s}: {e}")
 
 
 @receiver(post_delete, sender=SpaceMembership)

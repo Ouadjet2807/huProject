@@ -86,15 +86,20 @@ export default function TodoList({ user, space }) {
     }
   };
 
-  const updateTodo = async (index, todo) => {
+  const updateTodo = async (todo) => {
+    console.log(todo);
+    
     todo.completed = !todo.completed;
     todo.completed_by = user;
     todo.completed_by_id = user.id;
     todo.updated_at = moment(new Date()).format();
 
     console.log(todo);
+    let initial_index = todoList.indexOf(todo)
+    console.log(initial_index);
+    
 
-    let filter = filteredTodoList.toSpliced(index, 1, todo);
+    let filter = todoList.toSpliced(initial_index, 1, todo);
 
     setTodoList(filter);
 
@@ -108,8 +113,9 @@ export default function TodoList({ user, space }) {
     }
   };
 
-  const deleteTodo = async (index, todo) => {
-    let filter = filteredTodoList.toSpliced(index, 1);
+  const deleteTodo = async (todo) => {
+    let initial_index = todoList.indexOf(todo)
+    let filter = todoList.toSpliced(initial_index, 1);
 
     try {
       await api.delete(
@@ -159,6 +165,8 @@ export default function TodoList({ user, space }) {
 
   useEffect(() => {
     const resetTodo = () => {
+      console.log('reset');
+      
       const frequencies = {
         daily: "days",
         weekly: "weeks",
@@ -168,12 +176,12 @@ export default function TodoList({ user, space }) {
       todoList.forEach((todo, index) => {
         console.log(index);
         const updated_date = moment(todo.updated_at);
-        if (!todo.completed) return;
+        if (!todo.completed || todo.frequency == 'punctual') return;
 
         const frequency = frequencies[todo.frequency];
 
         if (moment().diff(updated_date, frequency) >= 1) {
-          updateTodo(index, todo);
+          updateTodo(todo);
         }
       });
     };
@@ -211,10 +219,10 @@ export default function TodoList({ user, space }) {
                   label={todo.title}
                   id=""
                   checked={todo.completed}
-                  onClick={() => updateTodo(index, todo)}
+                  onClick={() => updateTodo(todo)}
                 />
 
-                <div className="delete" onClick={() => deleteTodo(index, todo)}>
+                <div className="delete" onClick={() => deleteTodo(todo)}>
                   <LuTrash2 />
                 </div>
               </div>

@@ -196,7 +196,7 @@ class AgendaItemSerializer(serializers.ModelSerializer):
     created_by = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
     caregivers = CaregiverSerializer(many=True)
     recipients = RecipientSerializer(many=True)
-    category = serializers.PrimaryKeyRelatedField(queryset=AgendaItemCategory.objects.all())
+    category = serializers.PrimaryKeyRelatedField(queryset=AgendaItemCategory.objects.all(), allow_null=True)
 
     class Meta:
         model = AgendaItem
@@ -264,7 +264,7 @@ class TodoListItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = TodoListItem
         fields = ['id', 'todo_list', 'frequency', 'completed', 'completed_by', 'title', 'updated_at', 'created_at', 'created_by']
-        read_only_fields = ['id', 'space', 'created_at']
+        read_only_fields = ['id', 'space']
 
 class TodoListSerializer(serializers.ModelSerializer):
     space = serializers.PrimaryKeyRelatedField(queryset=Space.objects.all())

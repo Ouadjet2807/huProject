@@ -57,7 +57,7 @@ export default function AddEvent({ agenda, setAgenda, show, setShow, preloadedEv
   const [formData, setFormData] = useState({
     title: "",
     private: false,
-    category: {},
+    category: null,
     description: "",
     start_date: default_start_date,
     end_date: default_end_date,
@@ -255,7 +255,7 @@ export default function AddEvent({ agenda, setAgenda, show, setShow, preloadedEv
       setFormData({
         title: "",
         private: false,
-        category: {},
+        category: null,
         description: "",
         start_date: default_start_date,
         end_date: default_end_date,
@@ -320,6 +320,7 @@ export default function AddEvent({ agenda, setAgenda, show, setShow, preloadedEv
   }, [searchParticipants]);
 
   console.log(selectedCategory);
+  console.log(formData);
   
 
   return (

@@ -53,10 +53,9 @@ export default function Agenda({ space }) {
     event: "Événement",
   };
 
-  const handleSelectEvent = (event) => {
-    console.log("event", event);
-
-    setSelectedEvent(event);
+  const resetSelectedEvent = () => {
+    setSelectedEvent({})
+    setIsLoading(true)
   };
 
 
@@ -86,16 +85,15 @@ export default function Agenda({ space }) {
   }, [space]);
 
   useEffect(() => {
-    if(!agenda) return
-
-    setIsLoading(true)
+    if(!agenda && !isLoading) return
+  
     if (agenda.items && agenda.items.length > 0) {
       console.log("agenda change");
       agenda.items.forEach((item) => {
         console.log(item);
         console.log(item.category);
         console.log(agenda.categories);
-        
+
         let find_category = agenda.categories.find(c => c.id == item.category)
         item.category = find_category ? find_category : item.category
         console.log(item);
@@ -112,12 +110,20 @@ export default function Agenda({ space }) {
       setTodayAgendaItems(searchTodaysEvent);
     }
     setIsLoading(false)
-  }, [agenda]);
+  }, [agenda, isLoading]);
 
 
-  console.log(agenda);
+  console.log(todayAgendaItems);
   console.log(events);
-  
+
+  useEffect(() => {
+    events.forEach(event => {
+      console.log(typeof(event.start_date));
+      console.log(typeof(event.end_date));
+      
+    })
+  }, [selectedEvent])
+
 
   return (
     <div id="agenda">
@@ -137,7 +143,7 @@ export default function Agenda({ space }) {
             <Button
               variant="aqua"
               size="sm"
-              onClick={() => setSelectedEvent({})}
+              onClick={() => resetSelectedEvent()}
             >
               <TiArrowBackOutline />
               Retour
@@ -156,10 +162,14 @@ export default function Agenda({ space }) {
             <small>
               {displayDate(selectedEvent.start_date, selectedEvent.end_date)}
             </small>
+            {
+              selectedEvent.description && selectedEvent.description !== "" ?
 
-            <div className="description">{selectedEvent.description}</div>
-
-            <ListGroup className="participants">
+              <div className="description">{selectedEvent.description}</div>
+              :
+              <small>Aucune description</small>
+            }
+            {selectedEvent.caregivers.length > 0 || selectedEvent.recipients.length > 0 ? <ListGroup className="participants">
               {selectedEvent.caregivers
                 .concat(selectedEvent.recipients)
                 .map((item) => {
@@ -170,6 +180,9 @@ export default function Agenda({ space }) {
                   );
                 })}
             </ListGroup>
+          :
+          <small>Aucun participant</small>  
+          }
           </div>
         ) : (
           <>
@@ -184,7 +197,7 @@ export default function Agenda({ space }) {
                 <ul>
                   {todayAgendaItems.map((event) => {
                     return (
-                      <li onClick={() => handleSelectEvent(event)}>
+                      <li onClick={() => setSelectedEvent(event)}>
                         <div
                           className="icon"
                           style={{
@@ -196,8 +209,8 @@ export default function Agenda({ space }) {
                         </div>
                         <div className="event-info">
                           <div className="time">
-                            {event.start_date.toTimeString().slice(0, 5)}-
-                            {event.end_date.toTimeString().slice(0, 5)}
+                            {(event.start_date && typeof(event.start_date) !== 'string') && event.start_date.toTimeString().slice(0, 5)}-
+                            {(event.end_date && typeof(event.end_date) !== 'string') && event.end_date.toTimeString().slice(0, 5)}
                           </div>
                           <span>{event.title}</span>
                         </div>
@@ -244,7 +257,7 @@ export default function Agenda({ space }) {
             }}
             startAccessor="start_date"
             endAccessor="end_date"
-            onSelectEvent={handleSelectEvent}
+            onSelectEvent={setSelectedEvent}
             style={{ height: "100%", width: "100%" }}
             messages={messages}
           />

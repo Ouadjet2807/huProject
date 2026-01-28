@@ -13,6 +13,38 @@ from .models import *
 logger = logging.getLogger(__name__)
 User = get_user_model()
 
+@receiver(post_save, sender=Treatment)
+def register_treatment_date(sender, instance, created, **kwargs):
+    """ Register the treatment in the calendar"""
+
+    if not created:
+        return
+
+    target_agenda = Agenda.objects.get(space=instance.space)
+    target_category = AgendaItemCategory.objects.get(name="Traitements médicaux")
+
+    title = "Traitement " + (instance.name[:30] + '...') if len(instance.name) > 30 else instance.name
+    recipients = Treatment.objects.get(id=instance.id)
+    print(recipients.prescribed_to)
+
+    try:
+        new_event = AgendaItem.objects.create(
+        title=title,
+        private=False,
+        category=target_category,
+        description= "",
+        start_date=instance.start_date,
+        end_date=instance.end_date,
+        created_by=instance.registered_by,
+        agenda=target_agenda,
+        )
+
+
+        print(instance.id)
+
+    except Exception as e:
+        logger.exception(f"Failed to create Agenda item and Todo for treatment {instance!s}: {e}")
+
 @receiver(post_save, sender=Invitation)
 def send_invitation(sender, instance, created, **kwargs):
     """
@@ -110,7 +142,7 @@ def create_caregiver_space(sender, instance, created, **kwargs):
                 created_by=instance.user  # ensure created_by FK exists and allows null if needed
             )
 
-      
+
         # add the caregiver to the M2M after the space exists
         space.caregivers.add(instance)
         membership = SpaceMembership.objects.create(

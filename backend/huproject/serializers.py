@@ -89,6 +89,8 @@ class HealthcareProfessionalSerializer(serializers.ModelSerializer):
         model = HealthcareProfessional
         fields = ('id','name','specialty','contact','notes', 'space')
 
+
+
 class TreatmentSerializer(serializers.ModelSerializer):
     prescribed_by = HealthcareProfessionalSerializer(read_only=True)
     prescribed_by_id = serializers.PrimaryKeyRelatedField(
@@ -97,24 +99,32 @@ class TreatmentSerializer(serializers.ModelSerializer):
         write_only=True,
         required=False
     )
+    registered_by = serializers.PrimaryKeyRelatedField(
+        queryset=CustomUser.objects.all(),
+        required=True
+    )
 
     class Meta:
         model = Treatment
-        fields = ('id','name','dosage', 'cis_code', 'medication_format', 'quantity', 'frequency','start_date','end_date','prescribed_by','prescribed_by_id','notes', 'space', 'created_at')
+        fields = ('id','name','dosage', 'cis_code', 'medication_format', 'quantity', 'frequency','start_date','end_date','prescribed_by','prescribed_by_id', 'prescribed_to', 'registered_by', 'notes', 'space', 'created_at')
 
 
-class ArchivedTreatmentSerializer(serializers.ModelSerializer):
-    treatment = serializers.PrimaryKeyRelatedField(queryset=Treatment.objects.all())
-    class Meta:
-        model = ArchivedTreatment
-        fields = ('id', 'name', 'space', 'treatment')
+    def create(self, validated_data):
+        prescribed_to = validated_data.pop('prescribed_to')
+
+        treatement = Treatment.objects.create(**validated_data)
+
+        for recipient in prescribed_to:
+            treatement.prescribed_to.add(recipient)
+
+        return treatement
 
 
 class RecipientSerializer(serializers.ModelSerializer):
     id = serializers.CharField()
     space_id = serializers.UUIDField()
     medical_info = serializers.JSONField(required=False)
-    treatments = TreatmentSerializer(many=True)
+    treatments = TreatmentSerializer(many=True, read_only=True)
     healthcare_professionals = HealthcareProfessionalSerializer(many=True)
 
     class Meta:
@@ -160,7 +170,11 @@ class RecipientSerializer(serializers.ModelSerializer):
             instance.healthcare_professionals.set(professionals)
         return instance
 
-
+class ArchivedTreatmentSerializer(serializers.ModelSerializer):
+    treatment = serializers.PrimaryKeyRelatedField(queryset=Treatment.objects.all())
+    class Meta:
+        model = ArchivedTreatment
+        fields = ('id', 'name', 'space', 'treatment')
 
 
 class InvitationSerializer(serializers.ModelSerializer):

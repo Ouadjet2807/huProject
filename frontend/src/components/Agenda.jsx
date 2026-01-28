@@ -17,12 +17,10 @@ import { IoLockClosedOutline } from "react-icons/io5";
 import ListGroup from "react-bootstrap/ListGroup";
 
 export default function Agenda({ space }) {
-  const [agenda, setAgenda] = useState();
+  const [agenda, setAgenda] = useState({});
   const [events, setEvents] = useState([])
   const [todayAgendaItems, setTodayAgendaItems] = useState([]);
-  const [error, setError] = useState();
   const [selectedEvent, setSelectedEvent] = useState({});
-  const [showEvent, setShowEvent] = useState(false);
   const [showEventForm, setShowEventForm] = useState(false);
 
   const [isLoading, setIsLoading] = useState(true);
@@ -44,7 +42,7 @@ export default function Agenda({ space }) {
     previous: "Précédent",
     next: "Suivant",
     today: "Aujourd'hui",
-    month: "Mois",
+    month: "Mois", 
     week: "Semaine",
     day: "Jour",
     agenda: "Agenda",
@@ -86,8 +84,7 @@ export default function Agenda({ space }) {
 
   useEffect(() => {
     if(!agenda && !isLoading) return
-  
-    if (agenda.items && agenda.items.length > 0) {
+    if (Object.keys(agenda).includes('items') && agenda.items.length > 0) {
       console.log("agenda change");
       agenda.items.forEach((item) => {
         console.log(item);
@@ -114,15 +111,7 @@ export default function Agenda({ space }) {
 
 
   console.log(todayAgendaItems);
-  console.log(events);
-
-  useEffect(() => {
-    events.forEach(event => {
-      console.log(typeof(event.start_date));
-      console.log(typeof(event.end_date));
-      
-    })
-  }, [selectedEvent])
+  console.log(agenda);
 
 
   return (

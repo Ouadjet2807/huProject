@@ -77,7 +77,7 @@ export default function CreateCategory({ show, setShow, agenda, selectCategory }
             name="category"
             id=""
             size="sm"
-            // placeholder="Ex : médical, administratif..."
+            placeholder="Nouvelle catégorie"
             onChange={(e) =>
               setNewCategory((prev) => ({ ...prev, name: e.target.value.trim() }))
             }

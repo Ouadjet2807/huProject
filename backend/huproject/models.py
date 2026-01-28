@@ -35,7 +35,7 @@ class Space(models.Model):
 
     def __str__(self):
         return self.name
-    
+
 class CustomUser(AbstractUser):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     email = models.EmailField(unique=True)
@@ -117,7 +117,7 @@ class AcceptedInvitation(models.Model):
 
     def is_valid(self):
         return (not self.accepted) and (self.expires_at > timezone.now())
-    
+
 
 class HealthcareProfessional(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -134,7 +134,12 @@ class HealthcareProfessional(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.specialty})" if self.specialty else self.name
-    
+
+class Recipient(Person):
+    space = models.ForeignKey(Space, related_name='recipients', on_delete=models.CASCADE)
+    medical_info = models.JSONField(blank=True, null=True)
+    healthcare_professionals = models.ManyToManyField(HealthcareProfessional, blank=True, related_name='recipients')
+    caregivers = models.ManyToManyField(Caregiver, related_name="care_for")
 
 class Treatment(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -153,6 +158,9 @@ class Treatment(models.Model):
         on_delete=models.SET_NULL,
         related_name='prescribed_treatments'
     )
+    registered_by  = models.ForeignKey(CustomUser, null=True, on_delete=models.SET_NULL,
+        related_name='registered_treatments')
+    prescribed_to  = models.ManyToManyField(Recipient, related_name='treatments')
     notes = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     space = models.ForeignKey(
@@ -179,12 +187,6 @@ class ArchivedTreatment(models.Model):
     def __str__(self):
         return self.name
 
-class Recipient(Person):
-    space = models.ForeignKey(Space, related_name='recipients', on_delete=models.CASCADE)
-    medical_info = models.JSONField(blank=True, null=True)
-    treatments = models.ManyToManyField(Treatment, blank=True, related_name='recipients')
-    healthcare_professionals = models.ManyToManyField(HealthcareProfessional, blank=True, related_name='recipients')
-    caregivers = models.ManyToManyField(Caregiver, related_name="care_for")
 
 class Agenda(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

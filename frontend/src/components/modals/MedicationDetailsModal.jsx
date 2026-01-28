@@ -27,7 +27,7 @@ export default function MedicationDetailsModal({
 }) {
   moment.locale("fr");
 
-  const { space } = useContext(AuthContext);
+  const { user, space } = useContext(AuthContext);
 
   const [dayTime, setDayTime] = useState([]);
   const [presentation, setPresentation] = useState([]);
@@ -319,6 +319,7 @@ export default function MedicationDetailsModal({
     try {
       let data = {
         name: formData.name,
+        cis_code: formData.cis_code,
         dosage: formData.dosage,
         medication_format: formData.medication_format,
         notes: "",
@@ -327,6 +328,8 @@ export default function MedicationDetailsModal({
         frequency: freeTake ? freeTakeData : formData.frequency,
         start_date: formattedStartDate,
         end_date: formattedEndDate,
+        registered_by: user.id,
+        prescribed_to: [recipient.id]
       };
       console.log(data);
 
@@ -336,11 +339,6 @@ export default function MedicationDetailsModal({
       );
       console.log("Success");
       recipient.treatments.push(response.data.id);
-
-      await api.put(
-        `http://127.0.0.1:8000/api/recipients/${recipient.id}/`,
-        recipient
-      );
       handleClose();
     } catch (error) {
       console.log(error);

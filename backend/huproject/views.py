@@ -133,7 +133,7 @@ class CaregiverViewSet(viewsets.ModelViewSet):
                 return Caregiver.objects.filter(id=caregiver.id)
             except Caregiver.DoesNotExist:
                 raise NotFound("Caregiver not found")
-        return Caregiver.objects.filter(spaces__in=caregiver.spaces.all())
+        return Caregiver.objects.filter(spaces__in=caregiver.spaces.all()).prefetch_related('treatments')
 
     # If you want caregivers to be created automatically from user signups, override perform_create:
     def perform_create(self, serializer):

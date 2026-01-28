@@ -158,16 +158,21 @@ export default function AddEvent({ agenda, setAgenda, show, setShow, preloadedEv
           `http://127.0.0.1:8000/api/agenda_items/${preloadedEvent.id}/`,
           formData,
         );
+        let index = agenda.items.indexOf(formData)
+        let filter = agenda.items.toSpliced(index, 1, formData)
+        setAgenda(prev => ({...prev, "items": filter}))
+         setMessage("Événement modifié avec succès");
       } else {
         response = await api.post(
           "http://127.0.0.1:8000/api/agenda_items/",
           formData,
         );
+        setAgenda(prev => ({...prev, "items": [...prev.items, response.data] }))
+         setMessage("Événement crée avec succès");
       }
-      setAgenda(prev => ({...prev, "items": [...prev.items, response.data] }))
-      // agenda.items.push(response.data)
+      
+
       setShowToast(true);
-      setMessage("Événement crée avec succès");
       setColor("success");
       handleClose();
     } catch (error) {
@@ -547,7 +552,7 @@ export default function AddEvent({ agenda, setAgenda, show, setShow, preloadedEv
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={handleSubmit}>{Object.keys(preloadedEvent).length > 0 ? "Modifier" : "Créer"}</Button>
+          <Button variant="md-green" nClick={handleSubmit}>{Object.keys(preloadedEvent).length > 0 ? "Modifier" : "Créer"}</Button>
           {Object.keys(preloadedEvent).length > 0 && 
           <Button variant="outline-danger" onClick={deleteEvent}>
             Supprimer

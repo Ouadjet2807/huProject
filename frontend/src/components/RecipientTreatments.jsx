@@ -24,6 +24,7 @@ import moment from "moment";
 import "moment/locale/fr";
 import { UseDimensionsContext } from "../context/UseDimensionsContext";
 import { AuthContext } from "../context/AuthContext";
+import { MdOutlineAutorenew } from "react-icons/md";
 
 export default function RecipientTreatments({ recipient }) {
   const [showAddTreatment, setShowAddTreatement] = useState(false);
@@ -46,8 +47,10 @@ export default function RecipientTreatments({ recipient }) {
     try {
       setArchivedTreatments([]);
       const response = await api.get(
-        `http://127.0.0.1:8000/api/archived_treatments`
+        `http://127.0.0.1:8000/api/archived_treatments`,
       );
+
+      console.log("response :", response.data);
 
       response.data.forEach((doc) => {
         setArchivedTreatments((prev) => [...prev, doc.treatment]);
@@ -63,22 +66,27 @@ export default function RecipientTreatments({ recipient }) {
     setShowMedicationDetails(true);
   };
 
-  const archiveTreatment = async (treatment) => {
-    console.log(space);
-
+  const archiveTreatment = async (e, treatment) => {
     if (!space) return;
-    try {
-      await api.post("http://127.0.0.1:8000/api/archived_treatments/", {
-        name: treatment.name,
-        treatment: treatment.id,
-        space: space.id,
-      });
-      removeTreatement(treatment.id, true);
-    } catch (error) {
-      console.log(error);
-    }
 
-    getArchivedTreatments();
+    console.log(e);
+
+    if (!e || e.type == "click" &&
+      window.confirm("Êtes-vous sûr(e) de vouloir archiver ce traitement ?")) {
+
+        try {
+          await api.post("http://127.0.0.1:8000/api/archived_treatments/", {
+            name: treatment.name,
+            treatment: treatment.id,
+            space: space.id,
+          });
+          setArchivedTreatments((prev) => [...prev, treatment.id]);
+        } catch (error) {
+          console.log(error);
+        }
+      }
+
+      return
   };
 
   const checkForExpiredTreatments = () => {
@@ -88,9 +96,10 @@ export default function RecipientTreatments({ recipient }) {
       const end_date = moment(item.end_date);
 
       if (end_date < today && today.diff(end_date, "weeks") > 2) {
-        archiveTreatment(item);
+        archiveTreatment(null, item);
       }
     });
+    getArchivedTreatments();
   };
 
   const checkTodaysIntake = (intake_number, intake_time_range) => {
@@ -159,28 +168,6 @@ export default function RecipientTreatments({ recipient }) {
     }
   };
 
-  const removeTreatement = async (id, archiving) => {
-    if (!recipient.space_id) return;
-    if (
-      archiving ||
-      window.confirm("Êtes-vous sûr(e) de vouloir supprimer ce traitement ?")
-    ) {
-      recipient.treatments = recipient.treatments.filter(
-        (item) => item.id !== id
-      );
-      try {
-        await api.put(
-          `http://127.0.0.1:8000/api/recipients/${recipient.id}/`,
-          recipient
-        );
-        console.log("success");
-        setArchivedTreatments(recipient.treatments.filter((t) => t.id == id));
-      } catch (error) {
-        console.log(error);
-      }
-    }
-  };
-
   const getRemainingUnits = (item) => {
     if (item.frequency == "" || !item.end_date) return;
 
@@ -223,6 +210,7 @@ export default function RecipientTreatments({ recipient }) {
   };
 
   const renderTreatmentsList = () => {
+
     let treatments = recipient.treatments;
 
     if (!treatments || treatments.length == 0) {
@@ -244,9 +232,6 @@ export default function RecipientTreatments({ recipient }) {
     });
 
     let rows = [];
-
-    console.log(recipient.treatments);
-    console.log(array);
 
     // split the array in arrays of 3 elements maximum
     for (let i = 0; i <= array.length; i++) {
@@ -270,9 +255,9 @@ export default function RecipientTreatments({ recipient }) {
                   pill
                   className="remove-treatment"
                   bg="light"
-                  onClick={() => removeTreatement(item.id, false)}
+                  onClick={(e) => archiveTab ? selectTreatment(item) : archiveTreatment(e, item)}
                 >
-                  <LuTrash2 />
+                  {archiveTab ? <MdOutlineAutorenew /> : <LuTrash2 />}
                 </Badge>
                 <Card className="treatment">
                   {getRemainingUnits(item) == 0 && (
@@ -296,9 +281,9 @@ export default function RecipientTreatments({ recipient }) {
                         {item.frequency.intake_frequency === "day"
                           ? " jour"
                           : item.frequency.intake_frequency === "week"
-                          ? " semaine"
-                          : item.frequency.intake_frequency === "month" &&
-                            " mois"}
+                            ? " semaine"
+                            : item.frequency.intake_frequency === "month" &&
+                              " mois"}
                       </ListGroup.Item>
                       {item.frequency.intake_time_range &&
                         item.frequency.intake_time_range.length > 0 && (
@@ -371,7 +356,10 @@ export default function RecipientTreatments({ recipient }) {
 
   useEffect(() => {
     renderTreatmentsList();
-  }, [width]);
+  }, [width, archiveTab, archivedTreatments]);
+
+  console.log(archivedTreatments);
+  console.log(treatments);
 
   return (
     <div
@@ -396,7 +384,11 @@ export default function RecipientTreatments({ recipient }) {
       />
       <div className="header">
         <h3>Traitements médicaux </h3>{" "}
-        <Button variant="aqua" onClick={() => setArchiveTab(!archiveTab)}>
+        <Button
+          variant="aqua"
+          size="sm"
+          onClick={() => setArchiveTab(!archiveTab)}
+        >
           <GoArchive /> {!archiveTab ? "Archives" : "Retour"}
         </Button>
       </div>
@@ -404,7 +396,8 @@ export default function RecipientTreatments({ recipient }) {
         <Container
           className="treatments-list"
           style={{
-            justifyContent: recipient.treatments.length > 0 ? "flex-start" : "center",
+            justifyContent:
+              recipient.treatments.length > 0 ? "flex-start" : "center",
           }}
         >
           {renderTreatmentsList()}

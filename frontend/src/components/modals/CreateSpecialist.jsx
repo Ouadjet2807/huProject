@@ -77,7 +77,7 @@ export default function CreateSpecialist({
     console.log(formData);
 
     if(!formData.space) return
-    
+
     try {
       const response = await api.post(
         "http://127.0.0.1:8000/api/healthcare_professionals/",
@@ -85,11 +85,10 @@ export default function CreateSpecialist({
       );
 
       let update_recipient = recipient
-      
-      update_recipient.healthcare_professionals.push(response.data.id)
 
-      console.log(update_recipient);
-      
+      update_recipient.healthcare_professionals.push(response.data)
+
+
       await api.put(`http://127.0.0.1:8000/api/recipients/${recipient.id}/`, update_recipient)
       console.log("Success!", response.data);
 

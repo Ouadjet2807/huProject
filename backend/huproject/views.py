@@ -128,12 +128,13 @@ class CaregiverViewSet(viewsets.ModelViewSet):
         if not user or not hasattr(user, 'caregiver'):
             return Caregiver.objects.none()
         caregiver = user.caregiver
+
         if self.request.GET.get("id"):
             try:
                 return Caregiver.objects.filter(id=caregiver.id)
             except Caregiver.DoesNotExist:
                 raise NotFound("Caregiver not found")
-        return Caregiver.objects.filter(spaces__in=caregiver.spaces.all()).prefetch_related('treatments')
+        return Caregiver.objects.filter(spaces__in=caregiver.spaces.all())
 
     # If you want caregivers to be created automatically from user signups, override perform_create:
     def perform_create(self, serializer):
@@ -142,11 +143,6 @@ class CaregiverViewSet(viewsets.ModelViewSet):
             # prevent creating duplicate for same user
             raise ValidationError("Caregiver already exists for this user.")
         serializer.save(user=self.request.user)
-
-    # def perform_update(self, serializer):
-    #     # optionally create caregiver linked to request.user
-        
-    #     serializer.save()
 
 
 class IsCaregiverAndMember(permissions.BasePermission):
@@ -178,18 +174,19 @@ class RecipientViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        # serializer.validate_space_id returned a Space instance
-        space = serializer.validated_data.pop('space_id')
         caregiver = request.user.caregiver
 
-        # permission: the caregiver must be member of the space, OR be the creator of that space
-        if not space.caregivers.filter(pk=caregiver.pk).exists():
-            return Response({'detail': "You are not a member of that space."},
+        treatments = serializer.validated_data.pop('treatments', [])
+        healthcare_professionals = serializer.validated_data.pop('healthcare_professionals')
+        if not caregiver.can_edit:
+            return Response({'detail': "You can't create a recipient."},
                             status=status.HTTP_403_FORBIDDEN)
 
         # create Recipient; we fill inherited Person fields via serializer
-        recipient = Recipient.objects.create(space=space, **serializer.validated_data)
+        recipient = Recipient.objects.create(**serializer.validated_data)
         recipient.caregivers.add(caregiver) if hasattr(recipient, 'caregivers') else None
+        recipient.healthcare_professionals.set(healthcare_professionals) if hasattr(recipient, 'healthcare_professionals') else None
+        recipient.treatments.set(treatments) if hasattr(recipient, 'treatments') else None
         out_serializer = self.get_serializer(recipient)
         return Response(out_serializer.data, status=status.HTTP_201_CREATED)
 

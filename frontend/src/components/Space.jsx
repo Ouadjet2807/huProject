@@ -50,8 +50,9 @@ export default function Space({ editMode, setEditMode, roles }) {
   };
 
   const handleDeleteModal = (e, item) => {
-    if (!e.target) return;
+    if (!e || !e.target) return;
 
+    e.stopPropagation()
     if (e.target.parentElement.parentElement.className === "caregiver") {
       setSelectedCaregiver(item);
       setDeleteCaregiverModal(true);
@@ -152,18 +153,18 @@ export default function Space({ editMode, setEditMode, roles }) {
   };
 
   const deleteRecipient = async (recipient) => {
-    
+
     if(validationField.toUpperCase() !== "SUPPRIMER") {
       setValidationError(true)
       return
     }
-
     try {
       await api.delete(`http://127.0.0.1:8000/api/recipients/${recipient.id}/`)
+      space.recipients = space.recipients.filter(r => r.id !== recipient.id)
       handleClose()
     } catch (error) {
       console.log(error);
-      
+
     }
   }
 
@@ -249,7 +250,7 @@ export default function Space({ editMode, setEditMode, roles }) {
           )}
           <div className="validation-field">
             <label htmlFor="">SUPPRIMER</label>
-            <input type="text" name="validation" id="" onChange={(e) => setValidationField(e.target.value)} style={{boxShadow: validationError ? '#d9002d70 0px 0px 2px 1px' : ''}}/>
+            <input type="text" name="validation" autoFocus id="" onChange={(e) => setValidationField(e.target.value)} style={{boxShadow: validationError ? '#d9002d70 0px 0px 2px 1px' : ''}}/>
           </div>
           {validationError &&
             <small style={{textAlign: 'center', color: 'red', marginBottom: '10px'}}>Ce champ est requis</small>

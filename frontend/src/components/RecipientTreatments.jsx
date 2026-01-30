@@ -55,10 +55,10 @@ export default function RecipientTreatments({ recipient }) {
       response.data.forEach((doc) => {
         setArchivedTreatments((prev) => [...prev, doc.treatment]);
       });
-      setLoading(false);
     } catch (error) {
       console.log(error);
     }
+    setLoading(false);
   };
 
   const selectTreatment = (treatment) => {
@@ -351,6 +351,11 @@ export default function RecipientTreatments({ recipient }) {
   }, [showMedicationDetails]);
 
   useEffect(() => {
+
+    if(recipient.treatments.length <= 0) {
+      setLoading(false)
+      return
+    }
     checkForExpiredTreatments();
   }, [recipient.treatments, space]);
 

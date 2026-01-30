@@ -85,9 +85,12 @@ class CaregiverSerializer(serializers.ModelSerializer):
         return instance
 
 class HealthcareProfessionalSerializer(serializers.ModelSerializer):
+    id = serializers.CharField()
+
     class Meta:
         model = HealthcareProfessional
         fields = ('id','name','specialty','contact','notes', 'space')
+        read_only_fields = ('id',)
 
 
 
@@ -121,15 +124,15 @@ class TreatmentSerializer(serializers.ModelSerializer):
 
 
 class RecipientSerializer(serializers.ModelSerializer):
-    id = serializers.CharField()
-    space_id = serializers.UUIDField()
+    id = serializers.CharField(required=False)
+    space = serializers.PrimaryKeyRelatedField(queryset=Space.objects.all())
     medical_info = serializers.JSONField(required=False)
     treatments = TreatmentSerializer(many=True, read_only=True)
     healthcare_professionals = HealthcareProfessionalSerializer(many=True)
 
     class Meta:
         model = Recipient
-        fields = ('id', 'gender', 'first_name', 'last_name', 'birth_date', 'medical_info', 'space_id', 'treatments','healthcare_professionals')
+        fields = ('id', 'gender', 'first_name', 'last_name', 'birth_date', 'medical_info', 'space', 'treatments','healthcare_professionals')
         read_only_fields = ('id',)
 
 
@@ -140,25 +143,14 @@ class RecipientSerializer(serializers.ModelSerializer):
         except Space.DoesNotExist:
             raise serializers.ValidationError("Space not found")
 
-    def create(self, validated_data):
-        caregivers = validated_data.pop('caregivers', [])
-        recipient = Recipient.objects.create(**validated_data)
-        treatments = validated_data.pop('treatments', [])
-        professionals = validated_data.pop('healthcare_professionals', [])
-        recipient = super().create(validated_data)
-        if treatments:
-            recipient.treatments.set(treatments)
-        if professionals:
-            recipient.professionals.set(professionals)
-        if caregivers:
-            recipient.caregivers.set(caregivers)
-        return recipient
-
     def update(self, instance, validated_data):
         caregivers = validated_data.pop('caregivers', None)
         treatments = validated_data.pop('treatments', None)
         professionals = validated_data.pop('healthcare_professionals', None)
         instance = super().update(instance, validated_data)
+
+
+        print(professionals)
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save()
@@ -167,7 +159,11 @@ class RecipientSerializer(serializers.ModelSerializer):
         if treatments is not None:
             instance.treatments.set(treatments)
         if professionals is not None:
-            instance.healthcare_professionals.set(professionals)
+            professionals_ids = []
+            for p in professionals:
+                print(p)
+                professionals_ids.append(p['id'])
+            instance.healthcare_professionals.set(professionals_ids)
         return instance
 
 class ArchivedTreatmentSerializer(serializers.ModelSerializer):
@@ -218,6 +214,8 @@ class AgendaItemSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'created_at', 'created_by']
 
     def create(self, validated_data):
+
+        print(validated_data)
 
         caregivers_data = validated_data.pop('caregivers', None)
         recipients_data = validated_data.pop('recipients', None)

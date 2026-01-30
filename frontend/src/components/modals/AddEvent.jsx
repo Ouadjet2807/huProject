@@ -20,7 +20,7 @@ import { LuCalendarPlus } from "react-icons/lu";
 import ListGroup from "react-bootstrap/ListGroup";
 import FloatingLabel from "react-bootstrap/FloatingLabel";
 import { IoIosClose } from "react-icons/io";
-import { MdOutlineGroupAdd } from "react-icons/md";
+import { AiOutlineUsergroupAdd } from "react-icons/ai";
 import { HiOutlineBars3BottomLeft } from "react-icons/hi2";
 
 export default function AddEvent({ agenda, setAgenda, show, setShow, preloadedEvent, fetchAgenda, setSelectedEvent }) {
@@ -170,7 +170,6 @@ export default function AddEvent({ agenda, setAgenda, show, setShow, preloadedEv
         setAgenda(prev => ({...prev, "items": [...prev.items, response.data] }))
          setMessage("Événement crée avec succès");
       }
-      
 
       setShowToast(true);
       setColor("success");
@@ -439,7 +438,7 @@ export default function AddEvent({ agenda, setAgenda, show, setShow, preloadedEv
                 onChange={handleChange}
               />
             </FloatingLabel>
-            <MdOutlineGroupAdd />
+            <AiOutlineUsergroupAdd />
             <div className="add-participants">
               <div className="field">
                 {selectedParticipants.length > 0 && (
@@ -552,7 +551,7 @@ export default function AddEvent({ agenda, setAgenda, show, setShow, preloadedEv
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="md-green" nClick={handleSubmit}>{Object.keys(preloadedEvent).length > 0 ? "Modifier" : "Créer"}</Button>
+          <Button variant="md-green" onClick={handleSubmit}>{Object.keys(preloadedEvent).length > 0 ? "Modifier" : "Créer"}</Button>
           {Object.keys(preloadedEvent).length > 0 && 
           <Button variant="outline-danger" onClick={deleteEvent}>
             Supprimer

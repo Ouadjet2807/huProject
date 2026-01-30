@@ -22,14 +22,6 @@ export default function Home({ setRefreshSpace }) {
 
   console.log(loading);
 
-  // useEffect(() => {
-  //   const checkUserLoggedIn = () => {
-  //     if (!loading && !user) navigate("/login");
-  //   };
-
-  //   checkUserLoggedIn();
-  // }, [loading, user, navigate]);
-
 
   console.log(space);
 

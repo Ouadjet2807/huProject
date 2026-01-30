@@ -18,8 +18,9 @@ export default function CreateRecipient({
     last_name: "",
     birth_date: "",
     gender: "",
+    healthcare_professionals: [],
     medical_info: "",
-    space_id: space.id,
+    space: "",
   });
 
   const handleClose = () => {
@@ -41,13 +42,19 @@ export default function CreateRecipient({
         "http://127.0.0.1:8000/api/recipients/",
         formData
       );
-      console.log("Success!", response.data);
-      setRefreshRecipients(true);
+      space.recipients.push(response.data)
       handleClose()
     } catch (error) {
       console.log(error);
     }
   };
+
+  useEffect(() => {
+    setFormData(prev => ({
+      ...prev,
+      space: space.id
+    }))
+  }, [space])
 
 
   console.log(formData);

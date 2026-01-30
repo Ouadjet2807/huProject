@@ -3,6 +3,7 @@ import { AuthContext } from "../context/AuthContext";
 import { ToastContext } from "../context/ToastContext";
 import Profile from "../components/Profile";
 import Space from "../components/Space";
+import api from "../api/api";
 
 export default function () {
   const { user } = useContext(AuthContext);
@@ -19,6 +20,21 @@ export default function () {
     active: false,
     target: "",
   });
+
+  useEffect(() => {
+    const getCaregivers = async () => {
+      try {
+        let response = await api.get('http://127.0.0.1:8000/api/caregivers')
+        console.log(response);
+        
+      } catch (error) {
+        console.log(error);
+        
+      }
+    }
+
+    getCaregivers()
+  }, []) 
 
   const renderActiveTab = () => {
     switch (activeTab) {

@@ -15,6 +15,8 @@ import Loader from "./Loader";
 import { TiArrowBackOutline } from "react-icons/ti";
 import { IoLockClosedOutline } from "react-icons/io5";
 import ListGroup from "react-bootstrap/ListGroup";
+import { LuUsersRound } from "react-icons/lu";
+import { HiOutlineBars3BottomLeft } from "react-icons/hi2";
 
 export default function Agenda({ space }) {
   const [agenda, setAgenda] = useState({});
@@ -64,9 +66,9 @@ export default function Agenda({ space }) {
     let str = "";
 
     if (end.diff(start, "days") > 0) {
-      str = `${start.local().format("dddd Do MMMM - HH:mm")} | ${end
+      str = `Du ${start.local().format("dddd Do MMMM - HH:mm")} au ${end
         .local()
-        .format("dddd, MMMM, YYYY HH:mm:ss")}`;
+        .format("dddd Do, MMMM, YYYY HH:mm:ss")}`;
     } else {
       str = `${start.local().format("dddd Do MMMM - HH:mm")} | ${end.local().format("HH:mm")}`;
     }
@@ -156,7 +158,7 @@ export default function Agenda({ space }) {
 
               <div className="description">{selectedEvent.description}</div>
               :
-              <small>Aucune description</small>
+              <small><HiOutlineBars3BottomLeft /> Aucune description</small>
             }
             {selectedEvent.caregivers.length > 0 || selectedEvent.recipients.length > 0 ? <ListGroup className="participants">
               {selectedEvent.caregivers
@@ -170,7 +172,7 @@ export default function Agenda({ space }) {
                 })}
             </ListGroup>
           :
-          <small>Aucun participant</small>  
+          <small><LuUsersRound /> Aucun participant</small>  
           }
           </div>
         ) : (

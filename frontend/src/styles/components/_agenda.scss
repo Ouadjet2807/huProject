@@ -117,7 +117,7 @@
     border-radius: 0 $borderRadius $borderRadius 0;
 
     .rbc-calendar {
-      padding: 5vw 2vw;
+      padding: 2vw;
       border-radius: 0 $borderRadius $borderRadius 0;
       margin: auto;
 
@@ -135,12 +135,14 @@
         .rbc-btn-group {
           background: $pearl;
           border-radius: 5px;
+          z-index: 6;
 
           button {
             border: none;
             margin: 0;
             transition: 0.3s ease-in;
             display: inline-block !important;
+            font-size: 14px;
 
             &:not(.rbc-active, button:active) {
               &:hover {
@@ -160,17 +162,21 @@
         }
       }
 
+      .rbc-agenda-view, .rbc-time-view {
+        max-height: 80vh;
+      }
+
       .rbc-time-view,
       .rbc-month-view,
       .rbc-agenda-view {
         border: none;
         padding: 20px;
-        max-height: 70vh;
 
         .rbc-event {
           background: $aqua;
           border: 1px solid $green;
           color: $green;
+          font-size: 12px;
         }
 
         .rbc-time-header {

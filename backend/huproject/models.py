@@ -24,6 +24,10 @@ class Caregiver(Person):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     access_level = models.IntegerField(default=1)
 
+    @property
+    def can_edit(self) -> bool:
+        return self.access_level < 3
+
 class Space(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100)
@@ -46,7 +50,7 @@ class CustomUser(AbstractUser):
 
     def __str__(self) -> str:
         return self.email
-    
+
     def _generate_username_candidate(self):
         """Build a base username from first/last name or email local-part."""
         # prefer first initial + last name
@@ -103,7 +107,6 @@ class Invitation(models.Model):
 
     def is_valid(self):
         return (not self.accepted) and (self.expires_at > timezone.now())
-    
 
 class AcceptedInvitation(models.Model):
     space = models.ForeignKey(Space, on_delete=models.CASCADE)

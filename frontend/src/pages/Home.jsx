@@ -83,7 +83,7 @@ export default function Home({ setRefreshSpace }) {
                           <FaUserCircle />
                         </div>
                         <span>
-                          {item.first_name} {item.last_name}
+                          {item.first_name} {item.last_name} {space.created_by.id === item.user && <small>(administrateur)</small>}
                         </span>
                       </span>
                     </div>

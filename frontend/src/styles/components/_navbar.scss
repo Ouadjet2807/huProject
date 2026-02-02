@@ -1,11 +1,22 @@
 nav {
   display: flex;
-  justify-content: flex-end;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-end;
   padding: 10px 5px;
   background: linear-gradient(47deg, $green, $aquaOpac);
   border-radius: $borderRadius 0 0 $borderRadius;
   position: relative;
   width: 100%;
+
+  .pin {
+    opacity: 0;
+    color: $mediumGreen;
+    float: right;
+    cursor: pointer;
+    position: absolute;
+
+  }
 
   ul {
     width: 100%;

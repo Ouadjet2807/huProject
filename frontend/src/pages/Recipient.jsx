@@ -9,6 +9,9 @@ import DailyLife from "../components/DailyLife";
 import Loader from "../components/Loader";
 import moment from "moment";
 import { locale } from "moment";
+import { IoInformationCircleOutline } from "react-icons/io5";
+import { FaMedkit } from "react-icons/fa";
+import { FaUserMd } from "react-icons/fa";
 
 export default function Recipient({ spaceId }) {
   moment.locale("fr");
@@ -75,8 +78,6 @@ export default function Recipient({ spaceId }) {
 
       case "specialists":
         return <Specialists recipient={recipient} />;
-      case "dailyLife":
-        return <DailyLife />
       default:
         return (
           <RecipientEditForm
@@ -148,28 +149,21 @@ export default function Recipient({ spaceId }) {
                 className={activeTab === "general" ? "active" : ""}
                 onClick={(e) => handleTab(e)}
               >
-                Information génerales
+                <IoInformationCircleOutline /> Information génerales
               </li>
               <li
                 id="treatments"
                 className={activeTab === "treatments" ? "active" : ""}
                 onClick={(e) => handleTab(e)}
               >
-                Traitements
+               <FaMedkit /> Traitements
               </li>
               <li
                 id="specialists"
                 className={activeTab === "specialists" ? "active" : ""}
                 onClick={(e) => handleTab(e)}
               >
-                Spécialiste
-              </li>
-              <li
-                id="dailyLife"
-                className={activeTab === "dailyLife" ? "active" : ""}
-                onClick={(e) => handleTab(e)}
-              >
-                Vie quotidienne
+                <FaUserMd /> Spécialiste
               </li>
             </ul>
           </div>

@@ -11,13 +11,11 @@ import { LuStethoscope } from "react-icons/lu";
 import { LuPhone } from "react-icons/lu";
 import { TiContacts } from "react-icons/ti";
 import { FaUserMd } from "react-icons/fa";
+import Form from "react-bootstrap/Form";
+import InputGroup from "react-bootstrap/InputGroup";
+import FloatingLabel from "react-bootstrap/FloatingLabel";
 
-export default function CreateSpecialist({
-  space,
-  show,
-  setShow,
-  recipient
-}) {
+export default function CreateSpecialist({ space, show, setShow, recipient }) {
   const { user } = useContext(AuthContext);
   const [placeholderSuggestion, setPlaceholderSuggestion] = useState();
   const [debouncedValue, setDebouncedValue] = useState();
@@ -34,28 +32,26 @@ export default function CreateSpecialist({
     space: "",
   });
 
-
   const handleTelField = (e) => {
-      if(/^[A-Z]$/gi.test(e.target.value)) return
+    if (/^[A-Z]$/gi.test(e.target.value)) return;
 
-      let regex = /^[^0][^A-Z]*\d*$/gi;
+    let regex = /^[^0][^A-Z]*\d*$/gi;
 
-      let value = e.target.value;
-      let isValid = regex.test(e.target.value);
-      console.log(isValid);
+    let value = e.target.value;
+    let isValid = regex.test(e.target.value);
+    console.log(isValid);
 
-      console.log(value.match(regex));
+    console.log(value.match(regex));
 
-    if(isValid) {
+    if (isValid) {
       setContact((prev) => ({
         ...prev,
-        phone_number: value.match(regex)
+        phone_number: value.match(regex),
       }));
-    } else if (value === '') {
-
-        setContact((prev) => ({
+    } else if (value === "") {
+      setContact((prev) => ({
         ...prev,
-        phone_number: value
+        phone_number: value,
       }));
     }
   };
@@ -65,6 +61,8 @@ export default function CreateSpecialist({
   };
 
   const handleChange = (e) => {
+    console.log(e);
+
     setFormData((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
@@ -76,21 +74,24 @@ export default function CreateSpecialist({
 
     console.log(formData);
 
-    if(!formData.space) return
+    if (!formData.space) return;
 
     try {
       const response = await api.post(
         "http://127.0.0.1:8000/api/healthcare_professionals/",
-        formData
+        formData,
       );
 
-      let update_recipient = recipient
+      let update_recipient = recipient;
 
-      update_recipient.healthcare_professionals.push(response.data)
+      update_recipient.healthcare_professionals.push(response.data);
 
+      await api.put(
+        `http://127.0.0.1:8000/api/recipients/${recipient.id}/`,
+        update_recipient,
+      );
 
-      await api.put(`http://127.0.0.1:8000/api/recipients/${recipient.id}/`, update_recipient)
-      console.log("Success!", response.data);
+      recipient.healthcare_professionals.push(response.data);
 
       handleClose();
     } catch (error) {
@@ -116,7 +117,7 @@ export default function CreateSpecialist({
 
       try {
         const res = await axios.get(
-          `https://data.geopf.fr/geocodage/completion/?text=${debouncedValue}`
+          `https://data.geopf.fr/geocodage/completion/?text=${debouncedValue}`,
         );
         setAddressSuggestions(res.data.results);
       } catch (error) {
@@ -128,12 +129,16 @@ export default function CreateSpecialist({
   }, [debouncedValue]);
 
   useEffect(() => {
+    let addressValue = contact.address;
 
-    let addressValue = contact.address
-
-    if(addressSuggestions && addressSuggestions.some(e => e.fulltext.toUpperCase() === addressValue.toUpperCase())) {
-        setAddressSuggestions([])
-        return
+    if (
+      addressSuggestions &&
+      addressSuggestions.some(
+        (e) => e.fulltext.toUpperCase() === addressValue.toUpperCase(),
+      )
+    ) {
+      setAddressSuggestions([]);
+      return;
     }
 
     const delayDebounceFn = setTimeout(() => {
@@ -144,119 +149,167 @@ export default function CreateSpecialist({
   }, [contact.address]);
 
   useEffect(() => {
-    if(!addressSuggestions || addressSuggestions.length <= 0) return
+    if (!addressSuggestions || addressSuggestions.length <= 0) return;
 
-    let placeholder = addressSuggestions.find(e => e.fulltext.toUpperCase().includes(contact.address.toUpperCase()))
+    let placeholder = addressSuggestions.find((e) =>
+      e.fulltext.toUpperCase().includes(contact.address.toUpperCase()),
+    );
 
-    if(!placeholder) return
-    
-    setPlaceholderSuggestion(placeholder.fulltext)
-  }, [addressSuggestions, contact.address])
+    if (placeholder && placeholder.fulltext.toLowerCase().startsWith(contact.address.toLowerCase())) {
+      setPlaceholderSuggestion(placeholder.fulltext);
+    } else {
+      setPlaceholderSuggestion('')
+    }
+  }, [addressSuggestions, contact.address]);
 
   useEffect(() => {
-       setFormData(prev => ({
-      ...prev, 
-      contact: JSON.stringify(contact)
-    }))
-  }, [contact])
-
+    setFormData((prev) => ({
+      ...prev,
+      contact: JSON.stringify(contact),
+    }));
+  }, [contact]);
 
   console.log(formData);
   console.log(contact);
   console.log(addressSuggestions);
   console.log(recipient);
-  
+
   return (
     <Modal show={show} onHide={handleClose} className="create-specialist-modal">
       <Modal.Header closeButton>
-        <Modal.Title><FaUserMd /> Ajouter un professionel de santé</Modal.Title>
+        <Modal.Title>
+          <FaUserMd /> Ajouter un professionel de santé
+        </Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <form action="" method="post">
-          <div className="field">
-            <RxLetterCaseToggle />
-            <input
-              type="text"
-              name="name"
-              id=""
-              placeholder="Nom"
-              value={formData.name}
-              onChange={(e) => handleChange(e)}
-            />
-          </div>
-          <div className="field">
-            <LuStethoscope />
-            <input
-              type="text"
-              name="specialty"
-              id=""
-              placeholder="Spécialité"
-              value={formData.specialty}
-              onChange={(e) => handleChange(e)}
-            />
-          </div>
-            <label htmlFor="contact" className="contact-label"><TiContacts/> Contact</label>
+          <InputGroup className="">
+            <InputGroup.Text id="basic-addon1">
+              <RxLetterCaseToggle />
+            </InputGroup.Text>
+            <FloatingLabel controlId="floatingInput" label="Nom" className="">
+              <Form.Control
+                aria-label="Nom"
+                aria-describedby="basic-addon1"
+                placeholder="Nom"
+                name="name"
+                value={formData.name}
+                onChange={(e) => handleChange(e)}
+              />
+            </FloatingLabel>
+          </InputGroup>
+          <InputGroup className="">
+            <InputGroup.Text id="basic-addon2">
+              <LuStethoscope />
+            </InputGroup.Text>
+            <FloatingLabel
+              controlId="floatingInput"
+              label="Spécialité"
+              className=""
+            >
+              <Form.Control
+                aria-label="Spécialité"
+                aria-describedby="basic-addon2"
+                placeholder="Spécialité"
+                name="specialty"
+                value={formData.specialty}
+                onChange={(e) => handleChange(e)}
+              />
+            </FloatingLabel>
+          </InputGroup>
+          <label htmlFor="contact" className="contact-label">
+            <TiContacts /> Contact
+          </label>
           <div className="contact-fields">
-            <div className="address">
-              <div className="field">
+            <InputGroup className="address-field">
+              <InputGroup.Text id="basic-addon3">
                 <HiOutlineLocationMarker />
-                <input
-                  type="text"
-                  name="address"
+              </InputGroup.Text>
+              <FloatingLabel
+                controlId="floatingInput"
+                label="Adresse"
+                className=""
+              >
+                <Form.Control
+                  aria-label="Adresse"
+                  aria-describedby="basic-addon3"
                   placeholder="Adresse"
-                  id=""
+                  name="address"
                   value={contact.address}
-                  onChange={(e) => setContact(prev => ({...prev, address: e.target.value}))}
+                  onChange={(e) =>
+                    setContact((prev) => ({ ...prev, address: e.target.value }))
+                  }
                 />
                 {placeholderSuggestion && (
-                  <label className="suggestion" htmlFor="address">
-                  {placeholderSuggestion}
-                  </label>
+                  <span className="suggestion" htmlFor="address">
+                    {placeholderSuggestion}
+                  </span>
                 )}
-              </div>
-              {addressSuggestions && addressSuggestions.length > 0 && (
-                <ul className="address-suggestions">
-                  {addressSuggestions.map((item) => {
-                    return (
-                      <li onClick={() => setContact(prev => ({...prev, address: item.fulltext}))}>
-                        <HiOutlineLocationMarker /> {item.fulltext}
-                      </li>
-                    );
-                  })}
-                </ul>
-              )}
-            </div>
-            <div className="field">
-              <LuPhone />
-              <input
-                type="tel"
-                name="phone_number"
+              </FloatingLabel>
+            </InputGroup>
+            {addressSuggestions && addressSuggestions.length > 0 && (
+              <ul className="address-suggestions">
+                {addressSuggestions.map((item) => {
+                  return (
+                    <li
+                      onClick={() =>
+                        setContact((prev) => ({
+                          ...prev,
+                          address: item.fulltext,
+                        }))
+                      }
+                    >
+                      <HiOutlineLocationMarker /> {item.fulltext}
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+            <InputGroup className="tel-field mt-3">
+              <InputGroup.Text>
+                <LuPhone />
+              </InputGroup.Text>
+              <InputGroup.Text>+33</InputGroup.Text>
+
+              <Form.Control
+                aria-label="Téléphone"
+                aria-describedby="basic-addon4"
                 placeholder="Téléphone"
+                name="address"
                 value={contact.phone_number}
                 maxLength={9}
                 id=""
                 onChange={(e) => handleTelField(e)}
               />
-              <label htmlFor="phone_number">+ 33</label>
-            </div>
+            </InputGroup>
           </div>
-          <div className="field textarea">
-            <LuMessageSquareText />
-            <textarea
-              name="notes"
-              placeholder="Notes"
-              id=""
-              value={formData.notes}
-              onChange={(e) => handleChange(e)}
-            ></textarea>
-          </div>
+          <InputGroup className="notes">
+            <InputGroup.Text id="basic-addon2">
+              <LuMessageSquareText />
+            </InputGroup.Text>
+            <FloatingLabel controlId="floatingInput" label="Notes" className="">
+              <Form.Control
+                as="textarea"
+                aria-label="Spécialité"
+                aria-describedby="basic-addon2"
+                placeholder="Notes"
+                name="notes"
+                value={formData.notes}
+                onChange={(e) => handleChange(e)}
+              />
+            </FloatingLabel>
+          </InputGroup>
         </form>
       </Modal.Body>
       <Modal.Footer>
-        <Button type="submit" onClick={(e) => handleSubmit(e)}>
+        <Button
+          variant="md-green"
+          type="submit"
+          onClick={(e) => handleSubmit(e)}
+        >
           Ajouter
         </Button>
-        <Button type="button" variant="secondary" onClick={handleClose}>
+        <Button type="button" variant="outline-secondary" onClick={handleClose}>
           Annuler
         </Button>
       </Modal.Footer>

@@ -44,7 +44,6 @@ export default function Navbar() {
   ];
 
   const handleNavAnimation = (e) => {
-    e.stopPropagation();
 
     if (pinNav) return;
 

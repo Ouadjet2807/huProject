@@ -16,13 +16,21 @@ import InputGroup from "react-bootstrap/InputGroup";
 import FloatingLabel from "react-bootstrap/FloatingLabel";
 import { ConfirmContext } from "../../context/ConfirmContext";
 
-export default function CreateSpecialist({ space, show, setShow, recipient, preloadedData }) {
+export default function CreateSpecialist({
+  space,
+  show,
+  setShow,
+  recipient,
+  preloadedData,
+  setSelectedSpecialist,
+}) {
   const { user } = useContext(AuthContext);
-  const { showConfirm, setShowConfirm, setText, setAction } = useContext(ConfirmContext)
+  const { showConfirm, setShowConfirm, setText, setAction } =
+    useContext(ConfirmContext);
   const [placeholderSuggestion, setPlaceholderSuggestion] = useState();
   const [debouncedValue, setDebouncedValue] = useState();
   const [addressSuggestions, setAddressSuggestions] = useState([]);
-  const [editMode, setEditMode] = useState(false)
+  const [editMode, setEditMode] = useState(false);
 
   const [contact, setContact] = useState({
     address: "",
@@ -61,6 +69,18 @@ export default function CreateSpecialist({ space, show, setShow, recipient, prel
   };
 
   const handleClose = () => {
+    setContact({
+      address: "",
+      phone_number: "",
+    });
+    setFormData({
+      name: "",
+      specialty: "",
+      contact: "",
+      notes: "",
+      space: "",
+    });
+    setSelectedSpecialist()
     setShow(false);
   };
 
@@ -104,14 +124,32 @@ export default function CreateSpecialist({ space, show, setShow, recipient, prel
   };
 
   const confirmRemoval = () => {
-    setText('Êtes-vous sûr(e) de vouloir supprimer ce professionel de santé ?')
-    setAction(() => async () => {try {
-      const response = await api.delete(`http://127.0.0.1:8000/api/healthcare_professionals/${preloadedData.id}`)
-    } catch (error) {
-       console.log(error);
-    }})
-    setShowConfirm(true)
-  }
+    setText("Êtes-vous sûr(e) de vouloir supprimer ce professionel de santé ?");
+    setAction(() => async () => {
+      try {
+        const response = await api.delete(
+          `http://127.0.0.1:8000/api/healthcare_professionals/${preloadedData.id}`,
+        );
+      } catch (error) {
+        console.log(error);
+      }
+    });
+    setShowConfirm(true);
+  };
+
+  const formatContact = (contact) => {
+    if (typeof contact === "string") {
+      contact = JSON.parse(contact);
+    }
+
+    contact.phone_number = contact.phone_number.replaceAll(" ", "");
+
+    if (contact.phone_number.startsWith("0")) {
+      contact.phone_number = contact.phone_number.substring(1);
+    }
+
+    return contact;
+  };
 
   useEffect(() => {
     if (!space) return;
@@ -143,8 +181,7 @@ export default function CreateSpecialist({ space, show, setShow, recipient, prel
   }, [debouncedValue]);
 
   useEffect(() => {
-
-    if(preloadedData && !editMode) return
+    if (preloadedData && !editMode) return;
 
     let addressValue = contact.address;
 
@@ -172,10 +209,20 @@ export default function CreateSpecialist({ space, show, setShow, recipient, prel
       e.fulltext.toUpperCase().includes(contact.address.toUpperCase()),
     );
 
-    if (placeholder && placeholder.fulltext.toLowerCase().startsWith(contact.address.toLowerCase())) {
-      setPlaceholderSuggestion(placeholder.fulltext);
+    if (
+      placeholder &&
+      placeholder.fulltext
+        .toLowerCase()
+        .startsWith(contact.address.toLowerCase())
+    ) {
+      console.log(placeholder.fulltext.length);
+      setPlaceholderSuggestion(
+        placeholder.fulltext.length > 45
+          ? placeholder.fulltext.slice(0, 45).padEnd(48, "...")
+          : placeholder.fulltext,
+      );
     } else {
-      setPlaceholderSuggestion('')
+      setPlaceholderSuggestion("");
     }
   }, [addressSuggestions, contact.address]);
 
@@ -187,14 +234,16 @@ export default function CreateSpecialist({ space, show, setShow, recipient, prel
   }, [contact]);
 
   useEffect(() => {
-    if(!preloadedData) return
-    setFormData(preloadedData)
+    if (!preloadedData || Object.keys(preloadedData).length < 0) return;
+
+    preloadedData.contact = formatContact(preloadedData.contact);
+    setFormData(preloadedData);
+
     setContact({
       address: Object.values(preloadedData.contact.address).join(" "),
-      phone_number: preloadedData.contact.phone_number
-    })
-
-  }, [preloadedData])
+      phone_number: preloadedData.contact.phone_number,
+    });
+  }, [preloadedData]);
   console.log(preloadedData);
 
   console.log(formData);
@@ -237,7 +286,7 @@ export default function CreateSpecialist({ space, show, setShow, recipient, prel
               className=""
             >
               <Form.Control
-              disabled={preloadedData && !editMode}
+                disabled={preloadedData && !editMode}
                 aria-label="Spécialité"
                 aria-describedby="basic-addon2"
                 placeholder="Spécialité"
@@ -261,7 +310,7 @@ export default function CreateSpecialist({ space, show, setShow, recipient, prel
                 className=""
               >
                 <Form.Control
-                disabled={preloadedData && !editMode}
+                  disabled={preloadedData && !editMode}
                   aria-label="Adresse"
                   aria-describedby="basic-addon3"
                   placeholder="Adresse"
@@ -303,7 +352,7 @@ export default function CreateSpecialist({ space, show, setShow, recipient, prel
               <InputGroup.Text>+33</InputGroup.Text>
 
               <Form.Control
-              disabled={preloadedData && !editMode}
+                disabled={preloadedData && !editMode}
                 aria-label="Téléphone"
                 aria-describedby="basic-addon4"
                 placeholder="Téléphone"
@@ -321,7 +370,7 @@ export default function CreateSpecialist({ space, show, setShow, recipient, prel
             </InputGroup.Text>
             <FloatingLabel controlId="floatingInput" label="Notes" className="">
               <Form.Control
-              disabled={preloadedData && !editMode}
+                disabled={preloadedData && !editMode}
                 as="textarea"
                 aria-label="Spécialité"
                 aria-describedby="basic-addon2"
@@ -335,29 +384,33 @@ export default function CreateSpecialist({ space, show, setShow, recipient, prel
         </form>
       </Modal.Body>
       <Modal.Footer>
-        {!preloadedData || editMode ?
+        {!preloadedData || editMode ? (
+          <Button
+            variant="md-green"
+            type="submit"
+            onClick={(e) => handleSubmit(e)}
+          >
+            {editMode ? "Enregistrer" : "Ajouter"}
+          </Button>
+        ) : (
+          <Button variant="md-green" onClick={() => setEditMode(true)}>
+            Modifier
+          </Button>
+        )}
+        {preloadedData && (
+          <Button
+            type="button"
+            variant="outline-danger"
+            onClick={confirmRemoval}
+          >
+            Supprimer
+          </Button>
+        )}
         <Button
-        variant="md-green"
-        type="submit"
-        onClick={(e) => handleSubmit(e)}
+          type="button"
+          variant="outline-secondary"
+          onClick={() => (editMode ? setEditMode(false) : handleClose())}
         >
-          {editMode ? "Enregistrer" : "Ajouter"}
-        </Button>
-
-        : 
-        <Button
-        variant="md-green"
-        onClick={() => setEditMode(true)}
-        >
-          Modifier
-        </Button>
-        }
-        {preloadedData &&
-        <Button type="button" variant="outline-danger" onClick={confirmRemoval}>
-          Supprimer
-        </Button>
-        }
-        <Button type="button" variant="outline-secondary" onClick={() => editMode ? setEditMode(false) : handleClose()}>
           Annuler
         </Button>
       </Modal.Footer>

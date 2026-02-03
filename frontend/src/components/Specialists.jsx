@@ -19,8 +19,8 @@ export default function Specialists({recipient}) {
 
   const selectSpecialist = (specialist) => {
     console.log(specialist);
-
-    setSelectedSpecialist(specialist)
+    let json_specialist = JSON.stringify(specialist)
+    setSelectedSpecialist(JSON.parse(json_specialist))
     setShowAddSpecialist(true)
   }
 
@@ -81,7 +81,7 @@ export default function Specialists({recipient}) {
 
   return (
     <div id="recipientSpecialists">
-      <CreateSpecialist show={showAddSpecialist} setShow={setShowAddSpecialist} space={space} recipient={recipient} preloadedData={selectedSpecialist}/>
+      <CreateSpecialist show={showAddSpecialist} setShow={setShowAddSpecialist} space={space} recipient={recipient} preloadedData={selectedSpecialist} setSelectedSpecialist={setSelectedSpecialist} />
       <h3>Spécialistes de la santé</h3>
       {!loading ?
 

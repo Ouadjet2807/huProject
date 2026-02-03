@@ -85,7 +85,7 @@ class CaregiverSerializer(serializers.ModelSerializer):
         return instance
 
 class HealthcareProfessionalSerializer(serializers.ModelSerializer):
-    id = serializers.CharField()
+    id = serializers.CharField(required=False)
 
     class Meta:
         model = HealthcareProfessional

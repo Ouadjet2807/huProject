@@ -45,27 +45,16 @@ export default function Specialists({recipient}) {
     return formatted_data
   }
 
-  const getSpecialists = async () => {
-    try {
-      const res = await api.get(`http://127.0.0.1:8000/api/healthcare_professionals/?recipient=${recipient.id}`)
-
-      const formatted_data = formatSpecialist(res.data)
+  useEffect(() => {
+    if(Object.keys(recipient).includes('healthcare_professionals')) {
+      const formatted_data = formatSpecialist(recipient.healthcare_professionals)
       setSpecialists(formatted_data)
       setLoading(false)
-    } catch (error) {
-      console.log(error);
-      
     }
-  }
+  }, [recipient])
 
-
-
-  useEffect(() => {
-    getSpecialists()
-  }, [])
-  
   console.log(specialists);
-  
+
 
   return (
     <div id="recipientSpecialists">

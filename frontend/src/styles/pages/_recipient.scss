@@ -37,6 +37,9 @@
           transition: 0.5s ease-in;
           border-radius: 10px;
           cursor: pointer;
+          display: flex;
+          align-items: center;
+          gap: 10px;
 
           &.active {
             background: $pearl;
@@ -140,15 +143,14 @@
     }
 
     #recipientTreatments {
-
       .header {
         display: flex;
         width: 100%;
-        
+
         h3 {
           width: 100%;
         }
-        }
+      }
       .treatments-list {
         padding: 0;
         height: 35vw;
@@ -293,7 +295,6 @@
                 display: flex;
                 align-items: center;
                 gap: 5px;
-
               }
             }
           }
@@ -321,6 +322,7 @@
           display: flex;
           align-items: center;
           gap: 10px;
+          font-style: italic;
         }
 
         .specialist {
@@ -351,7 +353,11 @@
             display: flex;
             flex-direction: column;
             height: 100%;
-            padding: 10px 0;
+            padding: 10px 0 10px 10px;
+
+            h5 {
+              margin-bottom: 0;
+            }
 
             span {
               display: flex;
@@ -388,52 +394,6 @@
     display: flex;
     flex-direction: column;
 
-    .field {
-      display: flex;
-      width: 100%;
-
-      label {
-        position: absolute;
-        text-transform: capitalize;
-        margin-left: 2.9vw;
-        color: $greyGreen;
-      }
-
-      input[type="tel"] {
-        padding-left: 5.5vw;
-      }
-
-      svg {
-        position: absolute;
-        margin-left: 1vw;
-        color: $charcoal;
-      }
-
-      input,
-      textarea,
-      label {
-        font-family: $font1;
-      }
-
-      input,
-      textarea {
-        padding-left: 2.8vw;
-        width: 100%;
-      }
-
-      &:not(.textarea) {
-        align-items: center;
-      }
-
-      &.textarea {
-        margin-top: 1vw;
-
-        svg {
-          margin-top: 0.8vw;
-        }
-      }
-    }
-
     .contact-label {
       font-weight: 600;
       display: flex;
@@ -445,7 +405,6 @@
     .contact-fields {
       display: flex;
       flex-direction: column;
-      gap: 10px;
       border-left: 2px solid $whiteGreen;
 
       > * {
@@ -453,48 +412,46 @@
         margin: 0 auto;
       }
 
-      .address {
-        display: flex;
-        flex-direction: column;
-
-        label {
-          position: absolute;
-          text-transform: capitalize;
-          margin-left: 2.9vw;
-          color: $greyGreen;
-
-          span {
-            &:nth-child(1) {
-              color: transparent;
-            }
-          }
-        }
-
+      .address-field {
         input {
           text-transform: capitalize;
           z-index: 6;
+          position: relative;
           background: transparent;
         }
 
-        .address-suggestions {
-          padding: 0.7vw;
+        .suggestion {
+          position: absolute;
+          text-transform: capitalize;
+          color: $greyGreen;
+          font-family: inherit;
+          bottom: 15%;
+          font-size: 1rem;
+          left: 3.3%;
+        }
+      }
+      .address-suggestions {
+        padding: 0.7vw;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        border: 1px solid $whiteGreen;
+        border-top: none;
+        border-radius: 0 0 5px 5px;
+        max-height: 10vw;
+        overflow-y: scroll;
+        overflow-x: hidden;
+
+        li {
+          padding: 0 5px;
           display: flex;
-          flex-direction: column;
+          align-items: center;
           gap: 10px;
-          border: 1px solid $whiteGreen;
-          border-top: none;
-          border-radius: 0 0 5px 5px;
+          font-family: $font1;
+          cursor: pointer;
 
-          li {
-            padding: 0 5px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-family: $font1;
-
-            svg {
-              color: $greyGreen;
-            }
+          svg {
+            color: $greyGreen;
           }
         }
       }

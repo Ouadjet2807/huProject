@@ -63,8 +63,8 @@ nav {
         justify-content: center;
 
         svg {
-          width: 1vw;
-          height: 1vw;
+          min-width: 1vw;
+          min-height: 1vw;
         }
       }
 

@@ -40,8 +40,6 @@ def register_treatment_date(sender, instance, created, **kwargs):
         )
 
 
-        print(instance.id)
-
     except Exception as e:
         logger.exception(f"Failed to create Agenda item and Todo for treatment {instance!s}: {e}")
 

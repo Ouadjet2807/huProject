@@ -13,18 +13,21 @@ import Sign from "./pages/Sign";
 import Agenda from "./components/Agenda";
 import Toast from "./components/Toast";
 import { ToastContext } from "./context/ToastContext";
+import { ConfirmContext } from "./context/ConfirmContext";
+import Confirm from "./components/modals/Confirm";
 
 function App() {
   const { user, space, setRefreshSpace } = useContext(AuthContext);
   const { showToast, setShowToast, message, color } = useContext(ToastContext);
+  const { showConfirm, setShowConfirm, action, text } = useContext(ConfirmContext);
 
   console.log("user ", user);
-  console.log("space ", space);
-
+  console.log("space ", space)
 
   return (
     <div className="App">
       <Toast show={showToast} setShow={setShowToast} message={message} color={color}/>
+      <Confirm show={showConfirm} setShow={setShowConfirm} text={text} action={action}/>
       <BrowserRouter>
         <Navbar />
         <Routes>

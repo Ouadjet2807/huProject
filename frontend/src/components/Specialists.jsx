@@ -13,8 +13,16 @@ export default function Specialists({recipient}) {
   const [specialists, setSpecialists] = useState([])
   const [loading, setLoading] = useState(true)
   const [showAddSpecialist, setShowAddSpecialist] = useState(false)
+  const [selectedSpecialist, setSelectedSpecialist] = useState()
 
   const { space } = useContext(AuthContext)
+
+  const selectSpecialist = (specialist) => {
+    console.log(specialist);
+
+    setSelectedSpecialist(specialist)
+    setShowAddSpecialist(true)
+  }
 
   const formatSpecialist = (data) => {
 
@@ -46,6 +54,21 @@ export default function Specialists({recipient}) {
   }
 
   useEffect(() => {
+    const getSpecialist = async () => {
+      try {
+        const res = await api.get('http://127.0.0.1:8000/api/healthcare_professionals/')
+        console.log(res.data);
+        
+      } catch (error) {
+        console.log(error);
+        
+      }
+    }
+
+    getSpecialist()
+  }, [])
+
+  useEffect(() => {
     if(Object.keys(recipient).includes('healthcare_professionals')) {
       const formatted_data = formatSpecialist(recipient.healthcare_professionals)
       setSpecialists(formatted_data)
@@ -58,7 +81,7 @@ export default function Specialists({recipient}) {
 
   return (
     <div id="recipientSpecialists">
-      <CreateSpecialist show={showAddSpecialist} setShow={setShowAddSpecialist} space={space} recipient={recipient}/>
+      <CreateSpecialist show={showAddSpecialist} setShow={setShowAddSpecialist} space={space} recipient={recipient} preloadedData={selectedSpecialist}/>
       <h3>Spécialistes de la santé</h3>
       {!loading ?
 
@@ -66,7 +89,7 @@ export default function Specialists({recipient}) {
           {specialists.length > 0 ?
 
             specialists.map(item => {
-             return (<div className="specialist">
+             return (<div className="specialist" onClick={() => selectSpecialist(item)}>
               <div className="icon">
                 <FaUserMd />
               </div>

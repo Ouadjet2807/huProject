@@ -134,7 +134,7 @@ class CaregiverViewSet(viewsets.ModelViewSet):
                 return Caregiver.objects.filter(id=caregiver.id)
             except Caregiver.DoesNotExist:
                 raise NotFound("Caregiver not found")
-        return Caregiver.objects.filter(spaces__in=caregiver.spaces.all())
+        return Caregiver.objects.filter(caregivers__in=caregiver.caregivers_in.all())
 
     # If you want caregivers to be created automatically from user signups, override perform_create:
     def perform_create(self, serializer):
@@ -168,7 +168,7 @@ class RecipientViewSet(viewsets.ModelViewSet):
         if not user or not hasattr(user, 'caregiver'):
             return Recipient.objects.none()
         caregiver = user.caregiver
-        return Recipient.objects.filter(space__in=caregiver.spaces.all()).prefetch_related('treatments')
+        return Recipient.objects.filter(space__in=caregiver.caregivers_in.all()).prefetch_related('treatments')
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -302,7 +302,7 @@ class SpaceViewSet(viewsets.ModelViewSet):
         if not user or not hasattr(user, "caregiver"):
             return Space.objects.none()
 
-        return user.caregiver.spaces.all().prefetch_related("recipients", "caregivers", "agenda_space", 'todo_space')
+        return user.caregiver.caregivers_in.all().prefetch_related("recipients", "caregivers", "agenda_space", 'todo_space')
 
     # -------------------------
     # Creation / update hooks
@@ -398,7 +398,7 @@ class SpaceMembershipViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
 
         print(self.request)
-        
+
         if self.request.GET:
             space = Space.objects.get(id=self.request.GET.get("space"))
 
@@ -466,7 +466,7 @@ class ArchivedTreatmentViewSet(viewsets.ModelViewSet):
 
         caregiver = user.caregiver
 
-        return ArchivedTreatment.objects.filter(space__in=caregiver.spaces.all()).select_related('space')
+        return ArchivedTreatment.objects.filter(space__in=caregiver.caregivers_in.all()).select_related('space')
 
     def perform_create(self, serializer):
         serializer.save()
@@ -552,15 +552,10 @@ class HealthcareProfessionalViewSet(viewsets.ModelViewSet):
 
         if not user or not hasattr(user, 'caregiver'):
             return HealthcareProfessional.objects.none()
-        
-        if self.request.GET.get('recipient'):
-            recipient_id = self.request.GET.get('recipient')
-
-            return Recipient.objects.get(id=recipient_id).healthcare_professionals
 
         caregiver = user.caregiver
 
-        return Caregiver.objects.filter(space__in=caregiver.spaces.all()).select_related('space')
+        return HealthcareProfessional.objects.filter(space__in=caregiver.caregivers_in.all()).select_related('space')
 
     def perform_create(self, serializer):
         serializer.save()

@@ -413,11 +413,12 @@
       }
 
       .address-field {
-        input {
+        input:not(:disabled) {
           text-transform: capitalize;
           z-index: 6;
           position: relative;
           background: transparent;
+
         }
 
         .suggestion {

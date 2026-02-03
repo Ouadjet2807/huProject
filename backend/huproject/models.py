@@ -28,6 +28,7 @@ class Caregiver(Person):
     def can_edit(self) -> bool:
         return self.access_level < 3
 
+
 class Space(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100)
@@ -35,7 +36,7 @@ class Space(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     created_by = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    caregivers = models.ManyToManyField('Caregiver', related_name='spaces')
+    caregivers = models.ManyToManyField('Caregiver', related_name='caregivers_in')
 
     def __str__(self):
         return self.name

@@ -25,7 +25,7 @@ export default function CreateSpecialist({
   setSelectedSpecialist,
 }) {
   const { user } = useContext(AuthContext);
-  const { showConfirm, setShowConfirm, setText, setAction } =
+  const { showConfirm, setShowConfirm, setText, setAction, returnValue } =
     useContext(ConfirmContext);
   const [placeholderSuggestion, setPlaceholderSuggestion] = useState();
   const [debouncedValue, setDebouncedValue] = useState();
@@ -41,7 +41,7 @@ export default function CreateSpecialist({
     specialty: "",
     contact: "",
     notes: "",
-    space: "",
+    space: space && space.id,
   });
 
   const handleTelField = (e) => {
@@ -78,14 +78,13 @@ export default function CreateSpecialist({
       specialty: "",
       contact: "",
       notes: "",
-      space: "",
+      space: space.id,
     });
     setSelectedSpecialist()
     setShow(false);
   };
 
   const handleChange = (e) => {
-    console.log(e);
 
     setFormData((prev) => ({
       ...prev,
@@ -106,16 +105,12 @@ export default function CreateSpecialist({
         formData,
       );
 
-      let update_recipient = recipient;
-
-      update_recipient.healthcare_professionals.push(response.data);
+      recipient.healthcare_professionals.push(response.data);
 
       await api.put(
         `http://127.0.0.1:8000/api/recipients/${recipient.id}/`,
-        update_recipient,
+        recipient,
       );
-
-      recipient.healthcare_professionals.push(response.data);
 
       handleClose();
     } catch (error) {
@@ -126,13 +121,10 @@ export default function CreateSpecialist({
   const confirmRemoval = () => {
     setText("Êtes-vous sûr(e) de vouloir supprimer ce professionel de santé ?");
     setAction(() => async () => {
-      try {
         const response = await api.delete(
           `http://127.0.0.1:8000/api/healthcare_professionals/${preloadedData.id}`,
         );
-      } catch (error) {
-        console.log(error);
-      }
+        handleClose()
     });
     setShowConfirm(true);
   };
@@ -244,6 +236,15 @@ export default function CreateSpecialist({
       phone_number: preloadedData.contact.phone_number,
     });
   }, [preloadedData]);
+
+  useEffect(() => {
+    if (!returnValue || !preloadedData || Object.keys(preloadedData).length < 0) return
+
+    const filter = recipient.healthcare_professionals.filter(doc => doc.id !== preloadedData.id)
+
+    recipient.healthcare_professionals = filter
+
+  }, [returnValue])
   console.log(preloadedData);
 
   console.log(formData);

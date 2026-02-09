@@ -19,7 +19,7 @@ import Confirm from "./components/modals/Confirm";
 function App() {
   const { user, space, setRefreshSpace } = useContext(AuthContext);
   const { showToast, setShowToast, message, color } = useContext(ToastContext);
-  const { showConfirm, setShowConfirm, action, text } = useContext(ConfirmContext);
+  const { showConfirm, setShowConfirm, action, text, setReturnValue, returnValue } = useContext(ConfirmContext);
 
   console.log("user ", user);
   console.log("space ", space)
@@ -27,7 +27,7 @@ function App() {
   return (
     <div className="App">
       <Toast show={showToast} setShow={setShowToast} message={message} color={color}/>
-      <Confirm show={showConfirm} setShow={setShowConfirm} text={text} action={action}/>
+      <Confirm show={showConfirm} setShow={setShowConfirm} text={text} action={action} setReturnValue={setReturnValue}/>
       <BrowserRouter>
         <Navbar />
         <Routes>

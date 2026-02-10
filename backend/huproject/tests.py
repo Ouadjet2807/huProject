@@ -8,6 +8,12 @@ import json
 
 User = get_user_model()
 
+invited_default = json.dumps({
+            "invited": False,
+            "invited_by": None,
+            "role": 1
+})
+
 class UserModelTest(TestCase):
     def setUp(self):
 
@@ -23,11 +29,6 @@ class UserModelTest(TestCase):
 
     def test_user_created(self):
 
-        invited_default = json.dumps({
-            "invited": False,
-            "invited_by": None,
-            "role": 1
-        })
         user = User.objects.get(email="johndoe@test.fr")
 
         self.assertEqual(user.username, "johnDoe")
@@ -41,12 +42,6 @@ class CaregiverModelTest(TestCase):
 
     def test_caregiver_created(self):
 
-        invited_default = json.dumps({
-            "invited": False,
-            "invited_by": None,
-            "role": 1
-        })
-         
         user = User.objects.create(username="johnDoe", last_name="Doe", first_name="John", email="johndoe@test.fr", password='secret', invited=invited_default)
         caregiver = Caregiver.objects.get(user=user)
 
@@ -54,6 +49,38 @@ class CaregiverModelTest(TestCase):
         self.assertEqual(caregiver.last_name, "Doe")
         self.assertEqual(caregiver.user.email, "johndoe@test.fr")
         self.assertEqual(caregiver.access_level, 1)
+
+class SpaceModelTest(TestCase):
+    def test_space_created(self):
+
+        user = User.objects.create(username="johnDoe", last_name="Doe", first_name="John", email="johndoe@test.fr", password='secret', invited=invited_default)
+        caregiver = Caregiver.objects.get(user=user)
+        space = Space.objects.get(created_by=user)
+        membership = SpaceMembership.objects.get(space=space)
+        self.assertEqual(space.name, "John's Space")
+        self.assertEqual(space.description, "Personal space created automatically")
+        self.assertEqual(space.created_by, user)
+        self.assertEqual(membership.user, user)
+        self.assertEqual(membership.role, caregiver.access_level)
+
+class RecipientModelTest(TestCase):
+    def test_recipient_created(self):
+        user = User.objects.create(username="johnDoe", last_name="Doe", first_name="John", email="johndoe@test.fr", password='secret', invited=invited_default)
+        space = Space.objects.get(created_by=user)
+
+        recipient = Recipient.objects.create(space=space, medical_info=None, last_name="Doe", first_name="Jane", birth_date="2000-01-01", gender="F")
+
+        self.assertEqual(recipient.last_name, 'Doe')
+        self.assertEqual(recipient.first_name, 'Jane')
+        self.assertEqual(recipient.birth_date, '2000-01-01')
+        self.assertEqual(recipient.gender, 'F')
+        self.assertEqual(recipient.medical_info, None)
+
+
+    def test_recipient_updated(self):
+        user = User.objects.create(username="johnDoe", last_name="Doe", first_name="John", email="johndoe@test.fr", password='secret', invited=invited_default)
+        space = Space.objects.get(created_by=user)
+        recipient = Recipient.objects.get(space=space)
 
 
 # class CaregiverAPITest(APITestCase):

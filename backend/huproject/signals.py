@@ -4,7 +4,8 @@ from django.db.models.signals import post_save, pre_save, post_delete
 from django.dispatch import receiver
 from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
-from django.core.exceptions import ValidationError
+from django.shortcuts import get_object_or_404
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 import time
 import json
 
@@ -119,7 +120,6 @@ def create_caregiver_space(sender, instance, created, **kwargs):
     Create a Space and a Space membership when a new Caregiver is created and link the caregiver to it.
     """
     user = CustomUser.objects.get(id=instance.user.id)
-
     invitation_info = json.loads(user.invited)
 
     if not created:
@@ -130,7 +130,7 @@ def create_caregiver_space(sender, instance, created, **kwargs):
 
         space = {}
 
-        if(user.invited):
+        if invitation_info["invited"] and (invitation_info["invited_by"] is not None):
             space = Space.objects.get(created_by=invitation_info["invited_by"])
 
         else:
@@ -158,7 +158,12 @@ def create_caregiver_space(sender, instance, created, **kwargs):
 @receiver(pre_save, sender=Caregiver)
 def update_membership(sender, instance, **kwargs):
 
-    membership = SpaceMembership.objects.get(user=instance.user)
+    membership = {}
+
+    try:
+       membership = SpaceMembership.objects.get(user=instance.user)
+    except ObjectDoesNotExist:
+        return
 
     try:
         membership.role = instance.access_level
@@ -174,7 +179,11 @@ def update_caregiver_profile(sender, instance, **kwargs):
     Update Caregiver object whenever the linked user is edited
     """
 
-    caregiver = Caregiver.objects.get(user=instance)
+    caregiver = {}
+    try:
+        caregiver = Caregiver.objects.get(user=instance)
+    except ObjectDoesNotExist:
+        return
 
     if caregiver.last_name == instance.last_name and caregiver.first_name == instance.first_name:
         return

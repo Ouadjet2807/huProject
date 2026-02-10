@@ -54,7 +54,7 @@ class UserUpdateAPIView(GenericAPIView):
        if request.method=='POST':
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user = CustomUser.objects.get(id = request.user.id)
+        user = CustomUser.objects.get_object_or_404(id = request.user.id)
         user.first_name = request.data.get('first_name')
         user.last_name = request.data.get('last_name')
         user.username = request.data.get('username')
@@ -93,7 +93,7 @@ class UserInfoAPIView(RetrieveAPIView):
 
         # If id provided → return that user
         try:
-            return CustomUser.objects.get(id=user_id)
+            return CustomUser.objects.get_object_or_404(id=user_id)
         except CustomUser.DoesNotExist:
             raise NotFound("User not found")
 

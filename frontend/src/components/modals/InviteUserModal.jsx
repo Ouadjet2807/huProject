@@ -21,8 +21,6 @@ export default function InviteUserModal({ show, setShow }) {
         space: "",
         sender: "",
         token: "",
-        created_at: moment().format(),
-        expires_at: moment().add(1, "days").format(),
         accepted: false,
     })
 
@@ -48,18 +46,14 @@ export default function InviteUserModal({ show, setShow }) {
     const handleSubmit = async () => {
 
         console.log(formData);
-        
 
         try {
             let post = await api.post("http://127.0.0.1:8000/api/invitations/", formData)
             console.log('Success', post);
-            
         }
         catch (error) {
             console.log(error);
-            
         }
-        
     }
 
     const handleClose = () => {
@@ -69,7 +63,6 @@ export default function InviteUserModal({ show, setShow }) {
     useEffect(() => {
       if(!user) return
         console.log(space);
-        
         setFormData(prev => ({
         ...prev,
         sender: user.id,

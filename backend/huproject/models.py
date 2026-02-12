@@ -2,6 +2,8 @@ from django.conf import settings
 from django.contrib.auth  import get_user_model
 from django.contrib.auth.models import AbstractUser
 from django.contrib.postgres.fields import JSONField
+from django.core.validators import MaxValueValidator
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
 from datetime import timedelta
@@ -22,11 +24,24 @@ class Person(models.Model):
 
 class Caregiver(Person):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    access_level = models.IntegerField(default=1)
+    access_level = models.IntegerField(default=1, validators=[MaxValueValidator(3)])
+
+    class Meta:
+        constraints=[
+            models.CheckConstraint(
+                check=models.Q(access_level__lt=4),
+                name="access_level_lt_4"
+            )
+        ]
 
     @property
     def can_edit(self) -> bool:
         return self.access_level < 3
+
+    def clean(self):
+        super().clean()
+        if self.access_level > 3:
+            raise ValidationError({'access_level': "Access level can't be greater than 3"})
 
 
 class Space(models.Model):
@@ -91,14 +106,26 @@ class SpaceMembership(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     space = models.ForeignKey(Space, on_delete=models.CASCADE)
-    role = models.IntegerField(choices=Role.choices, default=Role.ADMIN)
+    role = models.IntegerField(choices=Role.choices, default=Role.ADMIN, validators=[MaxValueValidator(3)])
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        constraints=[
+            models.CheckConstraint(
+                check=models.Q(role__lt=4),
+                name="membership_role_lt_4"
+            )
+        ]
+
+    def clean(self):
+        super().clean()
+        if self.role > 3:
+            raise ValidationError({'role': "role can't be greater than 3"})
 
 class Invitation(models.Model):
     email = models.EmailField()
     space = models.ForeignKey(Space, on_delete=models.CASCADE)
-    role = models.PositiveSmallIntegerField(choices=Role.choices)
+    role = models.PositiveSmallIntegerField(choices=Role.choices, validators=[MaxValueValidator(3)])
     sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     token = models.CharField(max_length=64, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -108,6 +135,19 @@ class Invitation(models.Model):
 
     def is_valid(self):
         return (not self.accepted) and (self.expires_at > timezone.now())
+
+    class Meta:
+        constraints=[
+            models.CheckConstraint(
+                check=models.Q(role__lt=4),
+                name="invitation_role_lt_4"
+            )
+        ]
+
+    def clean(self):
+        super().clean()
+        if self.role > 3:
+            raise ValidationError({'role': "role can't be greater than 3"})
 
 class AcceptedInvitation(models.Model):
     space = models.ForeignKey(Space, on_delete=models.CASCADE)

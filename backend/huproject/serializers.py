@@ -1,7 +1,9 @@
 from rest_framework import serializers
 from django.contrib.auth import authenticate
+from django.utils import timezone
 from .models import *
 import json
+from datetime import timedelta
 
 class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -175,12 +177,20 @@ class ArchivedTreatmentSerializer(serializers.ModelSerializer):
 
 class InvitationSerializer(serializers.ModelSerializer):
     space =  serializers.PrimaryKeyRelatedField(queryset=Space.objects.all())
-    sender = CustomUserSerializer(read_only=True)
+    sender = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
 
     class Meta:
         model = Invitation
-        fields = ['email', 'space', 'role', 'token', 'created_at', 'expires_at', 'accepted', 'sender']
+        fields = ['email', 'space', 'role', 'token', 'accepted', 'sender']
 
+    def create(self, validated_data):
+        now = timezone.now()
+        expires_at = now + timedelta(days=1)
+        validated_data["expires_at"] = expires_at
+
+        invitiation = Invitation.objects.create(**validated_data)
+
+        return invitiation
 
 class AgendaItemCategorySerializer(serializers.ModelSerializer):
     agenda =  serializers.PrimaryKeyRelatedField(queryset=Agenda.objects.all())

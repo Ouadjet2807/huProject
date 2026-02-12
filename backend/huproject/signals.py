@@ -6,6 +6,7 @@ from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
+from django.db import IntegrityError
 import time
 import json
 
@@ -49,12 +50,12 @@ def send_invitation(sender, instance, created, **kwargs):
     """
     Send an email to the invited user.
     """
+    if instance.accepted:
+        return
 
     address = instance.email
     message = "Vous avez été invité(e) à rejoindre un espace aidant, suivez le lien ci-dessous pour vous inscrire. http://localhost:3000/invite/" + instance.token
 
-    if instance.accepted:
-        return
 
     # try :
     #     send_mail(
@@ -159,6 +160,9 @@ def create_caregiver_space(sender, instance, created, **kwargs):
 def update_membership(sender, instance, **kwargs):
 
     membership = {}
+
+    if instance.access_level > 3:
+        raise IntegrityError("role cannot be greater than 3")
 
     try:
        membership = SpaceMembership.objects.get(user=instance.user)

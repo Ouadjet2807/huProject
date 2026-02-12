@@ -121,7 +121,8 @@ def create_caregiver_space(sender, instance, created, **kwargs):
     Create a Space and a Space membership when a new Caregiver is created and link the caregiver to it.
     """
     user = CustomUser.objects.get(id=instance.user.id)
-    invitation_info = json.loads(user.invited)
+
+    invitation_info = json.loads(user.invited) if type(user.invited) == "string" else user.invited 
 
     if not created:
         return

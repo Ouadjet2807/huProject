@@ -74,11 +74,12 @@ class UserUpdateSerializer(serializers.Serializer):
 class CaregiverSerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
     id = serializers.CharField()
+    can_edit = serializers.BooleanField(read_only=True)
 
     class Meta:
         model = Caregiver
-        fields = ('id', 'gender', 'first_name', 'last_name', 'birth_date', 'user', 'access_level')
-        read_only_fields = ('id', 'user')
+        fields = ('id', 'gender', 'first_name', 'last_name', 'birth_date', 'user', 'access_level', 'can_edit')
+        read_only_fields = ('id', 'user', 'can_edit')
 
     def update(self, instance, validated_data):
 
@@ -108,10 +109,13 @@ class TreatmentSerializer(serializers.ModelSerializer):
         queryset=CustomUser.objects.all(),
         required=True
     )
+    is_expired = serializers.BooleanField(read_only=True)
+    is_expired_for = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Treatment
-        fields = ('id','name','dosage', 'cis_code', 'medication_format', 'quantity', 'frequency','start_date','end_date','prescribed_by','prescribed_by_id', 'prescribed_to', 'registered_by', 'notes', 'space', 'created_at')
+        fields = ('id','name','dosage', 'cis_code', 'medication_format', 'quantity', 'frequency','start_date','end_date','prescribed_by','prescribed_by_id', 'prescribed_to', 'registered_by', 'notes', 'space', 'created_at', 'is_expired', 'is_expired_for')
+        read_only_fields = ['id', 'created_at', 'is_expired', 'is_expired_for']
 
 
     def create(self, validated_data):
@@ -167,12 +171,6 @@ class RecipientSerializer(serializers.ModelSerializer):
                 professionals_ids.append(p['id'])
             instance.healthcare_professionals.set(professionals_ids)
         return instance
-
-class ArchivedTreatmentSerializer(serializers.ModelSerializer):
-    treatment = serializers.PrimaryKeyRelatedField(queryset=Treatment.objects.all())
-    class Meta:
-        model = ArchivedTreatment
-        fields = ('id', 'name', 'space', 'treatment')
 
 
 class InvitationSerializer(serializers.ModelSerializer):

@@ -9,6 +9,7 @@ from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import IntegrityError
 from django.shortcuts import get_object_or_404
 from django.db.models import Prefetch
+from datetime import date, timedelta
 from .models import *
 from .serializers import *
 import json
@@ -127,14 +128,13 @@ class CaregiverViewSet(viewsets.ModelViewSet):
 
         if not user or not hasattr(user, 'caregiver'):
             return Caregiver.objects.none()
-        caregiver = user.caregiver
 
-        if self.request.GET.get("id"):
+        elif self.request.GET.get("id"):
+            caregiver = user.caregiver
             try:
                 return Caregiver.objects.filter(id=caregiver.id)
             except Caregiver.DoesNotExist:
                 raise NotFound("Caregiver not found")
-        return Caregiver.objects.filter(caregivers__in=caregiver.caregivers_in.all())
 
     # If you want caregivers to be created automatically from user signups, override perform_create:
     def perform_create(self, serializer):
@@ -168,7 +168,7 @@ class RecipientViewSet(viewsets.ModelViewSet):
         if not user or not hasattr(user, 'caregiver'):
             return Recipient.objects.none()
         caregiver = user.caregiver
-        return Recipient.objects.filter(space__in=caregiver.caregivers_in.all()).prefetch_related('treatments')
+        return Recipient.objects.filter(space__in=caregiver.caregivers_in.all())
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -257,7 +257,7 @@ class AgendaItemCategoryViewSet(viewsets.ModelViewSet):
 
         if not user or not hasattr(user, 'caregiver'):
             return AgendaItemCategory.objects.none()
-        
+
         caregiver = user.caregiver
 
         qs = AgendaItemCategory.objects.filter(agenda__space__caregivers=caregiver)
@@ -422,54 +422,31 @@ class TreatmentViewSet(viewsets.ModelViewSet):
     queryset = Treatment.objects.all()
     permission_classes = [permissions.IsAuthenticated] 
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
-    search_fields = ['name', 'medication_format', 'start_date', 'end_date']
+    search_fields = ['name', 'medication_format', 'start_date', 'end_date', 'prescribed_to']
     ordering_fields = ['name', 'medication_format', 'start_date', 'end_date']
 
     def get_queryset(self):
         user = self.request.user
 
+        archives = self.request.GET.get('archives')
+        recipient = self.request.GET.get("recipient")
+
         if not user or not hasattr(user, 'caregiver'):
             return Treatment.objects.none()
 
-        if self.request.GET.get('recipient'):
-            recipient_id = self.request.GET.get('recipient')
-
-            return Recipient.objects.get(id=recipient_id).treatments
-
         caregiver = user.caregiver
 
-        return Treatment.objects.filter(space__in=caregiver.spaces.all()).select_related('space')
+        archive_delay = date.today() - timedelta(weeks=2)
+        archived_treatments = Treatment.archived_objects.filter(space__in=caregiver.caregivers_in.all(), prescribed_to=recipient).select_related('space')
+
+        if eval(archives):
+            return archived_treatments
+
+        return Treatment.objects.filter(space__in=caregiver.caregivers_in.all(), prescribed_to=recipient, end_date__gt=archive_delay).select_related('space')
 
     def perform_create(self, serializer):
         serializer.save()
 
-
-class ArchivedTreatmentViewSet(viewsets.ModelViewSet):
-    serializer_class = ArchivedTreatmentSerializer
-    lookup_field = 'id'
-    queryset = ArchivedTreatment.objects.all()
-    permission_classes = [permissions.IsAuthenticated] 
-    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
-    search_fields = ['treatment']
-    ordering_fields = ['archived_at']
-
-    def get_queryset(self):
-        user = self.request.user
-
-        if not user or not hasattr(user, 'caregiver'):
-            return ArchivedTreatment.objects.none()
-
-        if self.request.GET.get('recipient'):
-            recipient_id = self.request.GET.get('recipient')
-
-            return Recipient.objects.get(id=recipient_id).treatments
-
-        caregiver = user.caregiver
-
-        return ArchivedTreatment.objects.filter(space__in=caregiver.caregivers_in.all()).select_related('space')
-
-    def perform_create(self, serializer):
-        serializer.save()
 
 class TodoListItemViewSet(viewsets.ModelViewSet):
     serializer_class = TodoListItemSerializer
@@ -511,7 +488,7 @@ class TodoListViewSet(viewsets.ModelViewSet):
 
         caregiver = user.caregiver
 
-        return TodoList.objects.filter(space__in=caregiver.spaces.all()).select_related()
+        return TodoList.objects.filter(space__in=caregiver.caregivers_in.all()).select_related()
 
     def perform_create(self, serializer):
         serializer.save()
@@ -532,7 +509,7 @@ class GroceriesViewSet(viewsets.ModelViewSet):
             return Groceries.objects.none()
 
         caregiver = user.caregiver
-        return Groceries.objects.select_related('created_by').filter(space__in=caregiver.spaces.all())
+        return Groceries.objects.select_related('created_by').filter(space__in=caregiver.caregivers_in.all())
 
     def perform_create(self, serializer):
         serializer.save() 

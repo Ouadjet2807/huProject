@@ -6,7 +6,7 @@ from django.core.validators import MaxValueValidator
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
-from datetime import timedelta
+from datetime import timedelta, date
 import uuid
 import re
 
@@ -185,6 +185,17 @@ class Recipient(Person):
     healthcare_professionals = models.ManyToManyField(HealthcareProfessional, blank=True, related_name='recipients')
     caregivers = models.ManyToManyField(Caregiver, related_name="care_for")
 
+
+class ArchivedTreatmentManager(models.Manager):
+    def get_queryset(self):
+        archive_delay = date.today() - timedelta(weeks=2)
+        print(archive_delay)
+        return super().get_queryset().filter(end_date__lte=archive_delay)
+
+    def __str__(self):
+        return self.name
+
+
 class Treatment(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     cis_code = models.CharField(max_length=10)
@@ -212,24 +223,20 @@ class Treatment(models.Model):
         on_delete=models.CASCADE,
         related_name='contains'
     )
+    objects = models.Manager()
+    archived_objects = ArchivedTreatmentManager()
 
     def __str__(self):
         return self.name
 
+    @property
+    def is_expired(self) -> bool:
+        return date.today() > self.end_date
 
-class ArchivedTreatment(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name = models.CharField(max_length=100)
-    treatment = models.OneToOneField(Treatment, on_delete=models.CASCADE, related_name='is_archived')
-    space = models.ForeignKey(
-        Space,
-        on_delete=models.CASCADE,
-        related_name='contains_archive'
-    )
-    archived_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return self.name
+    @property
+    def is_expired_for(self) -> int:
+        diff = date.today() - self.end_date
+        return diff.days if self.is_expired else 0
 
 
 class Agenda(models.Model):

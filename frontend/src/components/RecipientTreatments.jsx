@@ -43,18 +43,29 @@ export default function RecipientTreatments({ recipient }) {
 
   const today = moment(new Date());
 
+  const getTreatments = async () => {
+    setLoading(true)
+     try {
+      setTreatments([]);
+      const response = await api.get(
+        `http://127.0.0.1:8000/api/treatments/?archives=False&recipient=${recipient.id}`,
+      );
+      setTreatments(response.data)
+    } catch (error) {
+      console.log(error);
+    }
+    setLoading(false);
+  }
+
   const getArchivedTreatments = async () => {
+    setLoading(true)
     try {
       setArchivedTreatments([]);
       const response = await api.get(
-        `http://127.0.0.1:8000/api/archived_treatments`,
+        `http://127.0.0.1:8000/api/treatments/?archives=True&recipient=${recipient.id}`,
       );
 
-      console.log("response :", response.data);
-
-      response.data.forEach((doc) => {
-        setArchivedTreatments((prev) => [...prev, doc.treatment]);
-      });
+      setArchivedTreatments(response.data)
     } catch (error) {
       console.log(error);
     }
@@ -64,42 +75,6 @@ export default function RecipientTreatments({ recipient }) {
   const selectTreatment = (treatment) => {
     setSelectedTreatment(treatment);
     setShowMedicationDetails(true);
-  };
-
-  const archiveTreatment = async (e, treatment) => {
-    if (!space) return;
-
-    console.log(e);
-
-    if (!e || e.type == "click" &&
-      window.confirm("Êtes-vous sûr(e) de vouloir archiver ce traitement ?")) {
-
-        try {
-          await api.post("http://127.0.0.1:8000/api/archived_treatments/", {
-            name: treatment.name,
-            treatment: treatment.id,
-            space: space.id,
-          });
-          setArchivedTreatments((prev) => [...prev, treatment.id]);
-        } catch (error) {
-          console.log(error);
-        }
-      }
-
-      return
-  };
-
-  const checkForExpiredTreatments = () => {
-    if (recipient.treatments.length <= 0) return;
-
-    recipient.treatments.forEach((item) => {
-      const end_date = moment(item.end_date);
-
-      if (end_date < today && today.diff(end_date, "weeks") > 2) {
-        archiveTreatment(null, item);
-      }
-    });
-    getArchivedTreatments();
   };
 
   const checkTodaysIntake = (intake_number, intake_time_range) => {
@@ -157,11 +132,12 @@ export default function RecipientTreatments({ recipient }) {
 
   const getProgressColor = (item) => {
     let value = getProgress(item);
-
+    console.log(value);
+    
     switch (true) {
       case value >= 50:
         return "success";
-      case value > 10 && value < 45:
+      case value > 10 && value < 50:
         return "warning";
       case value <= 10:
         return "danger";
@@ -169,6 +145,7 @@ export default function RecipientTreatments({ recipient }) {
   };
 
   const getRemainingUnits = (item) => {
+
     if (item.frequency == "" || !item.end_date) return;
 
     const today = moment(new Date());
@@ -194,6 +171,10 @@ export default function RecipientTreatments({ recipient }) {
       totalUnits = item.quantity.units_per_unit * item.quantity.number_of_boxes;
     }
 
+    console.log(totalUnits);
+
+    console.log(start_date > today);
+
     if (start_date > today) return totalUnits;
 
     let todaysIntakeCount = checkTodaysIntake(intake_number, intake_time_range);
@@ -204,16 +185,21 @@ export default function RecipientTreatments({ recipient }) {
       end_date.add(1, `${frequency}s`).diff(today, `${frequency}s`) *
       intake_number;
 
+      console.log(Math.ceil(remaining_time) > 0);
+
+      console.log(remaining_time);
+      console.log(todaysIntakeCount);
+
     return Math.ceil(remaining_time) > 0
-      ? Math.ceil(remaining_time) - todaysIntakeCount
+      ? Math.ceil(remaining_time)
       : 0;
   };
 
   const renderTreatmentsList = () => {
 
-    let treatments = recipient.treatments;
+    let treatmentsList = archiveTab ? archivedTreatments : treatments;
 
-    if (!treatments || treatments.length == 0) {
+    if (!treatmentsList || treatmentsList.length == 0) {
       return (
         <small>
           <CiMedicalClipboard /> Aucun traitement enregistré
@@ -221,25 +207,21 @@ export default function RecipientTreatments({ recipient }) {
       );
     }
 
-    let array = archiveTab
-      ? treatments.filter((item) => archivedTreatments.includes(item.id))
-      : treatments.filter((item) => !archivedTreatments.includes(item.id));
-
     let breakPoints = width > 1200 ? 3 : width > 800 ? 2 : 1;
 
-    array.sort((a, b) => {
+    treatmentsList.sort((a, b) => {
       return new Date(b.end_date) - new Date(a.end_date);
     });
 
     let rows = [];
 
     // split the array in arrays of 3 elements maximum
-    for (let i = 0; i <= array.length; i++) {
+    for (let i = 0; i <= treatmentsList.length; i++) {
       if (i !== 0 && i % breakPoints == 0) {
-        rows.push(array.slice(i - breakPoints, i));
-      } else if (i == array.length) {
+        rows.push(treatmentsList.slice(i - breakPoints, i));
+      } else if (i == treatmentsList.length) {
         let firstIndex = rows.length * breakPoints;
-        rows.push(array.slice(firstIndex, i)); // store the remaining
+        rows.push(treatmentsList.slice(firstIndex, i)); // store the remaining
       }
     }
 
@@ -249,18 +231,18 @@ export default function RecipientTreatments({ recipient }) {
           {row.map((item) => {
             return (
               <Col
-                className={`${getRemainingUnits(item) > 0 ? "" : "expired"}`}
+                className={`${item.is_expired? "expired" : ""}`}
               >
                 <Badge
                   pill
                   className="remove-treatment"
                   bg="light"
-                  onClick={(e) => archiveTab ? selectTreatment(item) : archiveTreatment(e, item)}
+                  onClick={() => selectTreatment(item)}
                 >
                   {archiveTab ? <MdOutlineAutorenew /> : <LuTrash2 />}
                 </Badge>
                 <Card className="treatment">
-                  {getRemainingUnits(item) == 0 && (
+                  {item.is_expired && (
                     <h5>
                       <Badge bg="danger">expiré</Badge>
                     </h5>
@@ -351,13 +333,10 @@ export default function RecipientTreatments({ recipient }) {
   }, [showMedicationDetails]);
 
   useEffect(() => {
+    getTreatments()
+    getArchivedTreatments()
 
-    if(recipient.treatments.length <= 0) {
-      setLoading(false)
-      return
-    }
-    checkForExpiredTreatments();
-  }, [recipient.treatments, space]);
+  }, []);
 
   useEffect(() => {
     renderTreatmentsList();

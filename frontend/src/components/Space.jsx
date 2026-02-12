@@ -185,7 +185,8 @@ export default function Space({ editMode, setEditMode, roles }) {
 
   console.log(validationField);
   console.log(selectedRecipient);
-
+  console.log(space.caregivers);
+  
   return Object.keys(space).length > 0 && user ? (
     <div className="space-container">
       <InviteUserModal show={showInviteModal} setShow={setShowInviteModal} />
@@ -376,7 +377,7 @@ export default function Space({ editMode, setEditMode, roles }) {
       <div className="box" id="recipients">
         <div className="box-header">
           <strong>Aidés</strong>
-          {canEdit(user.id) && (
+          {space.caregivers.find(c => c.user == user.id).can_edit && (
             <Button
               className={`edit-button ${
                 editMode.active && editMode.target === "recipients"
@@ -411,7 +412,7 @@ export default function Space({ editMode, setEditMode, roles }) {
                     <p>
                       {item.first_name} {item.last_name}
                     </p>
-                    {editMode.active && editMode.target === "recipients" && canEdit(user.id) && (
+                    {editMode.active && editMode.target === "recipients" && space.caregivers.find(c => c.user == user.id).can_edit && (
                       <Button
                         onClick={(e) => handleDeleteModal(e, item)}
                         className="remove-person"

@@ -16,6 +16,7 @@ import { MdOutlineTitle } from "react-icons/md";
 import CreateCategory from "./CreateCategory";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { ToastContext } from "../../context/ToastContext";
+import { ConfirmContext } from "../../context/ConfirmContext.js"
 import { LuCalendarPlus } from "react-icons/lu";
 import ListGroup from "react-bootstrap/ListGroup";
 import FloatingLabel from "react-bootstrap/FloatingLabel";
@@ -28,6 +29,8 @@ export default function AddEvent({ agenda, setAgenda, show, setShow, preloadedEv
   const { user, space } = useContext(AuthContext);
 
   const { setShowToast, setMessage, setColor } = useContext(ToastContext);
+  const { showConfirm, setShowConfirm, setText, setAction, returnValue } =
+  useContext(ConfirmContext);
 
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [showCreateCategory, setShowCreateCategory] = useState(false);
@@ -38,6 +41,7 @@ export default function AddEvent({ agenda, setAgenda, show, setShow, preloadedEv
   const [participantsListWidth, setParticipantsListWidth] = useState(0);
 
   const participantsListRef = useRef();
+
 
   let default_start_date = moment()
     .minutes(0)
@@ -134,15 +138,13 @@ export default function AddEvent({ agenda, setAgenda, show, setShow, preloadedEv
 
   const deleteEvent = async () => {
     if(!preloadedEvent.id) return
-    if(window.confirm('Supprimer cet événement ?')) {
-      try {
-        await api.delete(`http://127.0.0.1:8000/api/agenda_items/${preloadedEvent.id}`)
-        handleClose()
-        setSelectedEvent({})
-      } catch (error) {
-        console.log(error);
-      }
-    }
+    setText("Êtes-vous sûr(e) de vouloir supprimer cet évenement ?")
+    setAction(() => async () => {
+          await api.delete(`http://127.0.0.1:8000/api/agenda_items/${preloadedEvent.id}`)
+          handleClose()
+          setSelectedEvent({})
+        })
+    setShowConfirm(true);
   }
 
 

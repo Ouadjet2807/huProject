@@ -207,7 +207,7 @@ def update_caregiver_profile(sender, instance, **kwargs):
 def create_caregiver_profile(sender, instance, created, **kwargs):
     """
     Create a Caregiver when a new User is created.
-    We populate first_name/last_name from the user if available to avoid DB errors.
+    We populate first_name/last_name from the user if available to avoid db errors.
     """
 
     if not created:

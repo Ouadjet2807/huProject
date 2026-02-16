@@ -189,7 +189,7 @@ class Recipient(Person):
 class ArchivedTreatmentManager(models.Manager):
     def get_queryset(self):
         archive_delay = date.today() - timedelta(weeks=2)
-        print(archive_delay)
+
         return super().get_queryset().filter(end_date__lte=archive_delay)
 
     def __str__(self):
@@ -231,13 +231,7 @@ class Treatment(models.Model):
 
     @property
     def is_expired(self) -> bool:
-        return date.today() > self.end_date
-
-    @property
-    def is_expired_for(self) -> int:
-        diff = date.today() - self.end_date
-        return diff.days if self.is_expired else 0
-
+        return date.today() >= self.end_date
 
 class Agenda(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

@@ -25,17 +25,30 @@ import "moment/locale/fr";
 import { UseDimensionsContext } from "../context/UseDimensionsContext";
 import { AuthContext } from "../context/AuthContext";
 import { MdOutlineAutorenew } from "react-icons/md";
+import { ConfirmContext } from "../context/ConfirmContext";
 
 export default function RecipientTreatments({ recipient }) {
   const [showAddTreatment, setShowAddTreatement] = useState(false);
   const [showMedicationDetails, setShowMedicationDetails] = useState(false);
   const [selectedMedication, setSelectedMedication] = useState({});
+  const [treatmentToDelete, setTreatmentToDelete] = useState();
   const [selectedTreatment, setSelectedTreatment] = useState({});
-  const [treatments, setTreatments] = useState([]);
-  const [archivedTreatments, setArchivedTreatments] = useState([]);
+  const [treatmentsData, setTreatmentsData] = useState({
+    treatments: {
+      status: "pending",
+      content: [],
+    },
+    archived_treatments: {
+      status: "pending",
+      content: [],
+    },
+  });
+
   const [archiveTab, setArchiveTab] = useState(false);
 
   const { width, height } = useContext(UseDimensionsContext);
+  const { showConfirm, setShowConfirm, setText, setAction, returnValue } =
+    useContext(ConfirmContext);
   const { space } = useContext(AuthContext);
   const [loading, setLoading] = useState(true);
 
@@ -44,37 +57,59 @@ export default function RecipientTreatments({ recipient }) {
   const today = moment(new Date());
 
   const getTreatments = async () => {
-    setLoading(true)
-     try {
-      setTreatments([]);
+    try {
       const response = await api.get(
         `http://127.0.0.1:8000/api/treatments/?archives=False&recipient=${recipient.id}`,
       );
-      setTreatments(response.data)
+
+      const data = {
+        content: response.data,
+        status: response.status,
+      };
+
+      setTreatmentsData(prev => ({
+        ...prev,
+        treatments: data,
+      }));
+      console.log(response);
     } catch (error) {
       console.log(error);
     }
-    setLoading(false);
-  }
+  };
 
   const getArchivedTreatments = async () => {
-    setLoading(true)
     try {
-      setArchivedTreatments([]);
       const response = await api.get(
         `http://127.0.0.1:8000/api/treatments/?archives=True&recipient=${recipient.id}`,
       );
-
-      setArchivedTreatments(response.data)
+      const data = {
+        content: response.data,
+        status: response.status,
+      };
+      setTreatmentsData(prev => ({
+        ...prev,
+        archived_treatments: data,
+      }));
     } catch (error) {
       console.log(error);
     }
-    setLoading(false);
   };
 
   const selectTreatment = (treatment) => {
     setSelectedTreatment(treatment);
     setShowMedicationDetails(true);
+  };
+
+  const deleteTreatment = (e, treatment) => {
+    e.stopPropagation();
+    setTreatmentToDelete(treatment.id)
+    setText("Êtes-vous sûr(e) de vouloir supprimer ce traitement ?");
+    setAction(() => async () => {   
+        const response = await api.delete(
+          `http://127.0.0.1:8000/api/treatments/${treatment.id}`,
+      );
+    });
+    setShowConfirm(true);
   };
 
   const checkTodaysIntake = (intake_number, intake_time_range) => {
@@ -132,8 +167,7 @@ export default function RecipientTreatments({ recipient }) {
 
   const getProgressColor = (item) => {
     let value = getProgress(item);
-    console.log(value);
-    
+
     switch (true) {
       case value >= 50:
         return "success";
@@ -145,7 +179,6 @@ export default function RecipientTreatments({ recipient }) {
   };
 
   const getRemainingUnits = (item) => {
-
     if (item.frequency == "" || !item.end_date) return;
 
     const today = moment(new Date());
@@ -171,10 +204,6 @@ export default function RecipientTreatments({ recipient }) {
       totalUnits = item.quantity.units_per_unit * item.quantity.number_of_boxes;
     }
 
-    console.log(totalUnits);
-
-    console.log(start_date > today);
-
     if (start_date > today) return totalUnits;
 
     let todaysIntakeCount = checkTodaysIntake(intake_number, intake_time_range);
@@ -185,19 +214,17 @@ export default function RecipientTreatments({ recipient }) {
       end_date.add(1, `${frequency}s`).diff(today, `${frequency}s`) *
       intake_number;
 
-      console.log(Math.ceil(remaining_time) > 0);
-
-      console.log(remaining_time);
-      console.log(todaysIntakeCount);
-
     return Math.ceil(remaining_time) > 0
-      ? Math.ceil(remaining_time)
+      ? Math.ceil(remaining_time) - todaysIntakeCount
       : 0;
   };
 
   const renderTreatmentsList = () => {
+    if (loading) return;
 
-    let treatmentsList = archiveTab ? archivedTreatments : treatments;
+    let treatmentsList = archiveTab
+      ? treatmentsData.archived_treatments.content
+      : treatmentsData.treatments.content;
 
     if (!treatmentsList || treatmentsList.length == 0) {
       return (
@@ -230,14 +257,16 @@ export default function RecipientTreatments({ recipient }) {
         <Row xs={1} md={2} lg={3} style={{ margin: "15px 0" }}>
           {row.map((item) => {
             return (
-              <Col
-                className={`${item.is_expired? "expired" : ""}`}
-              >
+              <Col className={`${item.is_expired ? "expired" : ""}`}>
                 <Badge
                   pill
                   className="remove-treatment"
                   bg="light"
-                  onClick={() => selectTreatment(item)}
+                  onClick={(e) =>
+                    archiveTab
+                      ? selectTreatment(item)
+                      : deleteTreatment(e, item)
+                  }
                 >
                   {archiveTab ? <MdOutlineAutorenew /> : <LuTrash2 />}
                 </Badge>
@@ -333,17 +362,39 @@ export default function RecipientTreatments({ recipient }) {
   }, [showMedicationDetails]);
 
   useEffect(() => {
-    getTreatments()
-    getArchivedTreatments()
-
+    getTreatments();
+    getArchivedTreatments();
   }, []);
 
   useEffect(() => {
     renderTreatmentsList();
-  }, [width, archiveTab, archivedTreatments]);
+  }, [width, archiveTab, treatmentsData, loading]);
 
-  console.log(archivedTreatments);
-  console.log(treatments);
+  useEffect(() => {
+    if(treatmentsData.treatments.status == 200 && treatmentsData.archived_treatments.status == 200) {
+      setLoading(false)
+    }
+  }, [treatmentsData])
+
+  useEffect(() => {
+    if (!returnValue) return
+
+    const filter = treatmentsData.treatments.content.filter(treatment => treatment.id !== treatmentToDelete)
+    console.log(filter);
+    
+    setTreatmentsData(prev => ({
+      ...prev,
+      treatments: {
+        ...prev.treatments.status,
+        content: filter
+      }
+    }))
+
+  }, [returnValue])
+
+  console.log(treatmentsData);
+  console.log(returnValue);
+
 
   return (
     <div

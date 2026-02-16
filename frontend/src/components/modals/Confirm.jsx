@@ -12,16 +12,16 @@ export default function Confirm({ show, setShow, action, text, setReturnValue })
   const handleActionError = () => {
     console.log('error');
     setMessage("Une erreur s'est produite veuillez-réessayer")
-    setShowToast(true);
     setColor("danger");
+    setShowToast(true);
     setReturnValue(false)
   };
 
   const handleActionSuccess = () => {
     console.log('success');     
     setMessage("")
-    setShowToast(true);
     setColor("success");
+    setShowToast(true);
     setReturnValue(true)
     handleClose();
   };
@@ -52,7 +52,7 @@ export default function Confirm({ show, setShow, action, text, setReturnValue })
       </Modal.Body>
       <Modal.Footer>
         <Button variant="outline-danger" onClick={process}>
-          Ok
+          Oui, supprimer
         </Button>
         <Button variant="outline-secondary" onClick={() => setShow(false)}>
           Annuler

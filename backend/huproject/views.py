@@ -397,8 +397,6 @@ class SpaceMembershipViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
 
-        print(self.request)
-
         if self.request.GET:
             space = Space.objects.get(id=self.request.GET.get("space"))
 
@@ -427,22 +425,24 @@ class TreatmentViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-
-        archives = self.request.GET.get('archives')
-        recipient = self.request.GET.get("recipient")
-
-        if not user or not hasattr(user, 'caregiver'):
-            return Treatment.objects.none()
-
         caregiver = user.caregiver
 
-        archive_delay = date.today() - timedelta(weeks=2)
-        archived_treatments = Treatment.archived_objects.filter(space__in=caregiver.caregivers_in.all(), prescribed_to=recipient).select_related('space')
+        if self.request.GET:
 
-        if eval(archives):
-            return archived_treatments
+            archives = self.request.GET.get('archives')
+            recipient = self.request.GET.get("recipient")
 
-        return Treatment.objects.filter(space__in=caregiver.caregivers_in.all(), prescribed_to=recipient, end_date__gt=archive_delay).select_related('space')
+            if not user or not hasattr(user, 'caregiver'):
+                return Treatment.objects.none()
+
+            archive_delay = date.today() - timedelta(weeks=2)
+
+            if archives and eval(archives):
+                return Treatment.archived_objects.filter(space__in=caregiver.caregivers_in.all(), prescribed_to=recipient).select_related('space')
+
+            return Treatment.objects.filter(space__in=caregiver.caregivers_in.all(), prescribed_to=recipient, end_date__gt=archive_delay).select_related('space')
+
+        return Treatment.objects.filter(space__in=caregiver.caregivers_in.all()).select_related('space')
 
     def perform_create(self, serializer):
         serializer.save()

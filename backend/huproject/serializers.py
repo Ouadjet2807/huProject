@@ -110,12 +110,11 @@ class TreatmentSerializer(serializers.ModelSerializer):
         required=True
     )
     is_expired = serializers.BooleanField(read_only=True)
-    is_expired_for = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Treatment
-        fields = ('id','name','dosage', 'cis_code', 'medication_format', 'quantity', 'frequency','start_date','end_date','prescribed_by','prescribed_by_id', 'prescribed_to', 'registered_by', 'notes', 'space', 'created_at', 'is_expired', 'is_expired_for')
-        read_only_fields = ['id', 'created_at', 'is_expired', 'is_expired_for']
+        fields = ('id','name','dosage', 'cis_code', 'medication_format', 'quantity', 'frequency','start_date','end_date','prescribed_by','prescribed_by_id', 'prescribed_to', 'registered_by', 'notes', 'space', 'created_at', 'is_expired')
+        read_only_fields = ['id', 'created_at', 'is_expired']
 
 
     def create(self, validated_data):
@@ -155,8 +154,6 @@ class RecipientSerializer(serializers.ModelSerializer):
         professionals = validated_data.pop('healthcare_professionals', None)
         instance = super().update(instance, validated_data)
 
-
-        print(professionals)
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save()

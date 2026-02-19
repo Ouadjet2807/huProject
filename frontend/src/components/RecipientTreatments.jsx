@@ -381,7 +381,6 @@ export default function RecipientTreatments({ recipient }) {
 
     const filter = treatmentsData.treatments.content.filter(treatment => treatment.id !== treatmentToDelete)
     console.log(filter);
-    
     setTreatmentsData(prev => ({
       ...prev,
       treatments: {
@@ -416,6 +415,8 @@ export default function RecipientTreatments({ recipient }) {
         medication={selectedMedication}
         treatment={selectedTreatment}
         setMedication={setSelectedMedication}
+        treatmentsData={treatmentsData}
+        setTreatmentsData={setTreatmentsData}
       />
       <div className="header">
         <h3>Traitements médicaux </h3>{" "}

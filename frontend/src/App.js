@@ -15,6 +15,7 @@ import Toast from "./components/Toast";
 import { ToastContext } from "./context/ToastContext";
 import { ConfirmContext } from "./context/ConfirmContext";
 import Confirm from "./components/modals/Confirm";
+import TreatmentPage from "./components/TreatmentPage";
 
 function App() {
   const { user, space, setRefreshSpace } = useContext(AuthContext);
@@ -46,6 +47,10 @@ function App() {
           <Route
             path="recipient/:id"
             element={<Recipient spaceId={space && space.id} />}
+          />
+          <Route
+            path="treatments/:id"
+            element={<TreatmentPage spaceId={space && space.id}/>}
           />
           <Route
             path="invite/:token"

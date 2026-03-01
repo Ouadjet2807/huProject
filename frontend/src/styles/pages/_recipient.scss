@@ -53,7 +53,6 @@
       padding: 2vw;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
       align-items: flex-end;
       border-left: 1px solid $whiteGreen;
     }
@@ -150,157 +149,208 @@
         h3 {
           width: 100%;
         }
+
+        .layout-choice {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 0 20px;
+
+          > svg {
+            cursor: pointer;
+          }
+        }
       }
-      .treatments-list {
-        padding: 0;
-        height: 35vw;
-        overflow-y: scroll;
-        border-radius: $borderRadiusMedium;
+
+      .treatments-tab-body {
+        width: 100%;
+        height: 100%;
         display: flex;
-        flex-direction: column;
         align-items: center;
+        justify-content: center;
 
-        &::-webkit-scrollbar {
-          background: transparent;
-          width: 0.3vw;
-        }
+        .treatments-list {
+          padding: 0;
+          height: 40vw;
+          overflow-y: scroll;
+          border-radius: $borderRadiusMedium;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
 
-        &::-webkit-scrollbar-thumb {
-          background: $whiteGreen;
-          border-radius: $borderRadius;
-        }
+          &::-webkit-scrollbar {
+            background: transparent;
+            width: 0.3vw;
+          }
 
-        .row {
-          width: 100%;
+          &::-webkit-scrollbar-thumb {
+            background: $whiteGreen;
+            border-radius: $borderRadius;
+          }
 
-          .col {
-            position: relative;
+          .row {
+            width: 100%;
 
-            .remove-treatment {
-              right: 0%;
-              top: -5%;
-              position: absolute;
-              z-index: 10;
-              width: 1.8vw;
-              height: 1.8vw;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              color: $greyGreen;
-              border-width: 1px;
-              border-style: solid;
-              border-color: $greyGreen;
-              font-size: 1vw;
-              padding: 0;
-              cursor: pointer;
-              opacity: 0;
-              transition: 0.2s ease-in;
+            .col {
+              position: relative;
 
-              &:hover {
-                filter: brightness(0.9);
-              }
-            }
-
-            &:hover {
               .remove-treatment {
-                opacity: 1;
-              }
-            }
-
-            &.expired {
-              .card-header {
-                border-radius: 15px 15px 0 0;
-              }
-              .card-body {
-                border-radius: 0 0 15px 15px;
-              }
-
-              .card-body,
-              .card-header {
-                backdrop-filter: brightness(0.9);
-                filter: saturate(0.5) brightness(0.9);
-              }
-
-              h5 {
-                margin-bottom: 0;
+                right: 0%;
+                top: -5%;
                 position: absolute;
-                top: 3%;
-                right: 3%;
-                z-index: 6;
-                transition: 0.3s ease-in;
+                z-index: 10;
+                width: 1.8vw;
+                height: 1.8vw;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: $greyGreen;
+                border-width: 1px;
+                border-style: solid;
+                border-color: $greyGreen;
+                font-size: 1vw;
+                padding: 0;
+                cursor: pointer;
+                opacity: 0;
+                transition: 0.2s ease-in;
+
+                &:hover {
+                  filter: brightness(0.9);
+                }
               }
 
               &:hover {
-                filter: none;
-                .card-img-overlay {
+                .remove-treatment {
                   opacity: 1;
+                }
+              }
+
+              &.expired {
+                .card-header {
+                  border-radius: 15px 15px 0 0;
+                }
+                .card-body {
+                  border-radius: 0 0 15px 15px;
+                }
+
+                .card-body,
+                .card-header {
+                  backdrop-filter: brightness(0.9);
+                  filter: saturate(0.5) brightness(0.9);
                 }
 
                 h5 {
-                  opacity: 0;
+                  margin-bottom: 0;
+                  position: absolute;
+                  top: 3%;
+                  right: 3%;
+                  z-index: 6;
+                  transition: 0.3s ease-in;
+                }
+
+                &:hover {
+                  filter: none;
+                  .card-img-overlay {
+                    opacity: 1;
+                  }
+
+                  h5 {
+                    opacity: 0;
+                  }
                 }
               }
             }
           }
-        }
 
-        .treatment {
-          display: flex;
-          flex-direction: column;
-          height: 100%;
-          background: $white;
-          box-shadow: 2px 4px 8px 2px #eaeaea;
-          border-radius: $borderRadiusMedium;
-          position: relative;
-
-          .card-img-overlay {
-            background: #121f1e99;
-            backdrop-filter: blur(1px);
-            border-radius: 14px;
-            color: $white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: 0.3s ease-in;
-          }
-
-          .card-header {
-            color: $mediumGreen;
-            font-family: $font1;
-          }
-
-          .card-body {
+          .treatment {
             display: flex;
             flex-direction: column;
+            height: 100%;
+            background: $white;
+            box-shadow: 2px 4px 8px 2px #eaeaea;
+            border-radius: $borderRadiusMedium;
+            position: relative;
 
-            .remaining {
-              .progress {
-                .progress-bar {
-                  filter: contrast(0.5) brightness(1.5) saturate(0.9);
+            .card-img-overlay {
+              background: #121f1e99;
+              backdrop-filter: blur(1px);
+              border-radius: 14px;
+              color: $white;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              opacity: 0;
+              transition: 0.3s ease-in;
+            }
+
+            .card-header {
+              color: $mediumGreen;
+              font-family: $font1;
+              display: flex;
+              flex-direction: column;
+            }
+
+            .card-body {
+              display: flex;
+              flex-direction: column;
+
+              .remaining {
+                .progress {
+                  .progress-bar {
+                    filter: contrast(0.5) brightness(1.5) saturate(0.9);
+                  }
+                }
+              }
+
+              .start-time {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+              }
+
+              .list-group {
+                margin: 0 0 10px;
+
+                .time-range {
+                  display: flex;
+                  align-items: center;
+                  gap: 5px;
                 }
               }
             }
-
-            .start-time {
-              display: flex;
+          }
+          &.list {
+            .row {
+              flex-direction: column;
               align-items: center;
-              gap: 10px;
-            }
 
-            .list-group {
-              margin: 0 0 10px;
+              .col {
+                width: 100%;
 
-              .time-range {
-                display: flex;
-                align-items: center;
-                gap: 5px;
+                .card-header {
+                  flex-direction: row;
+                  justify-content: space-between;
+                }
+
+                .card-body {
+                  display: grid;
+                  grid-template-columns: 40% 60%;
+                  align-items: center;
+                  gap: 15px;
+
+                  .list-group {
+                    margin: 0;
+                  }
+
+                  .remaining {
+                    width: 95%;
+                  }
+                }
               }
             }
           }
         }
       }
-
       .add-treatment-btn {
         margin: 15px auto;
       }
@@ -418,7 +468,6 @@
           z-index: 6;
           position: relative;
           background: transparent;
-
         }
 
         .suggestion {

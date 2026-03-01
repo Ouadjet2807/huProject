@@ -1,0 +1,64 @@
+.treatment-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 20px;
+  .treatment-info {
+    height: 100%;
+
+    .container {
+      display: grid;
+      grid-template-columns: 40% 60%;
+
+      .medication-tracker {
+        position: relative;
+        height: 40vw;
+
+        .tablet {
+          padding: 20px;
+          width: 40vw;
+          gap: 20px 10px;
+          background: #dcdcdc;
+          border-radius: $borderRadiusMedium;
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+          justify-content: center;
+          position: absolute;
+
+          > div {
+            border-radius: 50%;
+            border: 1px solid $whiteGreen;
+
+            &.fill {
+              // background: linear-gradient(1deg, #a2cabe 50%, transparent 50%);
+              background: #ebeeee;
+              box-shadow:
+                -1px -1px 4px 1px rgb(104 110 107 / 29%),
+                inset -1px 0px 3px 1px #fff;
+            }
+
+            &.empty {
+              box-shadow:
+                inset 1px 1px 3px 1px rgb(126 134 130 / 46%),
+                1px 1px 4px 1px #fff;
+            }
+          }
+
+          &#tablet_1 {
+            z-index: 6;
+          }
+
+          &#tablet_2 {
+            top: 4.5%;
+            left: 5%;
+          }
+          &#tablet_3 {
+            top: 8%;
+            left: 9%;
+          }
+        }
+      }
+    }
+  }
+}

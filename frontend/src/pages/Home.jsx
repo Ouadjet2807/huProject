@@ -9,8 +9,6 @@ import InviteUserModal from "../components/modals/InviteUserModal";
 import { TbUsersPlus } from "react-icons/tb";
 import { FaUserCircle } from "react-icons/fa";
 import Button from "react-bootstrap/esm/Button";
-import GroceryList from "../components/GroceryList";
-
 
 export default function Home({ setRefreshSpace }) {
   const [addRecipient, setAddRecipient] = useState(false);
@@ -103,10 +101,6 @@ export default function Home({ setRefreshSpace }) {
             space={space}
             setRefreshRecipients={setRefreshSpace}
           />
-          <div className="middle-tab">
-            <h3>Liste de courses</h3>
-              <GroceryList />
-          </div>
           <div className="right-tab">
             <h3>Todo list</h3>
             <TodoList user={user} space={space} />

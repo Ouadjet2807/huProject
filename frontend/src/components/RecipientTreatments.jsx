@@ -26,10 +26,14 @@ import { UseDimensionsContext } from "../context/UseDimensionsContext";
 import { AuthContext } from "../context/AuthContext";
 import { MdOutlineAutorenew } from "react-icons/md";
 import { ConfirmContext } from "../context/ConfirmContext";
+import { CiGrid41 } from "react-icons/ci";
+import { CiGrid2H } from "react-icons/ci";
+import { useNavigate } from "react-router-dom";
 
 export default function RecipientTreatments({ recipient }) {
   const [showAddTreatment, setShowAddTreatement] = useState(false);
   const [showMedicationDetails, setShowMedicationDetails] = useState(false);
+  const [treatmentLayout, setTreatmentLayout] = useState('grid');
   const [selectedMedication, setSelectedMedication] = useState({});
   const [treatmentToDelete, setTreatmentToDelete] = useState();
   const [selectedTreatment, setSelectedTreatment] = useState({});
@@ -53,6 +57,8 @@ export default function RecipientTreatments({ recipient }) {
   const [loading, setLoading] = useState(true);
 
   moment.locale("fr");
+
+  const navigate = useNavigate()
 
   const today = moment(new Date());
 
@@ -234,7 +240,10 @@ export default function RecipientTreatments({ recipient }) {
       );
     }
 
-    let breakPoints = width > 1200 ? 3 : width > 800 ? 2 : 1;
+    let breakPoints = (treatmentLayout == 'list'  || width < 800) ? 1 : width > 1200 ? 3 : 2;
+
+    console.log(breakPoints);
+    
 
     treatmentsList.sort((a, b) => {
       return new Date(b.end_date) - new Date(a.end_date);
@@ -257,7 +266,7 @@ export default function RecipientTreatments({ recipient }) {
         <Row xs={1} md={2} lg={3} style={{ margin: "15px 0" }}>
           {row.map((item) => {
             return (
-              <Col className={`${item.is_expired ? "expired" : ""}`}>
+              <Col className={`${item.is_expired ? "expired" : ""}`} onClick={() => navigate(`/treatments/${item.id}`)}>
                 <Badge
                   pill
                   className="remove-treatment"
@@ -276,7 +285,12 @@ export default function RecipientTreatments({ recipient }) {
                       <Badge bg="danger">expiré</Badge>
                     </h5>
                   )}
-                  <Card.Header>{item.name}</Card.Header>
+                  <Card.Header>{item.name}   <span className="start-time">
+                      <LuCalendarFold />{" "}
+                      <strong>
+                        {new Date(item.start_date).toLocaleDateString()}
+                      </strong>
+                    </span></Card.Header>
                   <Card.Body>
                     <ListGroup horizontal>
                       <ListGroup.Item>
@@ -311,12 +325,7 @@ export default function RecipientTreatments({ recipient }) {
                           </ListGroup.Item>
                         )}
                     </ListGroup>
-                    <span className="start-time">
-                      <LuCalendarFold />{" "}
-                      <strong>
-                        {new Date(item.start_date).toLocaleDateString()}
-                      </strong>
-                    </span>
+                  
                     <div className="remaining">
                       <small>
                         {getRemainingUnits(item)} {item.medication_format}(s)
@@ -368,7 +377,7 @@ export default function RecipientTreatments({ recipient }) {
 
   useEffect(() => {
     renderTreatmentsList();
-  }, [width, archiveTab, treatmentsData, loading]);
+  }, [width, archiveTab, treatmentsData, loading, treatmentLayout]);
 
   useEffect(() => {
     if(treatmentsData.treatments.status == 200 && treatmentsData.archived_treatments.status == 200) {
@@ -419,7 +428,7 @@ export default function RecipientTreatments({ recipient }) {
         setTreatmentsData={setTreatmentsData}
       />
       <div className="header">
-        <h3>Traitements médicaux </h3>{" "}
+        <h3>Traitements médicaux </h3><div className="layout-choice"><CiGrid2H onClick={() => setTreatmentLayout('list')}/> <CiGrid41 onClick={() => setTreatmentLayout('grid')}/></div>
         <Button
           variant="aqua"
           size="sm"
@@ -428,13 +437,15 @@ export default function RecipientTreatments({ recipient }) {
           <GoArchive /> {!archiveTab ? "Archives" : "Retour"}
         </Button>
       </div>
+      <div className="treatments-tab-body">
+
       {!loading ? (
         <Container
-          className="treatments-list"
-          style={{
-            justifyContent:
-              recipient.treatments.length > 0 ? "flex-start" : "center",
-          }}
+        className={`treatments-list ${treatmentLayout}`}
+        style={{
+          justifyContent:
+          recipient.treatments.length > 0 ? "flex-start" : "center",
+        }}
         >
           {renderTreatmentsList()}
         </Container>
@@ -443,6 +454,7 @@ export default function RecipientTreatments({ recipient }) {
           <Loader />
         </div>
       )}
+      </div>
       <Button
         variant="aqua"
         className="add-treatment-btn"

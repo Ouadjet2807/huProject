@@ -10,15 +10,10 @@ import Container from "react-bootstrap/Container";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import { GrPowerCycle } from "react-icons/gr";
-import { CiMedicalClipboard } from "react-icons/ci";
 import { PiPillDuotone } from "react-icons/pi";
 import Badge from "react-bootstrap/Badge";
 import ListGroup from "react-bootstrap/ListGroup";
-import { LuLoader, LuSunrise } from "react-icons/lu";
-import { LuSunset } from "react-icons/lu";
-import { LuSun } from "react-icons/lu";
-import { LuCalendarFold } from "react-icons/lu";
-import { LuTrash2 } from "react-icons/lu";
+import { LuSunrise, LuSunset, LuSun, LuCalendarFold, LuTrash2 } from "react-icons/lu";
 import { GoArchive } from "react-icons/go";
 import moment from "moment";
 import "moment/locale/fr";
@@ -26,8 +21,7 @@ import { UseDimensionsContext } from "../context/UseDimensionsContext";
 import { AuthContext } from "../context/AuthContext";
 import { MdOutlineAutorenew } from "react-icons/md";
 import { ConfirmContext } from "../context/ConfirmContext";
-import { CiGrid41 } from "react-icons/ci";
-import { CiGrid2H } from "react-icons/ci";
+import { CiGrid41, CiGrid2H, CiMedicalClipboard } from "react-icons/ci";
 import { useNavigate } from "react-router-dom";
 
 export default function RecipientTreatments({ recipient }) {

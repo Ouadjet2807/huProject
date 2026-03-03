@@ -138,6 +138,16 @@ button {
   color: $white !important;
 }
 
+.btn-outline-md-green {
+  border: 1px solid $mediumGreen2 !important;
+  color: $mediumGreen2 !important;
+  
+  &:hover {
+    background: $mediumGreen2 !important;
+    color: $white !important;
+  }
+}
+
 input[type="email"],
 input[type="password"],
 input[type="search"],

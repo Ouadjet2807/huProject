@@ -9,8 +9,13 @@ export default function TreatmentPage() {
   const { id } = useParams();
 
   const [treatmentData, setTreatmentData] = useState({});
-  const [remainingUnits, setRemainingUnits] = useState();
+  const [remainingUnits, setRemainingUnits] = useState(0);
+  const [medicationFocus, setMedicationFocus] = useState(false);
   const [unitsNumber, setUnitsNumber] = useState(0);
+  const [totalUnits, setTotalUnits] = useState([]);
+  const [nbBoxes, setNbBoxes] = useState(0);
+  const [boxes, setBoxes] = useState([]);
+
   console.log(id);
   moment.locale("fr");
 
@@ -96,7 +101,58 @@ export default function TreatmentPage() {
     let remaining = getRemainingUnits(treatmentData);
     setRemainingUnits(remaining);
     setUnitsNumber(treatmentData.quantity.units_per_unit);
+
+    setNbBoxes(treatmentData.quantity.number_of_boxes);
+    console.log(nbBoxes);
   }, [treatmentData]);
+
+  useEffect(() => {
+    const fillUnits = () => {
+      for (let i = 1; i <= unitsNumber * nbBoxes; i++) {
+        if (!totalUnits.includes(i)) {
+          setTotalUnits((prev) => [...prev, i]);
+        }
+      }
+    };
+
+    fillUnits();
+  }, [nbBoxes]);
+
+  useEffect(() => {
+    const fillBoxes = () => {
+      console.log(!totalUnits.length > 0);
+
+      if (!totalUnits.length > 0) return;
+        setBoxes([]);
+      for (let i = 0; i < nbBoxes; i++) {
+        if (totalUnits.length <= 0) return;
+
+        let low = unitsNumber * i;
+        let high = unitsNumber * (i + 1);
+        setBoxes((prev) => [...prev, totalUnits.slice(low, high)]);
+      }
+    };
+
+    fillBoxes();
+  }, [totalUnits]);
+
+  useEffect(() => {
+    const sortBoxes = () => {
+      console.log("fire");
+
+      if (!boxes.length > 0 || remainingUnits == 0) return;
+     
+      console.log(remainingUnits > boxes[1].length);
+      console.log(boxes[0][boxes[0].length - 1]);
+
+      if (remainingUnits > boxes[0][boxes[0].length - 1]) {
+        console.log("reverse");
+
+        setBoxes((prev) => prev.reverse());
+      }
+    };
+    sortBoxes();
+  }, [remainingUnits, boxes]);
 
   useEffect(() => {
     const getTreatmentData = async () => {
@@ -115,58 +171,50 @@ export default function TreatmentPage() {
     getTreatmentData();
   }, [id]);
 
+  console.log(totalUnits);
   console.log(treatmentData);
   console.log(remainingUnits);
-  console.log(remainingUnits / treatmentData.quantity.number_of_boxes);
-
+  console.log(boxes);
 
   return (
     <div className="treatment-container">
       {Object.keys(treatmentData).length > 1 ? (
         <div className="treatment-info">
-          <h2>{treatmentData.name}</h2>
           <div className="container">
-            <div className="medication-tracker">
-              <div className="tablet" id="tablet_1">
-                {Array(unitsNumber)
-                  .fill(treatmentData.quantity.units_form)
-                  .map((item, i) => {
-                    return (
-                      <div
-                        className={`pill ${i + 1 > (remainingUnits - (unitsNumber * (treatmentData.quantity.number_of_boxes - 1))) ? "empty" : "fill"}`}
-                        style={{
-                          width: `${4 / Math.log10(unitsNumber)}vw`,
-                          height: `${4 / Math.log10(unitsNumber)}vw`,
-                        }}
-                        id={i + 1}
-                      ></div>
-                    );
-                  })}
-              </div>
-              {treatmentData.quantity.number_of_boxes > 1 &&
-                Array(treatmentData.quantity.number_of_boxes)
-                  .fill(treatmentData.quantity.number_of_boxes)
-                  .map((item, i) => {
-                    return (
-                      <div className="tablet" id={`tablet_${i + 2}`} style={{filter: `brightness(${1 - ((i+2) / 10)})`, zIndex: 6 - (i+2)}}>
-                        {Array(unitsNumber)
-                          .fill(treatmentData.quantity.units_form)
-                          .map((item, i) => {
-                            return (
-                              <div
-                                className="pill fill"
-                                style={{
-                                  width: `${Math.log10(unitsNumber)}vw`,
-                                  height: `${Math.log10(unitsNumber)}vw`,
-                                }}
-                                id={i + 1}
-                              ></div>
-                            );
-                          })}
-                      </div>
-                    );
-                  })}
+            <div
+              className={`medication-tracker ${medicationFocus ? "focus" : ""}`}
+              onMouseEnter={() => setMedicationFocus(true)}
+              onMouseLeave={() => setMedicationFocus(false)}
+            >
+              {boxes.length > 1 &&
+                boxes.map((box, i) => {
+                  return (
+                    <div
+                      className="tablet"
+                      id={`tablet_${boxes.length - i}`}
+                      style={{
+                        filter: `brightness(${1 - (i + 1) / 10})`,
+                        zIndex: 6 - (i + 2),
+                      }}
+                    >
+                      {box.map((unit, j) => {
+                        return (
+                          <div
+                            className={`pill ${unit <= remainingUnits ? "fill" : "empty"}`}
+                            style={{
+                              width: `${4 / Math.log10(unitsNumber)}vw`,
+                              height: `${4 / Math.log10(unitsNumber)}vw`,
+                            }}
+                            id={unit}
+                          ></div>
+                        );
+                      })}
+                    </div>
+                  );
+                })}
+              <span style={{ float: "right" }}>x {boxes.length}</span>
             </div>
+            <h3>{treatmentData.name}</h3>
           </div>
         </div>
       ) : (

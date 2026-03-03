@@ -4,11 +4,14 @@
   justify-content: center;
   padding: 20px;
   .treatment-info {
+    display: flex;
+    align-items: center;
     height: 100%;
 
     .container {
       display: grid;
       grid-template-columns: 40% 60%;
+      gap: 20px;
 
       .medication-tracker {
         position: relative;
@@ -16,46 +19,72 @@
 
         .tablet {
           padding: 20px;
-          width: 40vw;
+          width: 30vw;
           gap: 20px 10px;
-          background: #dcdcdc;
+          background: linear-gradient(
+            349deg,
+            #8d9e9773,
+            rgba(220, 220, 220, 0.8509803922)
+          );
           border-radius: $borderRadiusMedium;
           display: flex;
           flex-wrap: wrap;
           align-items: center;
           justify-content: center;
           position: absolute;
+          transition: 0.3s ease-in-out;
+          box-shadow:
+            inset 20px 20px 55px rgba(255, 255, 255, 0), 3px 3px 3px rgb(104 129 123 / 38%);
+          border-left: 1px solid #e1e1e1;
+          border-top: 1px solid #cbcaca;
+          border-right: 1px solid #716b6b;
+          border-bottom: 1px solid #706b6b;
 
           > div {
             border-radius: 50%;
-            border: 1px solid $whiteGreen;
 
             &.fill {
-              // background: linear-gradient(1deg, #a2cabe 50%, transparent 50%);
-              background: #ebeeee;
+              background: #ebeeee85;
               box-shadow:
-                -1px -1px 4px 1px rgb(104 110 107 / 29%),
-                inset -1px 0px 3px 1px #fff;
+                -3px -3px 3px rgba(255, 255, 255, 35%), 3px 3px 3px rgba(104, 110, 107, 0.29), inset 3px 3px 3px rgba(255, 255, 255, 35%), inset -3px -3px 3px rgba(128, 141, 134, 0.4);
             }
 
             &.empty {
               box-shadow:
-                inset 1px 1px 3px 1px rgb(126 134 130 / 46%),
-                1px 1px 4px 1px #fff;
+                inset 3px 3px 3px rgba(104, 110, 107, 0.29),
+                inset -3px -3px 3px rgba(255, 255, 255, 35%)
             }
           }
 
-          &#tablet_1 {
+          &:nth-child(1) {
             z-index: 6;
           }
 
-          &#tablet_2 {
-            top: 4.5%;
-            left: 5%;
+          &:nth-child(2) {
+            top: 2.5%;
+            left: 3%;
           }
-          &#tablet_3 {
-            top: 8%;
-            left: 9%;
+          &:nth-child(3) {
+            top: 5%;
+            left: 6%;
+          }
+        }
+
+        
+
+        &.focus {
+          .tablet {
+            background: linear-gradient(322deg, #c0c0c0, #dcdcdc80);
+            transform: skew(-3deg, 0deg) rotateY(20deg);
+            box-shadow:
+              inset 20px 20px 55px rgba(255, 255, 255, 0), 3px 3px 3px 3px rgba(104, 129, 123, 0.38);
+
+            &:nth-child(2) {
+              transform: skew(-3deg, 0deg) rotateY(20deg) translate(15px, 15px);
+            }
+            &:nth-child(3){
+              transform: skew(-3deg, 0deg) rotateY(20deg) translate(25px, 25px);
+            }
           }
         }
       }

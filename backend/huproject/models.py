@@ -4,6 +4,7 @@ from django.contrib.auth.models import AbstractUser
 from django.contrib.postgres.fields import JSONField
 from django.core.validators import MaxValueValidator
 from django.core.exceptions import ValidationError
+from django.db.models import Q
 from django.db import models
 from django.utils import timezone
 from datetime import timedelta, date
@@ -190,11 +191,16 @@ class ArchivedTreatmentManager(models.Manager):
     def get_queryset(self):
         archive_delay = date.today() - timedelta(weeks=2)
 
-        return super().get_queryset().filter(end_date__lte=archive_delay)
+        return super().get_queryset().filter(Q(end_date__lte=archive_delay) | Q(is_deleted=True))
 
     def __str__(self):
         return self.name
 
+
+class NonDeletedTreatments(models.Manager):
+    def get_queryset(self):
+        archive_delay = date.today() - timedelta(weeks=2)
+        return super().get_queryset().filter(is_deleted=False, end_date__gt=archive_delay)
 
 class Treatment(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -223,8 +229,10 @@ class Treatment(models.Model):
         on_delete=models.CASCADE,
         related_name='contains'
     )
-    objects = models.Manager()
+    everything = models.Manager()
+    objects = NonDeletedTreatments()
     archived_objects = ArchivedTreatmentManager()
+    is_deleted = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
@@ -232,6 +240,19 @@ class Treatment(models.Model):
     @property
     def is_expired(self) -> bool:
         return date.today() >= self.end_date
+
+    def soft_delete(self):
+        self.is_deleted = True
+        self.save()
+
+    def restore(self):
+        self.is_deleted = False
+
+        if self.is_expired:
+            dates_differences = (self.end_date - self.start_date).days
+            self.start_date = date.today()
+            self.end_date = date.today() + timedelta(days=dates_differences)
+        self.save()
 
 class Agenda(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

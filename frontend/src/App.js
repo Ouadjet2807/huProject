@@ -49,7 +49,15 @@ function App() {
             element={<Recipient spaceId={space && space.id} />}
           />
           <Route
-            path="treatments/:id"
+            path="recipient/:id/treatments/"
+            element={<Recipient spaceId={space && space.id} tab="treatments"/>}
+          />
+          <Route
+            path="recipient/:id/specialists/"
+            element={<Recipient spaceId={space && space.id} tab="specialists"/>}
+          />
+          <Route
+            path="recipient/:id/treatments/:id"
             element={<TreatmentPage spaceId={space && space.id}/>}
           />
           <Route

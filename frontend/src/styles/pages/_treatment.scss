@@ -1,8 +1,9 @@
 .treatment-container {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  // justify-content: center;
   padding: 20px;
+
   .treatment-info {
     display: flex;
     align-items: center;
@@ -23,86 +24,101 @@
         padding: 25px 10px;
         border-radius: 25px;
 
+        h5 {
+          width: 100%;
+          display: flex;
+          justify-content: flex-end;
+        }
+
         .medication-tracker {
           position: relative;
           height: 25vw;
           width: 30vw;
+          transition: 0.2s ease-in;
 
-            .tablet {
-              padding: 20px;
-              width: 20vw;
-              gap: 20px 10px;
-              background: linear-gradient(
-                349deg,
-                #8d9e9773,
-                rgba(220, 220, 220, 0.8509803922)
-              );
-              border-radius: $borderRadiusMedium;
-              display: flex;
-              flex-wrap: wrap;
-              align-items: center;
-              justify-content: center;
-              position: absolute;
-              transition: 0.3s ease-in-out;
-              box-shadow:
-                inset 20px 20px 55px rgba(255, 255, 255, 0),
-                3px 3px 3px rgb(104 129 123 / 38%);
-              border-left: 1px solid #e1e1e1;
-              border-top: 1px solid #cbcaca;
-              border-right: 1px solid #716b6b;
-              border-bottom: 1px solid #706b6b;
+          .tablet {
+            padding: 20px;
+            width: 20vw;
+            gap: 20px 10px;
+            background: linear-gradient(
+              349deg,
+              #8d9e9773,
+              rgba(220, 220, 220, 0.8509803922)
+            );
+            border-radius: $borderRadiusMedium;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            transition: 0.3s ease-in-out;
+            box-shadow:
+              inset 20px 20px 55px rgba(255, 255, 255, 0),
+              3px 3px 3px rgb(104 129 123 / 38%);
+            border-left: 1px solid #e1e1e1;
+            border-top: 1px solid #cbcaca;
+            border-right: 1px solid #716b6b;
+            border-bottom: 1px solid #706b6b;
 
-              > div {
-                border-radius: 50%;
+            > div {
+              border-radius: 50%;
 
-                &.fill {
-                  background: rgb(240 255 253 / 64%);
-                  box-shadow:
-                    -3px -3px 3px rgba(255, 255, 255, 35%),
-                    3px 3px 3px rgba(104, 110, 107, 0.29),
-                    inset 3px 3px 3px rgba(255, 255, 255),
-                    inset -3px -3px 3px rgba(128, 141, 134, 0.4);
-                }
-
-                &.empty {
-                  box-shadow:
-                    inset 3px 3px 3px rgba(104, 110, 107, 0.29),
-                    inset -3px -3px 3px rgba(255, 255, 255, 35%);
-                }
+              &.fill {
+                background: rgb(240 255 253 / 64%);
+                box-shadow:
+                  -3px -3px 3px rgba(255, 255, 255, 35%),
+                  3px 3px 3px rgba(104, 110, 107, 0.29),
+                  inset 3px 3px 3px rgba(255, 255, 255),
+                  inset -3px -3px 3px rgba(128, 141, 134, 0.4);
               }
 
-              &:nth-child(1) {
-                z-index: 6;
-              }
-
-              &:nth-child(2) {
-                top: 5.5%;
-                left: 3%;
-              }
-              &:nth-child(3) {
-                top: 7%;
-                left: 6%;
+              &.empty {
+                box-shadow:
+                  inset 3px 3px 3px rgba(104, 110, 107, 0.29),
+                  inset -3px -3px 3px rgba(255, 255, 255, 35%);
               }
             }
 
-            &.focus {
-              .tablet {
-                background: linear-gradient(322deg, #c0c0c0, #dcdcdc80);
-                transform: skew(-3deg, 0deg) rotateY(20deg);
-                box-shadow:
-                  inset 20px 20px 55px rgba(255, 255, 255, 0),
-                  3px 3px 3px 3px rgba(104, 129, 123, 0.38);
+            &:nth-child(1) {
+              top: 40%;
+              transform: translate(0, -40%);
+              z-index: 6;
+            }
 
-                &:nth-child(2) {
-                  transform: skew(-3deg, 0deg) rotateY(20deg)
-                    translate(15px, 15px);
-                }
-                &:nth-child(3) {
-                  transform: skew(-3deg, 0deg) rotateY(20deg)
-                    translate(25px, 25px);
-                }
+            &:nth-child(2) {
+              top: 45.5%;
+              transform: translate(0, -45%);
+              left: 3%;
+            }
+            &:nth-child(3) {
+              top: 53%;
+              transform: translate(0, -53%);
+              left: 6%;
+            }
+          }
+
+          &.focus {
+            transform: translate(-10%, -10%);
+
+            .tablet {
+              background: linear-gradient(322deg, #c0c0c0, #dcdcdc80);
+              box-shadow:
+                inset 20px 20px 55px rgba(255, 255, 255, 0),
+                3px 3px 3px 3px rgba(104, 129, 123, 0.38);
+
+              &:nth-child(1) {
+                transform: rotateY(20deg) translate(0, -5%) translate(5px, -40%);
               }
-            
+
+              &:nth-child(2) {
+                transform: skew(-2deg, 0deg) rotateY(20deg)
+                  translate(15px, -40%);
+              }
+              &:nth-child(3) {
+                transform: skew(-3deg, 0deg) rotateY(20deg)
+                  translate(25px, -40%);
+              }
+            }
           }
         }
         .stock {
@@ -132,17 +148,30 @@
       flex-direction: column;
       gap: 15px;
 
+      .date {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+
       .actions {
         display: flex;
         margin: 20px auto;
         gap: 20px;
       }
 
-      .intake-frequency {
+      .header {
         display: flex;
-        gap: 10px;
+        align-items: center;
+        justify-content: space-between;
 
-        > div {
+        .registered-by {
+          display: flex;
+          align-items: center;
+          gap: 5px;
+        }
+
+        .pill-radius {
           color: $greyGreen;
           border: 1px solid $whiteGreen;
           border-radius: $borderRadius;
@@ -154,6 +183,11 @@
             gap: 5px;
             justify-content: center;
           }
+        }
+
+        .intake-frequency {
+          display: flex;
+          gap: 10px;
         }
       }
     }

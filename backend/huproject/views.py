@@ -440,12 +440,39 @@ class TreatmentViewSet(viewsets.ModelViewSet):
             if archives and eval(archives):
                 return Treatment.archived_objects.filter(space__in=caregiver.caregivers_in.all(), prescribed_to=recipient).select_related('space')
 
-            return Treatment.objects.filter(space__in=caregiver.caregivers_in.all(), prescribed_to=recipient, end_date__gt=archive_delay).select_related('space')
+            return Treatment.objects.filter(space__in=caregiver.caregivers_in.all(), prescribed_to=recipient).select_related('space')
 
         return Treatment.objects.filter(space__in=caregiver.caregivers_in.all()).select_related('space')
 
     def perform_create(self, serializer):
         serializer.save()
+
+
+class TreatmentSoftDeleteAPIView(GenericAPIView):
+    permission_classes= (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        if request.method == 'POST':
+            target_treatment = Treatment.objects.get(id = kwargs['id'])
+
+            try:
+                target_treatment.soft_delete()
+                return Response(request.data, status=status.HTTP_200_OK)
+            except Exception as e:
+                return Response(e.args, status=status.HTTP_400_BAD_REQUEST)
+
+class TreatmentRestoreAPIView(GenericAPIView):
+    permission_classes= (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        if request.method == 'POST':
+            target_treatment = Treatment.everything.get(id = kwargs['id'])
+
+            try:
+                target_treatment.restore()
+                return Response(request.data, status=status.HTTP_200_OK)
+            except Exception as e:
+                return Response(e.args, status=status.HTTP_400_BAD_REQUEST)
 
 
 class TodoListItemViewSet(viewsets.ModelViewSet):

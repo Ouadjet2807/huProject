@@ -13,7 +13,13 @@ import { GrPowerCycle } from "react-icons/gr";
 import { PiPillDuotone } from "react-icons/pi";
 import Badge from "react-bootstrap/Badge";
 import ListGroup from "react-bootstrap/ListGroup";
-import { LuSunrise, LuSunset, LuSun, LuCalendarFold, LuTrash2 } from "react-icons/lu";
+import {
+  LuSunrise,
+  LuSunset,
+  LuSun,
+  LuCalendarFold,
+  LuTrash2,
+} from "react-icons/lu";
 import { GoArchive } from "react-icons/go";
 import moment from "moment";
 import "moment/locale/fr";
@@ -21,13 +27,17 @@ import { UseDimensionsContext } from "../context/UseDimensionsContext";
 import { AuthContext } from "../context/AuthContext";
 import { MdOutlineAutorenew } from "react-icons/md";
 import { ConfirmContext } from "../context/ConfirmContext";
-import { CiGrid41, CiGrid2H, CiMedicalClipboard } from "react-icons/ci";
+import { CiMedicalClipboard } from "react-icons/ci";
+import { TbLayoutList } from "react-icons/tb";
+import { TbLayoutListFilled } from "react-icons/tb";
+import { TbLayoutGrid } from "react-icons/tb";
+import { TbLayoutGridFilled } from "react-icons/tb";
 import { useNavigate } from "react-router-dom";
 
 export default function RecipientTreatments({ recipient }) {
   const [showAddTreatment, setShowAddTreatement] = useState(false);
   const [showMedicationDetails, setShowMedicationDetails] = useState(false);
-  const [treatmentLayout, setTreatmentLayout] = useState('grid');
+  const [treatmentLayout, setTreatmentLayout] = useState("grid");
   const [selectedMedication, setSelectedMedication] = useState({});
   const [treatmentToDelete, setTreatmentToDelete] = useState();
   const [selectedTreatment, setSelectedTreatment] = useState({});
@@ -52,7 +62,7 @@ export default function RecipientTreatments({ recipient }) {
 
   moment.locale("fr");
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const today = moment(new Date());
 
@@ -67,7 +77,7 @@ export default function RecipientTreatments({ recipient }) {
         status: response.status,
       };
 
-      setTreatmentsData(prev => ({
+      setTreatmentsData((prev) => ({
         ...prev,
         treatments: data,
       }));
@@ -86,7 +96,7 @@ export default function RecipientTreatments({ recipient }) {
         content: response.data,
         status: response.status,
       };
-      setTreatmentsData(prev => ({
+      setTreatmentsData((prev) => ({
         ...prev,
         archived_treatments: data,
       }));
@@ -95,18 +105,26 @@ export default function RecipientTreatments({ recipient }) {
     }
   };
 
-  const selectTreatment = (treatment) => {
-    setSelectedTreatment(treatment);
-    setShowMedicationDetails(true);
+  const restoreTreatment = async (treatment) => {
+    console.log('restore');
+    
+    try {
+      const response = await api.post(
+        `http://127.0.0.1:8000/api/restore_treatment/${treatment.id}/`,
+      );
+    } catch(error) {
+      console.log(error);
+      
+    }
   };
 
   const deleteTreatment = (e, treatment) => {
     e.stopPropagation();
-    setTreatmentToDelete(treatment.id)
+    setTreatmentToDelete(treatment.id);
     setText("Êtes-vous sûr(e) de vouloir supprimer ce traitement ?");
-    setAction(() => async () => {   
-        const response = await api.delete(
-          `http://127.0.0.1:8000/api/treatments/${treatment.id}`,
+    setAction(() => async () => {
+      const response = await api.post(
+        `http://127.0.0.1:8000/api/soft_delete_treatment/${treatment.id}/`,
       );
     });
     setShowConfirm(true);
@@ -234,10 +252,10 @@ export default function RecipientTreatments({ recipient }) {
       );
     }
 
-    let breakPoints = (treatmentLayout == 'list'  || width < 800) ? 1 : width > 1200 ? 3 : 2;
+    let breakPoints =
+      treatmentLayout == "list" || width < 800 ? 1 : width > 1200 ? 3 : 2;
 
     console.log(breakPoints);
-    
 
     treatmentsList.sort((a, b) => {
       return new Date(b.end_date) - new Date(a.end_date);
@@ -260,14 +278,19 @@ export default function RecipientTreatments({ recipient }) {
         <Row xs={1} md={2} lg={3} style={{ margin: "15px 0" }}>
           {row.map((item) => {
             return (
-              <Col className={`${item.is_expired ? "expired" : ""}`} onClick={() => navigate(`/treatments/${item.id}`)}>
+              <Col
+                className={`${(item.is_expired || item.is_deleted) ? "expired" : ""}`}
+                onClick={() => !archiveTab &&
+                  navigate(`${window.location.pathname}/${item.id}`)
+                }
+              >
                 <Badge
                   pill
                   className="remove-treatment"
                   bg="light"
                   onClick={(e) =>
                     archiveTab
-                      ? selectTreatment(item)
+                      ? restoreTreatment(item)
                       : deleteTreatment(e, item)
                   }
                 >
@@ -279,12 +302,20 @@ export default function RecipientTreatments({ recipient }) {
                       <Badge bg="danger">expiré</Badge>
                     </h5>
                   )}
-                  <Card.Header>{item.name}   <span className="start-time">
+                  {item.is_deleted && (
+                    <h5>
+                      <Badge bg="secondary">supprimé</Badge>
+                    </h5>
+                  )}
+                  <Card.Header>
+                    {item.name}{" "}
+                    <span className="start-time">
                       <LuCalendarFold />{" "}
                       <strong>
                         {new Date(item.start_date).toLocaleDateString()}
                       </strong>
-                    </span></Card.Header>
+                    </span>
+                  </Card.Header>
                   <Card.Body>
                     <ListGroup horizontal>
                       <ListGroup.Item>
@@ -319,7 +350,7 @@ export default function RecipientTreatments({ recipient }) {
                           </ListGroup.Item>
                         )}
                     </ListGroup>
-                  
+
                     <div className="remaining">
                       <small>
                         {getRemainingUnits(item)} {item.medication_format}(s)
@@ -334,14 +365,6 @@ export default function RecipientTreatments({ recipient }) {
                       )}
                     </div>
                   </Card.Body>
-                  <Card.ImgOverlay>
-                    <Button
-                      variant="aqua"
-                      onClick={() => selectTreatment(item)}
-                    >
-                      <GrPowerCycle /> Renouveler le traitement
-                    </Button>
-                  </Card.ImgOverlay>
                 </Card>
               </Col>
             );
@@ -365,6 +388,9 @@ export default function RecipientTreatments({ recipient }) {
   }, [showMedicationDetails]);
 
   useEffect(() => {
+    if(window.localStorage.getItem("treatments-layout")) {
+      setTreatmentLayout(window.localStorage.getItem("treatments-layout"))
+    }
     getTreatments();
     getArchivedTreatments();
   }, []);
@@ -374,29 +400,36 @@ export default function RecipientTreatments({ recipient }) {
   }, [width, archiveTab, treatmentsData, loading, treatmentLayout]);
 
   useEffect(() => {
-    if(treatmentsData.treatments.status == 200 && treatmentsData.archived_treatments.status == 200) {
-      setLoading(false)
+    if (
+      treatmentsData.treatments.status == 200 &&
+      treatmentsData.archived_treatments.status == 200
+    ) {
+      setLoading(false);
     }
-  }, [treatmentsData])
+  }, [treatmentsData]);
 
   useEffect(() => {
-    if (!returnValue) return
+    if (!returnValue) return;
 
-    const filter = treatmentsData.treatments.content.filter(treatment => treatment.id !== treatmentToDelete)
+    const filter = treatmentsData.treatments.content.filter(
+      (treatment) => treatment.id !== treatmentToDelete,
+    );
     console.log(filter);
-    setTreatmentsData(prev => ({
+    setTreatmentsData((prev) => ({
       ...prev,
       treatments: {
         ...prev.treatments.status,
-        content: filter
-      }
-    }))
+        content: filter,
+      },
+    }));
+  }, [returnValue]);
 
-  }, [returnValue])
+  useEffect(() => {
+    window.localStorage.setItem('treatments-layout', treatmentLayout)
+  }, [treatmentLayout])
 
   console.log(treatmentsData);
   console.log(returnValue);
-
 
   return (
     <div
@@ -422,7 +455,11 @@ export default function RecipientTreatments({ recipient }) {
         setTreatmentsData={setTreatmentsData}
       />
       <div className="header">
-        <h3>Traitements médicaux </h3><div className="layout-choice"><CiGrid2H onClick={() => setTreatmentLayout('list')}/> <CiGrid41 onClick={() => setTreatmentLayout('grid')}/></div>
+        <h3>Traitements médicaux </h3>
+        <div className="layout-choice">
+          {treatmentLayout == "list" ? <TbLayoutListFilled onClick={() => setTreatmentLayout("list")} /> : <TbLayoutList onClick={() => setTreatmentLayout("list")} />}
+          {treatmentLayout == "grid" ? <TbLayoutGridFilled onClick={() => setTreatmentLayout("grid")} /> : <TbLayoutGrid onClick={() => setTreatmentLayout("grid")} />}
+        </div>
         <Button
           variant="aqua"
           size="sm"
@@ -432,22 +469,21 @@ export default function RecipientTreatments({ recipient }) {
         </Button>
       </div>
       <div className="treatments-tab-body">
-
-      {!loading ? (
-        <Container
-        className={`treatments-list ${treatmentLayout}`}
-        style={{
-          justifyContent:
-          recipient.treatments.length > 0 ? "flex-start" : "center",
-        }}
-        >
-          {renderTreatmentsList()}
-        </Container>
-      ) : (
-        <div>
-          <Loader />
-        </div>
-      )}
+        {!loading ? (
+          <Container
+            className={`treatments-list ${treatmentLayout}`}
+            style={{
+              justifyContent:
+                recipient.treatments.length > 0 ? "flex-start" : "center",
+            }}
+          >
+            {renderTreatmentsList()}
+          </Container>
+        ) : (
+          <div>
+            <Loader />
+          </div>
+        )}
       </div>
       <Button
         variant="aqua"

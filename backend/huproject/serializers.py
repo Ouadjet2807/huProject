@@ -52,7 +52,6 @@ class UserUpdateSerializer(serializers.Serializer):
     first_name = serializers.CharField()
     last_name = serializers.CharField()
 
-
     class Meta:
         model = CustomUser
         fields = ('id', 'username', 'email', 'last_name', 'first_name')
@@ -113,9 +112,8 @@ class TreatmentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Treatment
-        fields = ('id','name','dosage', 'cis_code', 'medication_format', 'quantity', 'frequency','start_date','end_date','prescribed_by','prescribed_by_id', 'prescribed_to', 'registered_by', 'notes', 'space', 'created_at', 'is_expired')
+        fields = ('id','name','dosage', 'cis_code', 'medication_format', 'quantity', 'frequency','start_date','end_date','prescribed_by','prescribed_by_id', 'prescribed_to', 'registered_by', 'notes', 'space', 'created_at', 'is_expired', 'is_deleted')
         read_only_fields = ['id', 'created_at', 'is_expired']
-
 
     def create(self, validated_data):
         prescribed_to = validated_data.pop('prescribed_to')

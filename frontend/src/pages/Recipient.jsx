@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import api from "../api/api";
 import axios from "axios";
 import RecipientEditForm from "../components/RecipientEditForm";
@@ -13,7 +13,7 @@ import { IoInformationCircleOutline } from "react-icons/io5";
 import { FaMedkit } from "react-icons/fa";
 import { FaUserMd } from "react-icons/fa";
 
-export default function Recipient({ spaceId }) {
+export default function Recipient({ spaceId, tab}) {
   moment.locale("fr");
   const [recipient, setRecipient] = useState({});
 
@@ -36,11 +36,15 @@ export default function Recipient({ spaceId }) {
 
   const params = useParams();
 
+  const navigate = useNavigate()
+
   const recipient_id = params.id;
 
   const handleTab = (e) => {
-    if (e.target.id) {
-      setActiveTab(e.target.id);
+    if (e.target.id && e.target.id !== 'general') {
+      navigate(`/recipient/${recipient.id}/${e.target.id}`);
+    } else {
+      navigate(`/recipient/${recipient.id}`)
     }
   };
 
@@ -130,6 +134,12 @@ export default function Recipient({ spaceId }) {
   }, [recipient, spaceId]);
 
   console.log(recipient);
+
+  useEffect(() => {
+    if(tab) setActiveTab(tab)
+
+      else setActiveTab('general')
+  }, [tab])
   
 
   return (

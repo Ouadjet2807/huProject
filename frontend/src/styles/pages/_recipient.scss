@@ -157,6 +157,7 @@
           padding: 0 20px;
 
           > svg {
+            color: $mediumGreen;
             cursor: pointer;
           }
         }
@@ -270,6 +271,7 @@
             box-shadow: 2px 4px 8px 2px #eaeaea;
             border-radius: $borderRadiusMedium;
             position: relative;
+            cursor: pointer;
 
             .card-img-overlay {
               background: #121f1e99;
@@ -327,9 +329,12 @@
               .col {
                 width: 100%;
 
+
                 .card-header {
                   flex-direction: row;
                   justify-content: space-between;
+
+
                 }
 
                 .card-body {
@@ -349,6 +354,7 @@
               }
             }
           }
+
         }
       }
       .add-treatment-btn {

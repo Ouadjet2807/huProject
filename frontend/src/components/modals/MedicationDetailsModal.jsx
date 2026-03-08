@@ -49,7 +49,7 @@ export default function MedicationDetailsModal({
     end_date: null,
     start_date: moment(new Date()).toISOString().split("T")[0],
     frequency: {
-      intake_time_range: [""],
+      intake_time_range: [],
       intake_frequency: "day",
       intake_number: 1,
     },
@@ -124,6 +124,7 @@ export default function MedicationDetailsModal({
 
   const handleDayTime = (e) => {
     let time_range = formData.frequency.intake_time_range
+
     if (
       time_range.length > (formData.frequency.intake_number - 1) &&
       !time_range.includes(e.target.value)
@@ -363,7 +364,9 @@ export default function MedicationDetailsModal({
       };
       console.log(data);
 
-      if (treatment) {
+      if (Object.keys(treatment).length > 1) {
+        console.log(treatment);
+
         const response = await api.put(
         `http://127.0.0.1:8000/api/treatments/${treatment.id}/`,
         data
@@ -388,7 +391,7 @@ export default function MedicationDetailsModal({
       )
       setTreatmentsData(prev => ({
         ...prev,
-        treatment: [...prev, response.data.id]
+        treatments: [...prev, response.data.id]
       }))
       treatmentsData.treatments.content.push(response.data.id);
 
@@ -465,30 +468,38 @@ export default function MedicationDetailsModal({
 
 
   useEffect(() => {
-    if(!treatment) return
+
+    if(!treatment || !show) return
     console.log(treatment);
 
     fetchMedication(treatment.cis_code)
 
     let treatment_copy = JSON.stringify(treatment)
     let parsed_treatment_copy = JSON.parse(treatment_copy)
+    console.log(parsed_treatment_copy);
+
+    console.log(moment(parsed_treatment_copy.start_date).add(1, 'days').toISOString().split("T")[0]);
 
     if (Object.keys(parsed_treatment_copy).length > 0) {
       let number_of_boxes = parsed_treatment_copy.quantity.number_of_boxes
       delete parsed_treatment_copy.quantity.number_of_boxes
+      console.log(treatment_copy);
 
       setFormData((prev) => ({
         ...prev,
         frequency: parsed_treatment_copy.frequency,
         quantity_per_box: parsed_treatment_copy.quantity,
-        number_of_boxes: number_of_boxes,
-        notes: parsed_treatment_copy.notes
+        number_of_boxes:  number_of_boxes,
+        notes: parsed_treatment_copy.notes,
+        start_date: parsed_treatment_copy.is_expired ? moment(new Date()).toISOString().split("T")[0] : moment(parsed_treatment_copy.start_date).add(1, 'days').toISOString().split("T")[0]
       }));
     }
 
-  }, [treatment])
+  }, [treatment, show])
 
   console.log((presentation));
+  console.log(recipient);
+
    console.log(formData);
   return (
     medication && (
@@ -703,7 +714,6 @@ export default function MedicationDetailsModal({
               </div>
             </div>
             <div className="additional-info">
-         
                 <label htmlFor="start_date">Début du traitement</label>
                 <input
                   type="date"
@@ -721,9 +731,9 @@ export default function MedicationDetailsModal({
               <Form.Select aria-label="Default select example" onChange={(e) => setFormData(prev => ({...prev, prescribed_by: e.target.value}))}>
 
                   <option value="Non renseigné"> Non renseigné</option>
-                  {recipient.healthcare_professionals.map((item) => {
+                  {/* {recipient.healthcare_professionals.map((item) => {
                     return <option value={item.name} selected={formData.prescribed_by == item.name}>{item.name}</option>;
-                  })}
+                  })} */}
                </Form.Select>
             </div>
           </form>

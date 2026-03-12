@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState, useRef } from "react";
+import React, { useContext, useEffect, useState, useRef, useEffectEvent } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import gsap from "gsap";
@@ -10,6 +10,7 @@ import { CiCalendar } from "react-icons/ci";
 import { ToastContext } from "../context/ToastContext";
 import { BsPinFill } from "react-icons/bs";
 import { BsPin } from "react-icons/bs";
+
 gsap.registerPlugin(useGSAP);
 
 export default function Navbar() {
@@ -18,7 +19,7 @@ export default function Navbar() {
 
   const navigate = useNavigate();
 
-  const location = useLocation();
+  const location = useLocation()
 
   const [activeNav, setActiveNav] = useState(false);
   const [pinNav, setPinNav] = useState(false);
@@ -127,7 +128,7 @@ export default function Navbar() {
 
   useEffect(() => {
     if (
-      message.message == "" ||
+      message.message === "" ||
       message.message === "Connexion réussie, bienvenue !"
     )
       return;
@@ -136,6 +137,7 @@ export default function Navbar() {
     setShowToast(true);
     setColor("neutral");
   }, [message]);
+
 
   console.log(activeNav);
 

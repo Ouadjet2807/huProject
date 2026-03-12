@@ -20,13 +20,13 @@ import { AuthContext } from "../context/AuthContext";
 import MedicationDetailsModal from "./modals/MedicationDetailsModal";
 import { ConfirmContext } from "../context/ConfirmContext";
 import Badge from "react-bootstrap/esm/Badge";
+import { useSelector } from "react-redux";
 
 export default function TreatmentPage() {
   const { id } = useParams();
-  const { space } = useContext(AuthContext);
   const { showConfirm, setShowConfirm, setText, setAction, returnValue } =
     useContext(ConfirmContext);
-
+  const space = useSelector((state) => state.space)
   const navigate = useNavigate();
   const pathname = window.location.pathname.split("/");
   const today = moment(new Date());
@@ -78,7 +78,7 @@ export default function TreatmentPage() {
       }
     } else if (
       intake_count[intake_time_range[0]] ||
-      intake_time_range.length == 0
+      intake_time_range.length === 0
     ) {
       todaysIntakeCount = intake_number;
     }
@@ -98,7 +98,7 @@ export default function TreatmentPage() {
   };
 
   const getRemainingUnits = (item) => {
-    if (item.frequency == "" || !item.end_date) return;
+    if (item.frequency === "" || !item.end_date) return;
 
     const intake_time_range =
       !item.frequency.intake_time_range ||
@@ -178,7 +178,7 @@ export default function TreatmentPage() {
 
   useEffect(() => {
     const sortBoxes = () => {
-      if (!boxes.length > 0 || remainingUnits == 0) return;
+      if (!boxes.length > 0 || remainingUnits === 0) return;
 
       if (remainingUnits > boxes[0][boxes[0].length - 1]) {
         setBoxes((prev) => prev.reverse());
@@ -216,8 +216,8 @@ export default function TreatmentPage() {
   useEffect(() => {
     let reg = /^[0-9]+$/g;
     if (Object.keys(space).length > 1 && reg.test(pathname[2])) {
-      console.log(space.recipients.find((r) => r.id == pathname[2]));
-      setRecipient(space.recipients.find((r) => r.id == pathname[2]));
+      console.log(space.recipients.find((r) => r.id === pathname[2]));
+      setRecipient(space.recipients.find((r) => r.id === pathname[2]));
     }
   }, [space]);
 
@@ -358,11 +358,11 @@ export default function TreatmentPage() {
                     {Object.keys(space).length > 1 && (
                       <span className="pill-radius">
                         {space.caregivers.find(
-                          (c) => c.user == treatmentData.registered_by,
+                          (c) => c.user === treatmentData.registered_by,
                         ).first_name +
                           " " +
                           space.caregivers.find(
-                            (c) => c.user == treatmentData.registered_by,
+                            (c) => c.user === treatmentData.registered_by,
                           ).last_name}
                       </span>
                     )}

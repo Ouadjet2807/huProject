@@ -17,14 +17,15 @@ import { IoLockClosedOutline } from "react-icons/io5";
 import ListGroup from "react-bootstrap/ListGroup";
 import { LuUsersRound } from "react-icons/lu";
 import { HiOutlineBars3BottomLeft } from "react-icons/hi2";
+import { useSelector } from "react-redux";
 
-export default function Agenda({ space }) {
+export default function Agenda() {
   const [agenda, setAgenda] = useState({});
   const [events, setEvents] = useState([])
   const [todayAgendaItems, setTodayAgendaItems] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState({});
   const [showEventForm, setShowEventForm] = useState(false);
-
+  const space = useSelector((state) => state.space)
   const [isLoading, setIsLoading] = useState(true);
 
   const today = new Date();
@@ -93,7 +94,7 @@ export default function Agenda({ space }) {
         console.log(item.category);
         console.log(agenda.categories);
 
-        let find_category = agenda.categories.find(c => c.id == item.category)
+        let find_category = agenda.categories.find(c => c.id === item.category)
         item.category = find_category ? find_category : item.category
         console.log(item);
         item.start_date = new Date(item.start_date);
@@ -102,8 +103,8 @@ export default function Agenda({ space }) {
       });
       let searchTodaysEvent = agenda.items.filter(
         (item) =>
-          item.start_date.toLocaleDateString() == today.toLocaleDateString() ||
-          item.end_date.toLocaleDateString() == today.toLocaleDateString(),
+          item.start_date.toLocaleDateString() === today.toLocaleDateString() ||
+          item.end_date.toLocaleDateString() === today.toLocaleDateString(),
       );
       setEvents(agenda.items)
       setTodayAgendaItems(searchTodaysEvent);

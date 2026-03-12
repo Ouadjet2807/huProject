@@ -57,7 +57,6 @@ export default function RecipientTreatments({ recipient }) {
   const { width, height } = useContext(UseDimensionsContext);
   const { showConfirm, setShowConfirm, setText, setAction, returnValue } =
     useContext(ConfirmContext);
-  const { space } = useContext(AuthContext);
   const [loading, setLoading] = useState(true);
 
   moment.locale("fr");
@@ -107,14 +106,13 @@ export default function RecipientTreatments({ recipient }) {
 
   const restoreTreatment = async (treatment) => {
     console.log('restore');
-    
+
     try {
       const response = await api.post(
         `http://127.0.0.1:8000/api/restore_treatment/${treatment.id}/`,
       );
     } catch(error) {
       console.log(error);
-      
     }
   };
 
@@ -158,7 +156,7 @@ export default function RecipientTreatments({ recipient }) {
       }
     } else if (
       intake_count[intake_time_range[0]] ||
-      intake_time_range.length == 0
+      intake_time_range.length === 0
     ) {
       todaysIntakeCount = intake_number;
     }
@@ -197,7 +195,7 @@ export default function RecipientTreatments({ recipient }) {
   };
 
   const getRemainingUnits = (item) => {
-    if (item.frequency == "" || !item.end_date) return;
+    if (item.frequency === "" || !item.end_date) return;
 
     const today = moment(new Date());
 
@@ -244,7 +242,7 @@ export default function RecipientTreatments({ recipient }) {
       ? treatmentsData.archived_treatments.content
       : treatmentsData.treatments.content;
 
-    if (!treatmentsList || treatmentsList.length == 0) {
+    if (!treatmentsList || treatmentsList.length === 0) {
       return (
         <small>
           <CiMedicalClipboard /> Aucun traitement enregistré
@@ -253,7 +251,7 @@ export default function RecipientTreatments({ recipient }) {
     }
 
     let breakPoints =
-      treatmentLayout == "list" || width < 800 ? 1 : width > 1200 ? 3 : 2;
+      treatmentLayout === "list" || width < 800 ? 1 : width > 1200 ? 3 : 2;
 
     console.log(breakPoints);
 
@@ -265,9 +263,9 @@ export default function RecipientTreatments({ recipient }) {
 
     // split the array in arrays of 3 elements maximum
     for (let i = 0; i <= treatmentsList.length; i++) {
-      if (i !== 0 && i % breakPoints == 0) {
+      if (i !== 0 && i % breakPoints === 0) {
         rows.push(treatmentsList.slice(i - breakPoints, i));
-      } else if (i == treatmentsList.length) {
+      } else if (i === treatmentsList.length) {
         let firstIndex = rows.length * breakPoints;
         rows.push(treatmentsList.slice(firstIndex, i)); // store the remaining
       }
@@ -401,8 +399,8 @@ export default function RecipientTreatments({ recipient }) {
 
   useEffect(() => {
     if (
-      treatmentsData.treatments.status == 200 &&
-      treatmentsData.archived_treatments.status == 200
+      treatmentsData.treatments.status === 200 &&
+      treatmentsData.archived_treatments.status === 200
     ) {
       setLoading(false);
     }
@@ -457,8 +455,8 @@ export default function RecipientTreatments({ recipient }) {
       <div className="header">
         <h3>Traitements médicaux </h3>
         <div className="layout-choice">
-          {treatmentLayout == "list" ? <TbLayoutListFilled onClick={() => setTreatmentLayout("list")} /> : <TbLayoutList onClick={() => setTreatmentLayout("list")} />}
-          {treatmentLayout == "grid" ? <TbLayoutGridFilled onClick={() => setTreatmentLayout("grid")} /> : <TbLayoutGrid onClick={() => setTreatmentLayout("grid")} />}
+          {treatmentLayout === "list" ? <TbLayoutListFilled onClick={() => setTreatmentLayout("list")} /> : <TbLayoutList onClick={() => setTreatmentLayout("list")} />}
+          {treatmentLayout === "grid" ? <TbLayoutGridFilled onClick={() => setTreatmentLayout("grid")} /> : <TbLayoutGrid onClick={() => setTreatmentLayout("grid")} />}
         </div>
         <Button
           variant="aqua"

@@ -311,12 +311,9 @@ class SpaceMembershipSerializer(serializers.ModelSerializer):
         fields = ['id', 'user', 'space', 'role', 'created_at']
 
 
-class GrocerySerializer(serializers.ModelSerializer):
-    space = serializers.PrimaryKeyRelatedField(queryset=Space.objects.all())
-    created_by = CustomUserSerializer(read_only=True)
-    recipient = RecipientSerializer()
+class NotificationSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = TodoList
-        fields = ['id', 'space', 'recipient', 'content', 'updated_at', 'created_at', 'created_by']
-        read_only_fields = ['id', 'space', 'recipient', 'created_at']
+        model = Notification
+        fields = ['id', 'is_read', 'space', 'message', 'users']
+        read_only_fields = ['id', 'space']

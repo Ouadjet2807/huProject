@@ -9,6 +9,8 @@ import InviteUserModal from "../components/modals/InviteUserModal";
 import { TbUsersPlus } from "react-icons/tb";
 import { FaUserCircle } from "react-icons/fa";
 import Button from "react-bootstrap/esm/Button";
+import api from "../api/api";
+import { useSelector } from "react-redux";
 
 export default function Home({ setRefreshSpace }) {
   const [addRecipient, setAddRecipient] = useState(false);
@@ -16,8 +18,8 @@ export default function Home({ setRefreshSpace }) {
 
   const navigate = useNavigate();
 
-  const { user, space, logout, loading } = useContext(AuthContext);
-
+  const { user, logout, loading } = useContext(AuthContext);
+  const space = useSelector((state) => state.space)
   console.log(loading);
 
 
@@ -27,6 +29,7 @@ export default function Home({ setRefreshSpace }) {
     if (Object.keys(space).length <= 0) {
       setRefreshSpace(true);
     }
+
   }, [space]);
 
   return (

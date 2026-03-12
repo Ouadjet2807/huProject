@@ -1,0 +1,63 @@
+services:
+  redis:
+    image: redis:7-alpine
+    restart: always
+    ports:
+      - "6379:6379"
+  redis-commander:
+    image: rediscommander/redis-commander
+    ports:
+      - 8081:8081
+    environment:
+      - REDIS_HOSTS=redis
+  django:
+    container_name: django
+    build:
+        context: ./backend
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./backend:/usr/src/app/
+    ports:
+      - 8001:8000
+    environment:
+      - DEBUG=1
+      - SECRET_KEY=84897342dh232390ejr3048742
+      - ALLOWED_HOSTS=[localhost,127.0.0.1]
+    depends_on:
+      - redis
+  client:
+    container_name: client
+    build: ./frontend
+    environment:
+      - REACT_APP_PORT=${REACT_APP_PORT}
+    expose:
+      - ${REACT_APP_PORT}
+    ports:
+      - ${REACT_APP_PORT}:${REACT_APP_PORT}
+    volumes:
+      - ./frontend/src:/usr/src/client/src/
+      - ./frontend/public:/usr/src/client/public/
+    links:
+      - django
+    command: npm run start
+  celery:
+    container_name: celery
+    build:
+      context: ./backend
+    command: celery --app=backend worker -l INFO
+    volumes:
+      - ./backend:/usr/src/app/
+    environment:
+      - DEBUG=1
+      - SECRET_KEY=84897342dh232390ejr3048742
+      - ALLOWED_HOSTS=[localhost,127.0.0.1]
+    depends_on:
+      - redis
+  celery-beat:
+    build: ./backend
+    command: celery -A backend beat -l INFO
+    volumes:
+      - ./backend:/usr/src/app
+    depends_on:
+      - redis
+      - django

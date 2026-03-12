@@ -60,10 +60,10 @@ class Space(models.Model):
 class CustomUser(AbstractUser):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     email = models.EmailField(unique=True)
-    invited = models.JSONField(null=False)
+    invited = models.JSONField(null=True)
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS=['']
+    REQUIRED_FIELDS=['username']
 
     def __str__(self) -> str:
         return self.email
@@ -233,12 +233,15 @@ class Treatment(models.Model):
     objects = NonDeletedTreatments()
     archived_objects = ArchivedTreatmentManager()
     is_deleted = models.BooleanField(default=False)
+    reminder_sent = models.BooleanField(default=False)
+    expired_notification_sent = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
 
     @property
     def is_expired(self) -> bool:
+
         return date.today() >= self.end_date
 
     def soft_delete(self):
@@ -295,11 +298,10 @@ class TodoListItem(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='creates_todo')
 
-class Groceries(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    recipient = models.ForeignKey(Recipient, on_delete=models.CASCADE, related_name="recipient")
-    space = models.ForeignKey(Space, on_delete=models.CASCADE, related_name="space")
-    content = models.JSONField()
-    created_by = models.ForeignKey(Caregiver, on_delete=models.CASCADE, related_name="creator")
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+
+class Notification(models.Model):
+    space = models.ForeignKey(Space, on_delete=models.CASCADE, related_name="notifications_space")
+    is_read = models.BooleanField(default=False)
+    users = models.ManyToManyField(Caregiver, related_name='notifications_users')
+    message = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)

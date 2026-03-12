@@ -12,5 +12,6 @@ import os
 from django.core.wsgi import get_wsgi_application
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.settings')
-
+os.environ.setdefault('ALLOWED_HOSTS', "localhost")
+os.environ.setdefault('SECRET_KEY', "84897342dh232390ejr3048742")
 application = get_wsgi_application()

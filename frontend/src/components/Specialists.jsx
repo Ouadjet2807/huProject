@@ -7,6 +7,7 @@ import CreateSpecialist from "./modals/CreateSpecialist";
 import { AuthContext } from "../context/AuthContext";
 import { LuPhone } from "react-icons/lu";
 import { HiOutlineLocationMarker } from "react-icons/hi";
+import { useSelector } from "react-redux";
 
 export default function Specialists({ recipient }) {
   const [specialists, setSpecialists] = useState([]);
@@ -14,7 +15,7 @@ export default function Specialists({ recipient }) {
   const [showAddSpecialist, setShowAddSpecialist] = useState(false);
   const [selectedSpecialist, setSelectedSpecialist] = useState();
 
-  const { space } = useContext(AuthContext);
+  const space = useSelector((state) => state.space);
 
   const selectSpecialist = (specialist) => {
     console.log(specialist);
@@ -31,21 +32,29 @@ export default function Specialists({ recipient }) {
     data.forEach((item, index) => {
       if (typeof item.contact == "string") {
         let parsed_contact = JSON.parse(item.contact);
-        let splitted_address = parsed_contact.address.length > 0 ? parsed_contact.address.split(",") : undefined;
-        let phone_number_str = parsed_contact.phone_number[0] && `0${parsed_contact.phone_number[0]}`;
+        let splitted_address =
+          parsed_contact.address.length > 0
+            ? parsed_contact.address.split(",")
+            : undefined;
+        let phone_number_str =
+          parsed_contact.phone_number[0] &&
+          `0${parsed_contact.phone_number[0]}`;
 
-        let phone_number = phone_number_str && phone_number_str.match(/.{1,2}/g);
+        let phone_number =
+          phone_number_str && phone_number_str.match(/.{1,2}/g);
 
         let new_contact = {
-          address: splitted_address ? {
-            number: splitted_address[0].slice(0, 2),
-            street: splitted_address[0].slice(2),
-            city: splitted_address[1],
-          } : {
-            number: "Non renseigné",
-            street: "Non renseigné",
-            city: "Non renseigné",
-          },
+          address: splitted_address
+            ? {
+                number: splitted_address[0].slice(0, 2),
+                street: splitted_address[0].slice(2),
+                city: splitted_address[1],
+              }
+            : {
+                number: "Non renseigné",
+                street: "Non renseigné",
+                city: "Non renseigné",
+              },
           phone_number: phone_number ? phone_number.join(" ") : "Non renseigné",
         };
 
@@ -72,8 +81,8 @@ export default function Specialists({ recipient }) {
   }, []);
 
   useEffect(() => {
-    console.log('format');
-    
+    console.log("format");
+
     if (Object.keys(recipient).includes("healthcare_professionals")) {
       const formatted_data = formatSpecialist(
         recipient.healthcare_professionals,

@@ -9,9 +9,9 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-
+from celery.schedules import crontab
 from pathlib import Path
-
+import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -20,12 +20,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-((lp#te=10w_5$8sw*z1^iwd33s)*hfro(m@xcvs&rm75i)h^a'
+SECRET_KEY = "84897342dh232390ejr3048742"
+DEBUG = os.environ.get("DEBUG")
+ALLOWED_HOSTS = ["localhost","127.0.0.1"]
+
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -42,6 +46,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist', 
+    'celery',
+    'django_celery_beat',
 ]
 
 from datetime import timedelta
@@ -193,6 +199,18 @@ DEFAULT_FROM_EMAIL = "fmk@gmail.com"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+CELERY_BROKER_URL = "redis://redis:6379/0"
+CELERY_RESULT_BACKEND = "redis://redis:6379/0"
+
+CELERY_TIMEZONE = 'UTC'
+
+CELERY_BEAT_SCHEDULE = {
+    "check-treatment-expiration-daily": {
+        "task": "huproject.tasks.check_treatment_expiration",
+        "schedule":crontab(hour=0, minute=0,)
+    },
+}
 
 
 CORS_ALLOW_ALL_ORIGINS = True

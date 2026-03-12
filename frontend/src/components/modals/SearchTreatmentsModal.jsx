@@ -45,8 +45,8 @@ export default function SearchTreatmentsModal({
     return (
       <>
         {substrings.map((sub, index) => {
-          return (substrings.length > 2 && index == 1) ||
-            (substrings.length == 2 && index == 0) ? (
+          return (substrings.length > 2 && index === 1) ||
+            (substrings.length === 2 && index === 0) ? (
             <span className="search-value">{sub}</span>
           ) : (
 

@@ -9,12 +9,13 @@ import {v4 as uuidv4} from "uuid"
 import moment from "moment";
 import "moment/locale/fr";
 import api from "../../api/api";
+import { useSelector } from "react-redux";
 
 export default function InviteUserModal({ show, setShow }) {
 
     moment.locale("fr");
-    const { user, space } = useContext(AuthContext)
-
+    const { user } = useContext(AuthContext)
+    const space = useSelector((state) => state.space)
     const [formData, setFormData] = useState({
         email: "",
         role: 3,

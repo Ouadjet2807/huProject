@@ -78,3 +78,8 @@ class TodoListAdmin(admin.ModelAdmin):
     list_display = ('token', 'space', 'email', 'role', 'created_at', 'expires_at', 'sender')
     search_fields = ('token', 'space', 'role')
 
+@admin.register(Notification)
+class TodoListAdmin(admin.ModelAdmin):
+    list_display = ('id', 'is_read', 'space', 'timestamp', 'message')
+    search_fields = ('id', 'space', 'is_read ')
+

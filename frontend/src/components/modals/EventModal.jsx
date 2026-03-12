@@ -21,6 +21,7 @@ import { IoLockClosedOutline } from "react-icons/io5";
 import { IoLockOpenOutline } from "react-icons/io5";
 import { ToastContext } from "../../context/ToastContext";
 import ListGroup from "react-bootstrap/ListGroup";
+import { useSelector } from "react-redux";
 
 export default function EventModal({
   event,
@@ -30,9 +31,9 @@ export default function EventModal({
   agenda,
 }) {
   moment.locale("fr");
-  const { space, user } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const { setShowToast, setMessage, setColor } = useContext(ToastContext);
-
+  const space = useSelector((state) => state.space);
   const [eventCreator, setEventCreator] = useState();
   const [editionMode, setEditionMode] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState();
@@ -91,7 +92,7 @@ export default function EventModal({
       const parsed_value = JSON.parse(e.target.value);
       if (
         e.target.checked &&
-        !editFormData[key].some((e) => e.id == parsed_value.id)
+        !editFormData[key].some((e) => e.id === parsed_value.id)
       ) {
         editFormData[key].push(parsed_value);
         value = editFormData[key];
@@ -130,7 +131,7 @@ export default function EventModal({
     try {
       await api.put(
         `http://127.0.0.1:8000/api/agenda_items/${event.id}/`,
-        editFormData
+        editFormData,
       );
       console.log("Success");
       setShowToast(true);
@@ -141,7 +142,7 @@ export default function EventModal({
       console.log(error);
       setShowToast(true);
       setMessage(
-        "Une erreur s'est produite lors de la modification de l'événement"
+        "Une erreur s'est produite lors de la modification de l'événement",
       );
       setColor("danger");
     }
@@ -149,7 +150,7 @@ export default function EventModal({
 
   useEffect(() => {
     if (event.category && categories.length > 0) {
-      setSelectedCategory(categories.find((e) => e.id == event.category));
+      setSelectedCategory(categories.find((e) => e.id === event.category));
     }
   }, []);
 
@@ -173,7 +174,7 @@ export default function EventModal({
     setEventCreator(
       event.created_by.id === user.id
         ? "vous"
-        : `${event.created_by.first_name} ${event.created_by.first_name}`
+        : `${event.created_by.first_name} ${event.created_by.first_name}`,
     );
   }, [user]);
 
@@ -197,7 +198,7 @@ export default function EventModal({
                     <span>
                       créé {eventCreator ? <>par {eventCreator}</> : ""} le{" "}
                       {new Date(
-                        event.created_at.slice(0, 10)
+                        event.created_at.slice(0, 10),
                       ).toLocaleDateString("fr-Fr", date_options)}
                     </span>
                   </div>
@@ -271,7 +272,7 @@ export default function EventModal({
                       créé par {eventCreator} le{" "}
                       {Object.keys(editFormData).length > 0 &&
                         new Date(
-                          editFormData.created_at.slice(0, 10)
+                          editFormData.created_at.slice(0, 10),
                         ).toLocaleDateString("fr-Fr", date_options)}
                     </span>
                   </div>
@@ -380,7 +381,7 @@ export default function EventModal({
                                     checked={
                                       editFormData.participants &&
                                       editFormData.participants.some(
-                                        (e) => e.id == item.id
+                                        (e) => e.id === item.id,
                                       )
                                     }
                                     name="participants"
@@ -407,7 +408,7 @@ export default function EventModal({
                                     checked={
                                       editFormData.recipients &&
                                       editFormData.recipients.some(
-                                        (e) => e.id == item.id
+                                        (e) => e.id === item.id,
                                       )
                                     }
                                     name="recipients"

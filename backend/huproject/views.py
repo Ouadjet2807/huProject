@@ -14,6 +14,7 @@ from .models import *
 from .serializers import *
 import json
 
+
 class UserRegistrationAPIView(GenericAPIView):
     permission_classes = (AllowAny,)
     serializer_class = UserRegistrationSerializer
@@ -519,28 +520,6 @@ class TodoListViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save()
-
-class GroceriesViewSet(viewsets.ModelViewSet):
-    serializer_class = TodoListSerializer
-    lookup_field = 'id'
-    queryset = Groceries.objects.all()
-    permission_classes = [permissions.IsAuthenticated] 
-    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
-    search_fields = ['id', 'space', 'recipient', 'created_by']
-    ordering_fields = ['created_at', 'updated_at']
-
-    def get_queryset(self):
-        user = self.request.user
-
-        if not user or not hasattr(user, 'caregiver'):
-            return Groceries.objects.none()
-
-        caregiver = user.caregiver
-        return Groceries.objects.select_related('created_by').filter(space__in=caregiver.caregivers_in.all())
-
-    def perform_create(self, serializer):
-        serializer.save() 
-
 
 class HealthcareProfessionalViewSet(viewsets.ModelViewSet):
     serializer_class = HealthcareProfessionalSerializer

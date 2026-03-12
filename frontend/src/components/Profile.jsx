@@ -20,7 +20,7 @@ export default function Profile({ editMode, setEditMode, roles }) {
   const getAccessLevel = () => {
     if (!caregiverProfile) return;
     const access_level = roles.find(
-      (r) => r[0] == caregiverProfile.access_level
+      (r) => r[0] === caregiverProfile.access_level
     );
 
     if (access_level && access_level.length > 0) return access_level[1];

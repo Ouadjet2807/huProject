@@ -15,9 +15,9 @@ import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 import FloatingLabel from "react-bootstrap/FloatingLabel";
 import { ConfirmContext } from "../../context/ConfirmContext";
+import { useSelector } from "react-redux";
 
 export default function CreateSpecialist({
-  space,
   show,
   setShow,
   recipient,
@@ -31,7 +31,7 @@ export default function CreateSpecialist({
   const [debouncedValue, setDebouncedValue] = useState();
   const [addressSuggestions, setAddressSuggestions] = useState([]);
   const [editMode, setEditMode] = useState(false);
-
+    const space = useSelector((state) => state.space);
   const [contact, setContact] = useState({
     address: "",
     phone_number: "",

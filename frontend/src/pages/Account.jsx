@@ -69,7 +69,7 @@ export default function () {
     
     let storage = sessionStorage.getItem("tab");
     
-    if (storage == "") {
+    if (storage === "") {
       setActiveTab("profile");
       return;
     }

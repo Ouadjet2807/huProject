@@ -15,6 +15,7 @@ import { FiSun } from "react-icons/fi";
 import moment from "moment";
 import "moment/locale/fr";
 import { LuPillBottle } from "react-icons/lu";
+import { useSelector } from "react-redux";
 
 export default function MedicationDetailsModal({
   show,
@@ -29,9 +30,8 @@ export default function MedicationDetailsModal({
 }) {
   moment.locale("fr");
 
-  const { user, space } = useContext(AuthContext);
-
-  const [dayTime, setDayTime] = useState([]);
+  const { user } = useContext(AuthContext);
+  const space = useSelector((state) => state.space)
   const [presentation, setPresentation] = useState([]);
   const [freeTake, setFreeTake] = useState(false);
   const [formData, setFormData] = useState({
@@ -391,9 +391,8 @@ export default function MedicationDetailsModal({
       )
       setTreatmentsData(prev => ({
         ...prev,
-        treatments: [...prev, response.data.id]
+        treatments: {content: [...prev.treatments.content, response.data], status:response.status}
       }))
-      treatmentsData.treatments.content.push(response.data.id);
 
       console.log("Success :", response);
       }
@@ -572,7 +571,7 @@ export default function MedicationDetailsModal({
                   className={`dayTime field ${
                     formData.frequency.intake_time_range.includes("morning")
                       ? "selected"
-                      : freeTake || formData.frequency.intake_time_range.length == formData.frequency.intake_number &&
+                      : (freeTake || formData.frequency.intake_time_range.length === formData.frequency.intake_number) &&
                         !formData.frequency.intake_time_range.includes("morning")
                       ? "disabled"
                       : ""
@@ -584,7 +583,7 @@ export default function MedicationDetailsModal({
                     name="day_time"
                     value="morning"
                     disabled={
-                      freeTake || formData.frequency.intake_time_range.length == formData.frequency.intake_number &&
+                      (freeTake || formData.frequency.intake_time_range.length === formData.frequency.intake_number) &&
                       !formData.frequency.intake_time_range.includes("morning")
                     }
                     id=""
@@ -596,7 +595,7 @@ export default function MedicationDetailsModal({
                   className={`dayTime field ${
                      formData.frequency.intake_time_range.includes("midday")
                       ? "selected"
-                      : freeTake || formData.frequency.intake_time_range.length == formData.frequency.intake_number &&
+                      : (freeTake || formData.frequency.intake_time_range.length === formData.frequency.intake_number) &&
                         !formData.frequency.intake_time_range.includes("midday")
                       ? "disabled"
                       : ""
@@ -608,7 +607,7 @@ export default function MedicationDetailsModal({
                     name="day_time"
                     value="midday"
                     disabled={
-                      freeTake || formData.frequency.intake_time_range.length == formData.frequency.intake_number &&
+                      (freeTake || formData.frequency.intake_time_range.length === formData.frequency.intake_number) &&
                       !formData.frequency.intake_time_range.includes("midday")
                     }
                     id=""
@@ -620,7 +619,7 @@ export default function MedicationDetailsModal({
                   className={`dayTime field ${
                      formData.frequency.intake_time_range.includes("evening")
                       ? "selected"
-                      : freeTake || formData.frequency.intake_time_range.length == formData.frequency.intake_number &&
+                      : (freeTake || formData.frequency.intake_time_range.length === formData.frequency.intake_number) &&
                         !formData.frequency.intake_time_range.includes("evening")
                       ? "disabled"
                       : ""
@@ -632,7 +631,7 @@ export default function MedicationDetailsModal({
                     name="day_time"
                     value="evening"
                     disabled={
-                      freeTake || formData.frequency.intake_time_range.length == formData.frequency.intake_number &&
+                      (freeTake || formData.frequency.intake_time_range.length === formData.frequency.intake_number )&&
                       !formData.frequency.intake_time_range.includes("evening")
                     }
                     id=""
@@ -732,7 +731,7 @@ export default function MedicationDetailsModal({
 
                   <option value="Non renseigné"> Non renseigné</option>
                   {/* {recipient.healthcare_professionals.map((item) => {
-                    return <option value={item.name} selected={formData.prescribed_by == item.name}>{item.name}</option>;
+                    return <option value={item.name} selected={formData.prescribed_by === item.name}>{item.name}</option>;
                   })} */}
                </Form.Select>
             </div>

@@ -140,7 +140,7 @@ export default function Recipient({ spaceId, tab}) {
 
       else setActiveTab('general')
   }, [tab])
-  
+
 
   return (
     <div id="recipient">

@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
 import api, { tokenStore } from "../api/api";
-
+import { useSelector, useDispatch } from 'react-redux'
+import { setValues } from '../redux/spaceSlice'
 export const AuthContext = createContext();
 
 export const useAuth = () => {
@@ -15,7 +16,9 @@ export const AuthProvider = ({ children }) => {
     message: "",
   });
   const [loading, setLoading] = useState(true);
-  const [space, setSpace] = useState({});
+  const dispatch = useDispatch()
+  const space = useSelector((state) => state.space)
+
   const [refreshSpace, setRefreshSpace] = useState(false);
 
   const fetchSpaces = async () => {
@@ -24,7 +27,7 @@ export const AuthProvider = ({ children }) => {
 
       if (token) {
         const res = await api.get("http://127.0.0.1:8000/api/spaces/");
-        setSpace(res.data[0]);
+        dispatch(setValues(res.data[0]))
       }
     } catch (err) {
       if (err.response) {
@@ -186,7 +189,6 @@ export const AuthProvider = ({ children }) => {
     loading,
     refreshSpace,
     setRefreshSpace,
-    space,
     message,
   };
 

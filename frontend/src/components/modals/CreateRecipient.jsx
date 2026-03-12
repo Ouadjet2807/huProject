@@ -4,14 +4,15 @@ import { AuthContext } from "../../context/AuthContext";
 import api from "../../api/api";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
+import { useSelector } from "react-redux";
 
 export default function CreateRecipient({
-  space,
   setRefreshRecipients,
   show,
   setShow,
 }) {
   const { user } = useContext(AuthContext);
+  const space = useSelector((state) => state.space);
 
   const [formData, setFormData] = useState({
     first_name: "",
@@ -40,22 +41,21 @@ export default function CreateRecipient({
     try {
       const response = await api.post(
         "http://127.0.0.1:8000/api/recipients/",
-        formData
+        formData,
       );
-      space.recipients.push(response.data)
-      handleClose()
+      space.recipients.push(response.data);
+      handleClose();
     } catch (error) {
       console.log(error);
     }
   };
 
   useEffect(() => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      space: space.id
-    }))
-  }, [space])
-
+      space: space.id,
+    }));
+  }, [space]);
 
   console.log(formData);
 
@@ -103,12 +103,12 @@ export default function CreateRecipient({
         </form>
       </Modal.Body>
       <Modal.Footer>
-          <Button type="submit" onClick={(e) => handleSubmit(e)}>
-            Ajouter
-          </Button>
-          <Button type="button" variant='secondary' onClick={handleClose}>
-            Annuler
-          </Button>
+        <Button type="submit" onClick={(e) => handleSubmit(e)}>
+          Ajouter
+        </Button>
+        <Button type="button" variant="secondary" onClick={handleClose}>
+          Annuler
+        </Button>
       </Modal.Footer>
     </Modal>
   );

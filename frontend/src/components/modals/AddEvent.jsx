@@ -23,11 +23,12 @@ import FloatingLabel from "react-bootstrap/FloatingLabel";
 import { IoIosClose } from "react-icons/io";
 import { AiOutlineUsergroupAdd } from "react-icons/ai";
 import { HiOutlineBars3BottomLeft } from "react-icons/hi2";
+import { useSelector } from "react-redux";
 
 export default function AddEvent({ agenda, setAgenda, show, setShow, preloadedEvent, fetchAgenda, setSelectedEvent }) {
   moment.locale("fr");
-  const { user, space } = useContext(AuthContext);
-
+  const { user } = useContext(AuthContext);
+  const space = useSelector((state) => state.space);
   const { setShowToast, setMessage, setColor } = useContext(ToastContext);
   const { showConfirm, setShowConfirm, setText, setAction, returnValue } =
   useContext(ConfirmContext);
@@ -75,14 +76,14 @@ export default function AddEvent({ agenda, setAgenda, show, setShow, preloadedEv
     // handling different input types
     let key = [e.target.name];
     let value = "";
-    if (e.target.type == "text" || e.target.type == "textarea") {
+    if (e.target.type === "text" || e.target.type === "textarea") {
       value = e.target.value;
     } else if (e.target.type === "checkbox") {
       console.log(e.target.value);
       const parsed_value = JSON.parse(e.target.value);
       if (
         e.target.checked &&
-        !formData[key].some((e) => e.id == parsed_value.id)
+        !formData[key].some((e) => e.id === parsed_value.id)
       ) {
         formData[key].push(parsed_value);
         value = formData[key];
@@ -90,10 +91,10 @@ export default function AddEvent({ agenda, setAgenda, show, setShow, preloadedEv
         console.log("uncheck");
         value = formData[key].filter((item) => item.id !== parsed_value.id);
       }
-    } else if (e.target.type == "time" || e.target.type == "date") {
+    } else if (e.target.type === "time" || e.target.type === "date") {
       key = e.target.name.split("_")[0] + "_date";
       value =
-        e.target.type == "time"
+        e.target.type === "time"
           ? `${formData[key].slice(0, 10)} ${e.target.value}`
           : `${e.target.value} ${formData[key].slice(11, 16)}`;
     }
@@ -106,7 +107,7 @@ export default function AddEvent({ agenda, setAgenda, show, setShow, preloadedEv
   const deselectParticipant = (item) => {
     let key = "";
 
-    if (space.caregivers.some((elem) => elem.id == item.id)) {
+    if (space.caregivers.some((elem) => elem.id=== item.id)) {
       key = "caregivers";
     } else key = "recipients";
 
@@ -119,7 +120,7 @@ export default function AddEvent({ agenda, setAgenda, show, setShow, preloadedEv
     e.stopPropagation();
     let key = "";
 
-    if (space.caregivers.some((elem) => elem.id == item.id)) {
+    if (space.caregivers.some((elem) => elem.id=== item.id)) {
       key = "caregivers";
     } else key = "recipients";
     setFormData((prev) => ({ ...prev, [key]: [...prev[key], item] }));
@@ -286,13 +287,13 @@ export default function AddEvent({ agenda, setAgenda, show, setShow, preloadedEv
       .concat(space.recipients);
     console.log(
       all_participants.filter(
-        (elem) => !selectedParticipants.some((e) => e.id == elem.id),
+        (elem) => !selectedParticipants.some((e) => e.id=== elem.id),
       ),
     );
 
     setParticipantsList(
       all_participants.filter(
-        (elem) => !selectedParticipants.some((e) => e.id == elem.id),
+        (elem) => !selectedParticipants.some((e) => e.id=== elem.id),
       ),
     );
 

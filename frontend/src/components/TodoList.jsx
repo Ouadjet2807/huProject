@@ -14,11 +14,14 @@ import InputGroup from "react-bootstrap/InputGroup";
 import moment from "moment";
 import { locale } from "moment";
 import { MdLibraryAdd } from "react-icons/md";
+import { useSelector } from "react-redux";
 
 gsap.registerPlugin(useGSAP);
 
-export default function TodoList({ user, space }) {
+export default function TodoList({ user }) {
   moment.locale("fr");
+
+  const space = useSelector((state) => state.space)
 
   const todoCategory = [
     {
@@ -128,8 +131,6 @@ export default function TodoList({ user, space }) {
     }
   };
 
-  useEffect(() => {}, [space]);
-
   useEffect(() => {
     if (!user || !Object.keys(space).length > 0 || !space.todos) return;
 
@@ -164,29 +165,29 @@ export default function TodoList({ user, space }) {
   }, [activeCategory, todoList]);
 
   useEffect(() => {
-    const resetTodo = () => {
-      console.log('reset');
-      
-      const frequencies = {
-        daily: "days",
-        weekly: "weeks",
-        monthly: "months",
-      };
 
-      todoList.forEach((todo, index) => {
-        console.log(index);
-        const updated_date = moment(todo.updated_at);
-        if (!todo.completed || todo.frequency == 'punctual') return;
+    // const resetTodo = () => {
+    //   console.log('reset');
+    //   const frequencies = {
+    //     daily: "days",
+    //     weekly: "weeks",
+    //     monthly: "months",
+    //   };
 
-        const frequency = frequencies[todo.frequency];
+    //   todoList.forEach((todo, index) => {
+    //     console.log(index);
+    //     const updated_date = moment(todo.updated_at);
+    //     if (!todo.completed || todo.frequency === 'punctual') return;
 
-        if (moment().diff(updated_date, frequency) >= 1) {
-          updateTodo(todo);
-        }
-      });
-    };
+    //     const frequency = frequencies[todo.frequency];
 
-    resetTodo();
+    //     if (moment().diff(updated_date, frequency) >= 1) {
+    //       updateTodo(todo);
+    //     }
+    //   });
+    // };
+
+    // resetTodo();
   }, [todoList]);
 
   console.log(newTask);
@@ -210,7 +211,7 @@ export default function TodoList({ user, space }) {
         })}
       </ButtonGroup>
       <div className="todo-list-items">
-        {filteredTodoList.length > 0 &&
+        {filteredTodoList && filteredTodoList.length > 0 &&
           filteredTodoList.map((todo, index) => {
             return (
               <div className={`todo-item ${todo.completed ? "completed" : ""}`}>
@@ -249,7 +250,7 @@ export default function TodoList({ user, space }) {
             variant="outline-secondary"
             title={
               Object.keys(newTask).includes("frequency")
-                ? todoCategory.find((cat) => cat.value == newTask.frequency)
+                ? todoCategory.find((cat) => cat.value === newTask.frequency)
                     .name
                 : "Fréquence"
             }

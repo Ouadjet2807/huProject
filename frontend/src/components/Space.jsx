@@ -14,9 +14,11 @@ import { TbUsersMinus, TbUsersPlus } from "react-icons/tb";
 import InviteUserModal from "../components/modals/InviteUserModal";
 import CreateRecipient from "../components/modals/CreateRecipient";
 import { TiDelete } from "react-icons/ti";
+import { useSelector } from "react-redux";
 
 export default function Space({ editMode, setEditMode, roles }) {
-  const { space, user } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
+  const space = useSelector((state) => state.space)
   const [spaceMemberships, setSpaceMemberships] = useState([]);
   const [spaceCreator, setSpaceCreator] = useState();
   const [deleteCaregiverModal, setDeleteCaregiverModal] = useState(false);
@@ -70,12 +72,6 @@ export default function Space({ editMode, setEditMode, roles }) {
     }
   };
 
-  const isCreator = (user) => {
-    if (!user) return;
-    if (space.created_by === user) return true;
-    return false;
-  };
-
   const canEdit = (user) => {
     if (!user) return;
 
@@ -101,7 +97,7 @@ export default function Space({ editMode, setEditMode, roles }) {
 
   const getAccessLevel = (caregiver) => {
     if (!caregiver) return;
-    const access_level = roles.find((r) => r[0] == caregiver.access_level);
+    const access_level = roles.find((r) => r[0] === caregiver.access_level);
 
     if (access_level && access_level.length > 0) return access_level[1];
   };
@@ -120,7 +116,7 @@ export default function Space({ editMode, setEditMode, roles }) {
 
   const handleChange = async (e, id) => {
     if (!e.target) return;
-    let targetCaregiver = space.caregivers.find((e) => e.id == id);
+    let targetCaregiver = space.caregivers.find((e) => e.id === id);
 
     targetCaregiver[e.target.name] =
       e.target.type === "select-one"
@@ -140,7 +136,7 @@ export default function Space({ editMode, setEditMode, roles }) {
 
   const revokeAccess = async (caregiver) => {
     const membership = spaceMemberships.find(
-      (e) => e.user.id == caregiver.user
+      (e) => e.user.id === caregiver.user
     );
     try {
       let res = await api.delete(
@@ -170,7 +166,7 @@ export default function Space({ editMode, setEditMode, roles }) {
 
   useEffect(() => {
 
-    if(!user && !space || Object.keys(space).length <= 0) return
+    if(!user && (!space || Object.keys(space).length <= 0)) return
     getSpaceMemberships();
 
     setSpaceCreator(space.created_by.id === user.id ? 'vous' : `${space.created_by.first_name} ${space.last_name}`)
@@ -337,7 +333,7 @@ export default function Space({ editMode, setEditMode, roles }) {
                             return (
                               <option
                                 value={role[0]}
-                                selected={item.access_level == role[0]}
+                                selected={item.access_level === role[0]}
                               >
                                 {role[1]}
                               </option>
@@ -364,7 +360,7 @@ export default function Space({ editMode, setEditMode, roles }) {
               );
             })}
         </ul>
-        {space.created_by.id == user.id && (
+        {space.created_by.id === user.id && (
           <Button
             onClick={() => setShowInviteModal(true)}
             className="add-person"
@@ -377,7 +373,7 @@ export default function Space({ editMode, setEditMode, roles }) {
       <div className="box" id="recipients">
         <div className="box-header">
           <strong>Aidés</strong>
-          {space.caregivers.find(c => c.user == user.id).can_edit && (
+          {space.caregivers.find(c => c.user === user.id).can_edit && (
             <Button
               className={`edit-button ${
                 editMode.active && editMode.target === "recipients"
@@ -412,7 +408,7 @@ export default function Space({ editMode, setEditMode, roles }) {
                     <p>
                       {item.first_name} {item.last_name}
                     </p>
-                    {editMode.active && editMode.target === "recipients" && space.caregivers.find(c => c.user == user.id).can_edit && (
+                    {editMode.active && editMode.target === "recipients" && space.caregivers.find(c => c.user === user.id).can_edit && (
                       <Button
                         onClick={(e) => handleDeleteModal(e, item)}
                         className="remove-person"

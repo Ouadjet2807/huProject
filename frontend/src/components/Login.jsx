@@ -26,7 +26,7 @@ export default function Login({setActiveTab}) {
   const handleChange = (e) => {
     setFormData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value,
+      [e.target.name]: e.target.type == 'email' ? e.target.value.toLowerCase() : e.target.value,
     }));
   };
 

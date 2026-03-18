@@ -276,7 +276,7 @@ class TodoListItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TodoListItem
-        fields = ['id', 'todo_list', 'frequency', 'completed', 'completed_by', 'title', 'updated_at', 'created_at', 'created_by']
+        fields = ['id', 'todo_list', 'frequency', 'completed', 'completed_by', 'title', 'updated_at', 'created_at', 'created_by', 'updated_at']
         read_only_fields = ['id', 'space']
 
 class TodoListSerializer(serializers.ModelSerializer):

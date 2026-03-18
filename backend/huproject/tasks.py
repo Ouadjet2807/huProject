@@ -1,8 +1,8 @@
 from celery import shared_task
 from django.utils import timezone
 from datetime import timedelta
+from dateutil.relativedelta import relativedelta
 from .models import *
-from django.forms.models import model_to_dict
 import json
 
 def register_notification(item, message, title):
@@ -42,4 +42,30 @@ def check_treatment_expiration():
 
             treatment.expired_notification_sent = True
             treatment.save()
+
+
+@shared_task
+def reset_todos():
+    todo_items = TodoListItem.objects.all()
+
+    today = timezone.now()
+
+    frequencies = {
+        "daily": today - timedelta(days=1),
+        "weekly": today - timedelta(weeks=1),
+        "monthly": today - relativedelta(months=1)
+    }
+
+    for item in todo_items:
+        if not item.completed or item.frequency == "punctual":
+          continue
+
+        for key in frequencies:
+
+            if item.frequency == key and item.updated_at < frequencies[key]:
+                item.completed = False
+                item.save()
+
+
+
 

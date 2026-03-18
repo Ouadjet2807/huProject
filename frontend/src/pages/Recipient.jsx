@@ -5,7 +5,6 @@ import axios from "axios";
 import RecipientEditForm from "../components/RecipientEditForm";
 import RecipientTreatments from "../components/RecipientTreatments";
 import Specialists from "../components/Specialists";
-import DailyLife from "../components/DailyLife";
 import Loader from "../components/Loader";
 import moment from "moment";
 import { locale } from "moment";

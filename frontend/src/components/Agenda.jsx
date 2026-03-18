@@ -18,6 +18,10 @@ import ListGroup from "react-bootstrap/ListGroup";
 import { LuUsersRound } from "react-icons/lu";
 import { HiOutlineBars3BottomLeft } from "react-icons/hi2";
 import { useSelector } from "react-redux";
+import { BsFilter } from "react-icons/bs";
+import Dropdown from "react-bootstrap/Dropdown";
+import Form from 'react-bootstrap/Form';
+import { PiTagDuotone } from "react-icons/pi";
 
 export default function Agenda() {
   const [agenda, setAgenda] = useState({});
@@ -27,6 +31,7 @@ export default function Agenda() {
   const [showEventForm, setShowEventForm] = useState(false);
   const space = useSelector((state) => state.space);
   const [isLoading, setIsLoading] = useState(true);
+  const [hiddenCategories, setHiddenCategories] = useState([])
 
   const today = new Date();
 
@@ -59,6 +64,15 @@ export default function Agenda() {
     setIsLoading(true);
   };
 
+  const filterCategory = (e, category) => {
+    if(e.target.checked && hiddenCategories.includes(category)) {
+      let filter = hiddenCategories.filter(hiddenCat => hiddenCat !== category) 
+      setHiddenCategories(filter)
+    } else {
+      setHiddenCategories(prev => [...prev, category])
+    }
+  }
+
   const displayDate = (start_date, end_date) => {
     const start = moment(start_date);
     const end = moment(end_date);
@@ -84,8 +98,9 @@ export default function Agenda() {
   }, [space]);
 
   useEffect(() => {
-    if (!agenda && !isLoading) return;
-
+    if (!agenda) return;
+    console.log("formatting");
+    
     // Format event
     if (Object.keys(agenda).includes("items") && agenda.items.length > 0) {
       let formatted_events = JSON.stringify(agenda.items);
@@ -107,15 +122,21 @@ export default function Agenda() {
           item.start_date.toLocaleDateString() === today.toLocaleDateString() ||
           item.end_date.toLocaleDateString() === today.toLocaleDateString(),
       );
-      setEvents(formatted_events);
+
+      setEvents(formatted_events.filter(event => !hiddenCategories.includes(event.category && event.category.id)));
       setTodayAgendaItems(searchTodaysEvent);
       setIsLoading(false);
     }
-  }, [agenda, isLoading]);
+  }, [agenda, isLoading, hiddenCategories]);
+
 
   console.log(todayAgendaItems);
   console.log(agenda);
   console.log(isLoading);
+  console.log(events);
+  
+  console.log(hiddenCategories);
+  
 
   return (
     <div id="agenda">
@@ -189,7 +210,9 @@ export default function Agenda() {
               </div>
             </div>
             <div className="todays-events">
-              {todayAgendaItems.length > 0 ? (
+              {isLoading ? (
+                <Loader />
+              ) : todayAgendaItems.length > 0 ? (
                 <ul>
                   {todayAgendaItems.map((event) => {
                     return (
@@ -239,11 +262,21 @@ export default function Agenda() {
         </Button>
       </div>
       <div className="right-tab">
-        {isLoading && (
-          <div className="loading-overlay">
-            <Loader />
-          </div>
-        )}
+        {isLoading && <Loader overlay={true} />}
+        <Dropdown autoClose={false}>
+          <Dropdown.Toggle variant="" id="dropdown-basic" className="filter">
+            <BsFilter />
+          </Dropdown.Toggle>
+
+          <Dropdown.Menu >
+            <Dropdown.Header>Filtrer</Dropdown.Header>
+            {(agenda.categories && agenda.categories.length > 0) &&
+              agenda.categories.map((category) => {
+                return <Dropdown.Item><Form.Check type="checkbox" checked={!hiddenCategories.includes(category.id)} name={`${category.name}_category`} onChange={(e) => filterCategory(e, category.id)} id=""/> <PiTagDuotone  style={{ color: category.color.text }}/> {category.name}</Dropdown.Item>
+              })}
+          </Dropdown.Menu>
+        </Dropdown>
+
         <Calendar
           localizer={localizer}
           events={events}

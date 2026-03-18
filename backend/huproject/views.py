@@ -491,8 +491,8 @@ class TodoListItemViewSet(viewsets.ModelViewSet):
         if not user or not hasattr(user, 'caregiver'):
             return TodoListItem.objects.none()
 
-        space = user.caregiver.spaces.all()
-        todolist = TodoList.objects.get(space=space[0].id)
+        space = Space.objects.get(caregivers=user.caregiver)
+        todolist = TodoList.objects.get(space=space)
 
         return TodoListItem.objects.filter(todo_list=todolist.id)
 

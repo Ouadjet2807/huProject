@@ -103,6 +103,7 @@
     }
 
     .right-tab {
+      position: relative;
       background: linear-gradient(142deg, #abd1c685, #004643a6);
       padding: 25px;
       height: 100%;
@@ -115,20 +116,11 @@
       }
     }
 
-    .loading {
-      .loaderOne {
-        position: absolute;
-      }
-
-      .loaderTwo {
-        transform: rotateX(180deg) rotateY(-180deg);
-      }
-    }
-
     .left-tab {
       width: 100%;
 
       .box {
+        position: relative;
         border-radius: $borderRadius;
         padding: 20px;
         margin: 1vw auto;
@@ -145,7 +137,7 @@
           color: $white;
         }
 
-        > div {
+        > div:not(.overlay) {
           height: 3vw;
           background: rgba(255, 255, 255, 0.8);
           border-radius: $borderRadius;

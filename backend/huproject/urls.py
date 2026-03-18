@@ -16,6 +16,7 @@ router.register(r'space_memberships', SpaceMembershipViewSet, 'space-membership'
 router.register(r'invitations', InvitationViewSet, 'invitation')
 router.register(r'todo_lists', TodoListViewSet, 'todo-lists') 
 router.register(r'todo_list_items', TodoListItemViewSet, 'todo-list-items') 
+router.register(r'notifications', NotificationViewSet, 'notifications') 
 
 urlpatterns = [
     path("register/", UserRegistrationAPIView.as_view(), name="register-user"),
@@ -23,6 +24,8 @@ urlpatterns = [
     path("logout/", UserLogoutAPIView.as_view(), name="logout-user"),
     path("update_user/<str:id>/", UserUpdateAPIView.as_view(), name="update-user"),
     path("soft_delete_treatment/<str:id>/", TreatmentSoftDeleteAPIView.as_view(), name="soft_delete_treatment"),
+    path("read_notification/<str:id>/", NotificationReadAPIView.as_view(), name="read-notification"),
+    path("unread_notification/<str:id>/", NotificationUnreadAPIView.as_view(), name="unread-notification"),
     path("token/refresh/", TokenRefreshView.as_view(), name="token-refresh"),
     path('user/', UserInfoAPIView.as_view(), name="user-info"),
     path('user/<str:id>/', UserInfoAPIView.as_view()),

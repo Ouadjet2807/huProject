@@ -91,6 +91,19 @@
         $borderRadiusMedium;
       height: 45vw;
 
+
+      .account-question {
+        span {
+          cursor: pointer;
+          color: $mediumGreen2;
+          transition: 0.3s ease-in;
+
+          &:hover {
+            color: $lightGreen2;
+          }
+        }
+      }
+
       h2 {
         color: $charcoal;
         margin-left: 5vw;

@@ -20,8 +20,6 @@ export default function Home({ setRefreshSpace }) {
 
   const { user, logout, loading } = useContext(AuthContext);
   const space = useSelector((state) => state.space)
-  console.log(loading);
-
 
   console.log(space);
 
@@ -29,8 +27,8 @@ export default function Home({ setRefreshSpace }) {
     if (Object.keys(space).length <= 0) {
       setRefreshSpace(true);
     }
-
   }, [space]);
+
 
   return (
     <div id="home">
@@ -90,7 +88,7 @@ export default function Home({ setRefreshSpace }) {
                     </div>
                   );
                 })}
-              {space.created_by && space.created_by.id === user.id && (
+              {(user && space.created_by) && space.created_by.id === user.id && (
                 <Button variant="aqua" onClick={() => setShowInviteModal(true)}>
                   <TbUsersPlus /> Inviter une personne
                 </Button>

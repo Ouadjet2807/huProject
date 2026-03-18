@@ -208,7 +208,7 @@ CELERY_TIMEZONE = 'UTC'
 CELERY_BEAT_SCHEDULE = {
     "check-treatment-expiration-daily": {
         "task": "huproject.tasks.check_treatment_expiration",
-        "schedule":crontab(hour=0, minute=0,)
+        "schedule":crontab(minute='*/1',)
     },
 }
 

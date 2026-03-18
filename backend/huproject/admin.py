@@ -9,7 +9,7 @@ from .forms import CustomUserChangeForm, CustomUserCreationForm
 class TodoListAdmin(admin.ModelAdmin):
     list_display = ('id', 'space')
     search_fields = ('space',)
-    
+
 @admin.register(TodoListItem)
 class TodoListAdmin(admin.ModelAdmin):
     list_display = ('id', 'todo_list', 'created_by', 'created_at', 'completed')
@@ -79,7 +79,7 @@ class TodoListAdmin(admin.ModelAdmin):
     search_fields = ('token', 'space', 'role')
 
 @admin.register(Notification)
-class TodoListAdmin(admin.ModelAdmin):
-    list_display = ('id', 'is_read', 'space', 'timestamp', 'message')
+class NotificationAdmin(admin.ModelAdmin):
+    list_display = ('id', 'title', 'is_read', 'space', 'timestamp', 'message', 'user')
     search_fields = ('id', 'space', 'is_read ')
 

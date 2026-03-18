@@ -8,7 +8,7 @@ import { PiEyeClosedDuotone } from "react-icons/pi";
 import Button from "react-bootstrap/esm/Button";
 import Loader from "./Loader";
 
-export default function Login() {
+export default function Login({setActiveTab}) {
 
 
   const [formData, setFormData] = useState({
@@ -88,7 +88,9 @@ export default function Login() {
           <Button disabled={loading} onClick={(e) => handleSubmit(e)} variant="aqua">
             Connexion
           </Button>
+
         </div>
+          <p className="account-question">Pas encore de compte ? <span onClick={() => setActiveTab('register')}>S'inscrire</span></p>
       </form>
     </div>
   );

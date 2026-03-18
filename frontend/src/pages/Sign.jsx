@@ -8,11 +8,11 @@ export default function Sign() {
   const renderActiveTab = () => {
     switch (activeTab) {
       case "login":
-        return <Login />;
+        return <Login setActiveTab={setActiveTab}/>;
       case "register":
-        return <Register />;
+        return <Register setActiveTab={setActiveTab}/>;
       default:
-        return <Login />;
+        return <Login setActiveTab={setActiveTab}/>;
     }
   };
 
@@ -20,8 +20,8 @@ export default function Sign() {
     <div id="sign">
       <div className="container">
       <ul className="toolbar">
-        <li className={activeTab === "register" ? "active" : ""} onClick={() => setActiveTab("register")}><span>Register</span></li>
-        <li className={activeTab === "login" ? "active" : ""} onClick={() => setActiveTab("login")}><span>Login</span></li>
+        <li className={activeTab === "register" ? "active" : ""} onClick={() => setActiveTab("register")}><span>Inscription</span></li>
+        <li className={activeTab === "login" ? "active" : ""} onClick={() => setActiveTab("login")}><span>Connexion</span></li>
       </ul>
         {renderActiveTab()}
       </div>

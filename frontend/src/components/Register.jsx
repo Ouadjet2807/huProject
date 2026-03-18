@@ -9,7 +9,7 @@ import { ToastContext } from "../context/ToastContext";
 import Button from "react-bootstrap/esm/Button";
 import Loader from "./Loader";
 
-export default function Register({ data, token }) {
+export default function Register({ data, token, setActiveTab }) {
 
   const [formData, setFormData] = useState({
     invited: {
@@ -164,6 +164,7 @@ export default function Register({ data, token }) {
             S'enregistrer
           </Button>
         </div>
+           <p className="account-question">Déjà un compte ? <span onClick={() => setActiveTab('login')}>Se connecter</span></p>
       </form>
     </div>
   );

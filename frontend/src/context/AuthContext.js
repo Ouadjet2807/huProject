@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
 import api, { tokenStore } from "../api/api";
-import { useSelector, useDispatch } from 'react-redux'
-import { setValues } from '../redux/spaceSlice'
+import { useSelector, useDispatch } from "react-redux";
+import { setValues } from "../redux/spaceSlice";
 export const AuthContext = createContext();
 
 export const useAuth = () => {
@@ -16,8 +16,8 @@ export const AuthProvider = ({ children }) => {
     message: "",
   });
   const [loading, setLoading] = useState(true);
-  const dispatch = useDispatch()
-  const space = useSelector((state) => state.space)
+  const dispatch = useDispatch();
+  const space = useSelector((state) => state.space);
 
   const [refreshSpace, setRefreshSpace] = useState(false);
 
@@ -27,7 +27,7 @@ export const AuthProvider = ({ children }) => {
 
       if (token) {
         const res = await api.get("http://127.0.0.1:8000/api/spaces/");
-        dispatch(setValues(res.data[0]))
+        dispatch(setValues(res.data[0]));
       }
     } catch (err) {
       if (err.response) {
@@ -60,7 +60,7 @@ export const AuthProvider = ({ children }) => {
       });
     } catch (error) {
       console.log(error);
-      
+
       console.log("Error", error.response.data);
       if (error.response && error.response.data) {
         Object.keys(error.response.data).forEach((field) => {
@@ -73,7 +73,8 @@ export const AuthProvider = ({ children }) => {
           } else {
             setMessage({
               status: "error",
-              message: "Une erreur inconnue s'est produite, veuillez réessayer ultérieurement",
+              message:
+                "Une erreur inconnue s'est produite, veuillez réessayer ultérieurement",
             });
           }
         });
@@ -87,19 +88,19 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await api.post(
         "http://127.0.0.1:8000/api/register/",
-        data
+        data,
       );
       const { access, refresh } = response.data.tokens;
       localStorage.setItem("accessToken", response.data.tokens.access);
       localStorage.setItem("refreshToken", response.data.tokens.refresh);
       api.defaults.headers.common["Authorization"] = `Bearer ${access}`;
       const res = await api.get("http://127.0.0.1:8000/api/user/");
-        setUser({ ...res.data, isAuthenticated: true });
-        setMessage({
-          status: "success",
-          message: "Compte crée avec succès, bienvenue !",
+      setUser({ ...res.data, isAuthenticated: true });
+      setMessage({
+        status: "success",
+        message: "Compte crée avec succès, bienvenue !",
       });
-      } catch (error) {
+    } catch (error) {
       console.error("Register failed:", error);
       if (error.response && error.response.data) {
         Object.keys(error.response.data).forEach((field) => {
@@ -112,7 +113,8 @@ export const AuthProvider = ({ children }) => {
           } else {
             setMessage({
               status: "error",
-              message: "Une erreur inconnue s'est produite, veuillez réessayer ultérieurement",
+              message:
+                "Une erreur inconnue s'est produite, veuillez réessayer ultérieurement",
             });
           }
         });
@@ -124,8 +126,9 @@ export const AuthProvider = ({ children }) => {
   const logout = async (refresh) => {
     if (refresh) {
       try {
-
-        await api.post("http://127.0.0.1:8000/api/logout/", { refresh: refresh });
+        await api.post("http://127.0.0.1:8000/api/logout/", {
+          refresh: refresh,
+        });
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
         delete api.defaults.headers.common["Authorization"];
@@ -135,36 +138,36 @@ export const AuthProvider = ({ children }) => {
           message: "Déconnexion",
         });
       } catch (error) {
-         setMessage({
+        setMessage({
           status: "error",
           message: error.response.data,
         });
-        
       }
 
-      initAuth()
+      initAuth();
     }
   };
 
-      const initAuth = async () => {
-      const token = localStorage.getItem("accessToken");
-      if (token) {
-        api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-        try {
-          const res = await api.get("http://127.0.0.1:8000/api/user/");
-          setUser({ ...res.data, isAuthenticated: true });
-        } catch (err) {
-          console.error("Failed to fetch user info", err);
-          logout();
-        }
-      } 
-      
-      else if((window.location.pathname !== "/login") && !window.location.pathname.includes("invite")) {
-         window.location.assign("/login")
+  const initAuth = async () => {
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      try {
+        const res = await api.get("http://127.0.0.1:8000/api/user/");
+        setUser({ ...res.data, isAuthenticated: true });
+      } catch (err) {
+        console.error("Failed to fetch user info", err);
+        logout();
       }
+    } else if (
+      window.location.pathname !== "/login" &&
+      !window.location.pathname.includes("invite")
+    ) {
+      window.location.assign("/login");
+    }
 
-      setLoading(false);
-    };
+    setLoading(false);
+  };
 
   useEffect(() => {
     initAuth();
@@ -173,10 +176,10 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     fetchSpaces();
-  }, [refreshSpace]);
+  }, [refreshSpace, user]);
 
   useEffect(() => {
-    if(!loading) {
+    if (!loading) {
       initAuth();
     }
   }, [loading]);

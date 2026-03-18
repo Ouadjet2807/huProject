@@ -221,7 +221,7 @@ class Treatment(models.Model):
     )
     registered_by  = models.ForeignKey(CustomUser, null=True, on_delete=models.SET_NULL,
         related_name='registered_treatments')
-    prescribed_to  = models.ManyToManyField(Recipient, related_name='treatments')
+    prescribed_to  = models.ForeignKey(Recipient, on_delete=models.CASCADE, related_name='treatments')
     notes = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     space = models.ForeignKey(
@@ -302,6 +302,17 @@ class TodoListItem(models.Model):
 class Notification(models.Model):
     space = models.ForeignKey(Space, on_delete=models.CASCADE, related_name="notifications_space")
     is_read = models.BooleanField(default=False)
-    users = models.ManyToManyField(Caregiver, related_name='notifications_users')
+    user = models.ForeignKey(Caregiver, on_delete=models.CASCADE, related_name='notifications_user')
+    title = models.CharField(max_length=50)
+    reference_item = models.JSONField()
     message = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
+    object_path = models.TextField()
+
+    def read(self):
+        self.is_read = True
+        self.save()
+
+    def unread(self):
+        self.is_read = False
+        self.save()

@@ -53,7 +53,7 @@ body {
   height: 100%;
   padding: 1vw;
 
-  > :not(.navigation, .toast-container) {
+  > :not(.navigation, .toast-container, .navbar-container) {
     background: $white;
     border-radius: 0 $borderRadius $borderRadius 0;
   }

@@ -218,8 +218,6 @@ class AgendaItemSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
 
-        print(validated_data)
-
         caregivers_data = validated_data.pop('caregivers', None)
         recipients_data = validated_data.pop('recipients', None)
 
@@ -315,5 +313,5 @@ class NotificationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Notification
-        fields = ['id', 'is_read', 'space', 'message', 'users']
-        read_only_fields = ['id', 'space']
+        fields = ['id', 'title', 'reference_item', 'is_read', 'space', 'message', 'user', 'timestamp', 'object_path']
+        read_only_fields = ['id', 'space', 'timestamp']

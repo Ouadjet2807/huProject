@@ -542,3 +542,54 @@ class HealthcareProfessionalViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save()
+
+
+
+class NotificationViewSet(viewsets.ModelViewSet):
+    serializer_class = NotificationSerializer
+    lookup_field = 'id'
+    queryset = Notification.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['id', 'space']
+    ordering_fields = ['space', 'timestamp']
+
+    def get_queryset(self):
+        user = self.request.user
+
+        if not user:
+            return Notification.objects.none()
+        caregiver = user.caregiver
+
+        return Notification.objects.filter(user=caregiver).order_by('-timestamp')
+
+    def perform_create(self, serializer):
+        serializer.save()
+
+class NotificationReadAPIView(GenericAPIView):
+    permission_classes= (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        if request.method == 'POST':
+            print(kwargs["id"])
+            target_notification = Notification.objects.get(id = kwargs['id'])
+
+            try:
+                target_notification.read()
+
+                return Response(request.data, status=status.HTTP_200_OK)
+            except Exception as e:
+                return Response(e.args, status=status.HTTP_400_BAD_REQUEST)
+
+class NotificationUnreadAPIView(GenericAPIView):
+    permission_classes= (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        if request.method == 'POST':
+            target_notification = Notification.objects.get(id = kwargs['id'])
+
+            try:
+                target_notification.unread()
+                return Response(request.data, status=status.HTTP_200_OK)
+            except Exception as e:
+                return Response(e.args, status=status.HTTP_400_BAD_REQUEST)

@@ -2,11 +2,20 @@ from celery import shared_task
 from django.utils import timezone
 from datetime import timedelta
 from .models import *
+from django.forms.models import model_to_dict
+import json
 
+def register_notification(item, message, title):
+    space = item.space
+    data = {
+       "type": "treatment",
+       "objects": [str(item.id)]
+    }
+    json_data = json.dumps(data)
+    path = f"/recipient/{item.prescribed_to.id}/treatments/{str(item.id)}"
 
-def register_notification(item, message):
-    print("register")
-    Notification.objects.create(space=item.space, message=message)
+    for caregiver in space.caregivers.all():
+        Notification.objects.create(space=item.space, title=title, message=message, user=caregiver, reference_item=json_data, object_path=path)
 
 @shared_task
 def check_treatment_expiration():
@@ -18,19 +27,17 @@ def check_treatment_expiration():
 
 
     for treatment in treatments:
-        print(f"treatment date : {treatment.end_date}")
-        print(f"expiration date : {reminder_date}")
+
         if treatment.end_date == reminder_date and not treatment.reminder_sent:
 
-
             register_notification(
-                treatment, f"Le traitement {treatment.name} arrive à expiration dans 7 jours"
+                treatment, f"Le traitement {treatment.name} arrive à expiration dans 7 jours", "Un traitement va bientôt expirer"
             )
             treatment.reminder_sent = True
             treatment.save()
         if treatment.end_date == (today - timedelta(1)) and not treatment.expired_notification_sent:
             register_notification(
-                treatment, f"Le traitement {treatment.name} a expiré"
+                treatment, f"Le traitement {treatment.name} a expiré", "Un traitement a expiré"
             )
 
             treatment.expired_notification_sent = True

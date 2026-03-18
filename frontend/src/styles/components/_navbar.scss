@@ -1,80 +1,174 @@
-nav {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: flex-end;
-  padding: 10px 5px;
-  background: linear-gradient(47deg, $green, $aquaOpac);
-  border-radius: $borderRadius 0 0 $borderRadius;
+.navbar-container {
   position: relative;
-  width: 100%;
 
-  .pin {
-    opacity: 0;
-    color: $mediumGreen;
-    float: right;
-    cursor: pointer;
-    position: absolute;
-
-  }
-
-  ul {
-    width: 100%;
+  nav {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    justify-content: flex-start;
+    align-items: flex-end;
     padding: 10px 5px;
-    gap: 10px;
+    background: linear-gradient(47deg, $green, $aquaOpac);
+    border-radius: $borderRadius 0 0 $borderRadius;
+    position: relative;
+    width: 100%;
+    height: 100%;
 
-    li {
-      font-weight: 600;
+    .pin {
+      opacity: 0;
+      color: $mediumGreen;
+      float: right;
       cursor: pointer;
-      padding: 10px;
-      border-radius: 50%;
+      position: absolute;
+    }
+
+    .nav-list {
+      width: 100%;
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: center;
-      height: 3vw;
-      width: 3vw;
-      padding: 10px;
+      padding: 10px 5px;
+      gap: 10px;
 
-      &.active {
-        box-shadow: inset 0px 1px 3px 0px $mediumGreen2,
-          0px 1px 3px 0px $lightGreen;
-
-        a,
-        span {
-          color: $green;
-        }
-      }
-
-      a,
-      span {
-        font-family: $font2 !important;
-        font-size: 1.1vw;
-        text-decoration: none;
-        color: $pearl;
-        transition: 0.3s ease-in;
-        width: 100%;
-        height: 100%;
+      li {
+        font-weight: 600;
+        cursor: pointer;
+        padding: 10px;
+        border-radius: 50%;
         display: flex;
-        gap: 10px;
         align-items: center;
         justify-content: center;
+        height: 3vw;
+        width: 3vw;
+        padding: 10px;
+        position: relative;
 
-        svg {
-          min-width: 1vw;
-          min-height: 1vw;
+        h6 {
+          position: absolute;
+          top: -1%;
+          left: 45%;
+
+          .badge {
+            border-radius: 50%;
+            color: $pearl !important;
+          }
         }
-      }
 
-      &:hover {
-        box-shadow: 0px 1px 3px 0px $mediumGreen2,
-          inset 0px 1px 3px 0px $lightGreen;
+        &.active {
+          box-shadow:
+            inset 0px 1px 3px 0px $mediumGreen2,
+            0px 1px 3px 0px $lightGreen;
+
+          a,
+          span:not(.badge) {
+            color: $green;
+          }
+        }
 
         a,
-        span {
+        span:not(.badge) {
+          font-family: $font2 !important;
+          font-size: 1.1vw;
+          text-decoration: none;
+          color: $pearl;
+          transition: 0.3s ease-in;
+          width: 100%;
+          height: 100%;
+          display: flex;
+          gap: 10px;
+          align-items: center;
+          justify-content: center;
+
+          svg {
+            min-width: 1vw;
+            min-height: 1vw;
+          }
+        }
+
+        &:hover {
+          box-shadow:
+            0px 1px 3px 0px $mediumGreen2,
+            inset 0px 1px 3px 0px $lightGreen;
+
+          a,
+          span {
+            color: $green;
+          }
+        }
+      }
+    }
+  }
+  .notifications-container {
+    width: 20vw;
+    padding: 20px;
+    height: 100%;
+    margin: 0;
+    top: 0;
+    position: absolute;
+    left: 100%;
+    z-index: 20;
+    background: $white;
+    backdrop-filter: blur(3px);
+    border-radius: 10px;
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    ul {
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      padding: 5px;
+      height: 90%;
+      overflow-y: scroll;
+
+      &::-webkit-scrollbar {
+        background: transparent;
+        width: 0.3vw;
+      }
+      &::-webkit-scrollbar-thumb {
+        background: $whiteGreen;
+        border-radius: 5px;
+      }
+
+      li {
+        padding: 5px 10px;
+        background: $white;
+        border-radius: 5px;
+        transition: 0.3s ease;
+        cursor: pointer;
+        border: 1px solid $whiteGreen;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
+
+          h6 {
+            margin: 0;
+            display: flex;
+            gap: 5px;
+            align-items: center;
+          }
+
+          p {
+            font-size: 0.8rem;
+          }
+
+        &.new {
+          background: $aqua;
+          border: 1px solid $green;
           color: $green;
+
+          &:hover {
+            background: $whiteGreen;
+          }
+        }
+
+        &:hover {
+          background: $pearl;
         }
       }
     }

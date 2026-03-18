@@ -48,9 +48,9 @@
         overflow-y: scroll;
         overflow-x: hidden;
 
-      &::-webkit-scrollbar {
-        display: none;
-      }
+        &::-webkit-scrollbar {
+          display: none;
+        }
 
         li {
           background: $pearl;
@@ -115,6 +115,16 @@
   .right-tab {
     background: $whiteGreen;
     border-radius: 0 $borderRadius $borderRadius 0;
+    position: relative;
+
+    .loading-overlay {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      z-index: 10;
+      background: #ffffffc4;
+      border-radius: 0 $borderRadius $borderRadius 0;
+    }
 
     .rbc-calendar {
       padding: 2vw;
@@ -162,7 +172,8 @@
         }
       }
 
-      .rbc-agenda-view, .rbc-time-view {
+      .rbc-agenda-view,
+      .rbc-time-view {
         max-height: 80vh;
       }
 

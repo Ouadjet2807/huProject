@@ -1,4 +1,10 @@
-import React, { useContext, useEffect, useState, useRef, useEffectEvent } from "react";
+import React, {
+  useContext,
+  useEffect,
+  useState,
+  useRef,
+  useEffectEvent,
+} from "react";
 import { AuthContext } from "../context/AuthContext";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import gsap from "gsap";
@@ -10,21 +16,28 @@ import { CiCalendar } from "react-icons/ci";
 import { ToastContext } from "../context/ToastContext";
 import { BsPinFill } from "react-icons/bs";
 import { BsPin } from "react-icons/bs";
+import { LuBell } from "react-icons/lu";
+import Badge from "react-bootstrap/Badge";
+import Notifications from "./Notifications";
+
 
 gsap.registerPlugin(useGSAP);
 
-export default function Navbar() {
+export default function Navbar({ notifications }) {
   const { user, logout, message } = useContext(AuthContext);
   const { setMessage, setShowToast, setColor } = useContext(ToastContext);
 
   const navigate = useNavigate();
 
-  const location = useLocation()
-
+  const location = useLocation();
+  const [notificationsNotRead, setNotificationsNotRead] = useState(0);
   const [activeNav, setActiveNav] = useState(false);
   const [pinNav, setPinNav] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
 
   const navbar = useRef();
+
+  const sleep = ms => new Promise(r => setTimeout(r, ms))
 
   const auth_routes = [
     {
@@ -44,13 +57,11 @@ export default function Navbar() {
     },
   ];
 
-  const handleNavAnimation = (e) => {
-
+  const handleNavAnimation = async (e) => {
     if (pinNav) return;
-
-    if (e.type === "mouseenter" || e.type === "mouseleave") {
-      setActiveNav(!activeNav);
-    }
+    e.stopPropagation()
+    await sleep(500)
+    setActiveNav(!activeNav);
   };
 
   const handleLogout = async () => {
@@ -67,6 +78,7 @@ export default function Navbar() {
     }
   };
 
+
   useGSAP(() => {
     if (!user) return;
 
@@ -81,10 +93,10 @@ export default function Navbar() {
       gsap.to("nav .pin", {
         opacity: 1,
       });
-      gsap.to("nav ul", {
+      gsap.to("nav .nav-list", {
         padding: "15px",
       });
-      gsap.to("nav ul li", {
+      gsap.to("nav .nav-list li", {
         borderRadius: "20px",
         width: "100%",
         padding: "15px 20px",
@@ -92,8 +104,13 @@ export default function Navbar() {
         height: "max-content",
         duration: 0.2,
       });
-      gsap.to("nav ul li a, .navigation ul li span", {
+      gsap.to("nav .nav-list li a, .navigation .nav-list li span", {
         justifyContent: "flex-start",
+        duration: 0.2,
+      });
+      gsap.to("nav .nav-list li span h6", {
+        top: "5%",
+        left: "15%",
         duration: 0.2,
       });
     } else {
@@ -106,11 +123,11 @@ export default function Navbar() {
       gsap.to("nav .pin", {
         opacity: 0,
       });
-      gsap.to("nav ul", {
+      gsap.to("nav .nav-list", {
         padding: "10px 5px",
         alignItems: "center",
       });
-      gsap.to("nav ul li", {
+      gsap.to("nav .nav-list li", {
         transition: "0",
         width: "3vw",
         height: "3vw",
@@ -119,12 +136,42 @@ export default function Navbar() {
         justifyContent: "center",
         borderRadius: "50%",
       });
-      gsap.to("nav ul li a, .navigation ul li span", {
+      gsap.to("nav .nav-list li a, .navigation .nav-list li span", {
         justifyContent: "center",
+        duration: 0.2,
+      });
+      gsap.to("nav .nav-list li span h6", {
+        left: "45%",
         duration: 0.2,
       });
     }
   }, [activeNav]);
+
+  useGSAP(() => {
+    if (showNotifications) {
+      gsap.to(".notifications-container .header, .notifications-container ul", {
+        display: "flex",
+        opacity: 1,
+        duration: 0.3,
+      });
+      gsap.to(".notifications-container", {
+        width: "20vw",
+        padding: "20px",
+        duration: 0.1,
+      });
+    } else {
+      gsap.to(".notifications-container .header, .notifications-container ul", {
+        display: "none",
+        opacity: 0,
+        duration: 0.1,
+      });
+      gsap.to(".notifications-container", {
+        width: "0vw",
+        padding: 0,
+        duration: 0.3,
+      });
+    }
+  }, [showNotifications]);
 
   useEffect(() => {
     if (
@@ -138,58 +185,87 @@ export default function Navbar() {
     setColor("neutral");
   }, [message]);
 
+  useEffect(() => {
+    if (!notifications || notifications.length <= 0) return;
+
+    let findNotReadNotifications = notifications.filter((n) => !n.is_read);
+    setNotificationsNotRead(findNotReadNotifications.length);
+  }, [notifications]);
 
   console.log(activeNav);
+  console.log(notifications);
 
   return (
-    <nav
-      className={`navigation ${user ? "left-tab-nav" : ""}`}
-      onMouseEnter={(e) => handleNavAnimation(e)}
-      onMouseLeave={(e) => handleNavAnimation(e)}
-      ref={navbar}
-    >
-      {user && (
-        <>
-          <div
-            className={`pin ${pinNav ? "active" : ""}`}
-            onClick={() => setPinNav(!pinNav)}
-          >
-            {pinNav ? <BsPinFill /> : <BsPin />}
-          </div>
-          <ul className="nav-list">
-            {auth_routes.map((item) => {
-              return (
-                <li
-                  className={`nav-item ${
-                    item.path === location.pathname ? "active" : ""
-                  }`}
-                >
-                  <a href={item.path}>
-                    {activeNav ? (
-                      <>
-                        {item.icon} {item.name}
-                      </>
-                    ) : (
-                      item.icon
-                    )}
-                  </a>
-                </li>
-              );
-            })}
-            <li className="nav-item" onClick={handleLogout}>
-              <span>
-                {activeNav ? (
-                  <>
-                    <LuLogOut /> Déconnexion
-                  </>
-                ) : (
-                  <LuLogOut />
-                )}
-              </span>
-            </li>
-          </ul>
-        </>
-      )}
-    </nav>
+    <div className="navbar-container">
+      <nav
+        className={`navigation ${user ? "left-tab-nav" : ""}`}
+        onMouseEnter={(e) => handleNavAnimation(e)}
+        onMouseLeave={(e) => handleNavAnimation(e)}
+        ref={navbar}
+      >
+        {user && (
+          <>
+            <div
+              className={`pin ${pinNav ? "active" : ""}`}
+              onClick={() => setPinNav(!pinNav)}
+            >
+              {pinNav ? <BsPinFill /> : <BsPin />}
+            </div>
+            <ul className="nav-list">
+              {auth_routes.map((item) => {
+                return (
+                  <li
+                    className={`nav-item ${
+                      item.path === location.pathname ? "active" : ""
+                    }`}
+                  >
+                    <a href={item.path}>
+                      {activeNav ? (
+                        <>
+                          {item.icon} {item.name}
+                        </>
+                      ) : (
+                        item.icon
+                      )}
+                    </a>
+                  </li>
+                );
+              })}
+              <li
+                className="nav-item"
+                onClick={() => setShowNotifications(!showNotifications)}
+              >
+                <span>
+                  {notificationsNotRead > 0 && (
+                    <h6>
+                      <Badge bg="danger">{notificationsNotRead}</Badge>
+                    </h6>
+                  )}
+                  {activeNav ? (
+                    <>
+                      <LuBell /> Notifications
+                    </>
+                  ) : (
+                    <LuBell />
+                  )}
+                </span>
+              </li>
+              <li className="nav-item" onClick={handleLogout}>
+                <span>
+                  {activeNav ? (
+                    <>
+                      <LuLogOut /> Déconnexion
+                    </>
+                  ) : (
+                    <LuLogOut />
+                  )}
+                </span>
+              </li>
+            </ul>
+          </>
+        )}
+      </nav>
+      <Notifications notifications={notifications} notificationsNotRead={notificationsNotRead} setShow={setShowNotifications}/>
+    </div>
   );
 }

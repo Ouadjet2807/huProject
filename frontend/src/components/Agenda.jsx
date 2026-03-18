@@ -21,11 +21,11 @@ import { useSelector } from "react-redux";
 
 export default function Agenda() {
   const [agenda, setAgenda] = useState({});
-  const [events, setEvents] = useState([])
+  const [events, setEvents] = useState([]);
   const [todayAgendaItems, setTodayAgendaItems] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState({});
   const [showEventForm, setShowEventForm] = useState(false);
-  const space = useSelector((state) => state.space)
+  const space = useSelector((state) => state.space);
   const [isLoading, setIsLoading] = useState(true);
 
   const today = new Date();
@@ -45,7 +45,7 @@ export default function Agenda() {
     previous: "Précédent",
     next: "Suivant",
     today: "Aujourd'hui",
-    month: "Mois", 
+    month: "Mois",
     week: "Semaine",
     day: "Jour",
     agenda: "Agenda",
@@ -55,10 +55,9 @@ export default function Agenda() {
   };
 
   const resetSelectedEvent = () => {
-    setSelectedEvent({})
-    setIsLoading(true)
+    setSelectedEvent({});
+    setIsLoading(true);
   };
-
 
   const displayDate = (start_date, end_date) => {
     const start = moment(start_date);
@@ -78,44 +77,45 @@ export default function Agenda() {
 
   useEffect(() => {
     console.log(space);
-    if(space && Object.keys(space).length > 0) {
+    if (space && Object.keys(space).length > 0) {
       console.log(space.agenda);
-      setAgenda(space.agenda)
-      setIsLoading(false)
+      setAgenda(space.agenda);
     }
   }, [space]);
 
   useEffect(() => {
-    if(!agenda && !isLoading) return
-    if (Object.keys(agenda).includes('items') && agenda.items.length > 0) {
-      console.log("agenda change");
-      agenda.items.forEach((item) => {
-        console.log(item);
-        console.log(item.category);
-        console.log(agenda.categories);
+    if (!agenda && !isLoading) return;
 
-        let find_category = agenda.categories.find(c => c.id === item.category)
-        item.category = find_category ? find_category : item.category
+    // Format event
+    if (Object.keys(agenda).includes("items") && agenda.items.length > 0) {
+      let formatted_events = JSON.stringify(agenda.items);
+      formatted_events = JSON.parse(formatted_events);
+      formatted_events.forEach((item) => {
+        let find_category = agenda.categories.find(
+          (c) => c.id == item.category,
+        );
+        console.log(item.category);
+        console.log(find_category);
+        item.category = find_category ? find_category : item.category;
         console.log(item);
         item.start_date = new Date(item.start_date);
         item.end_date = new Date(item.end_date);
         item.agenda_id = item.agenda.id;
       });
-      let searchTodaysEvent = agenda.items.filter(
+      let searchTodaysEvent = formatted_events.filter(
         (item) =>
           item.start_date.toLocaleDateString() === today.toLocaleDateString() ||
           item.end_date.toLocaleDateString() === today.toLocaleDateString(),
       );
-      setEvents(agenda.items)
+      setEvents(formatted_events);
       setTodayAgendaItems(searchTodaysEvent);
+      setIsLoading(false);
     }
-    setIsLoading(false)
   }, [agenda, isLoading]);
-
 
   console.log(todayAgendaItems);
   console.log(agenda);
-
+  console.log(isLoading);
 
   return (
     <div id="agenda">
@@ -154,27 +154,31 @@ export default function Agenda() {
             <small>
               {displayDate(selectedEvent.start_date, selectedEvent.end_date)}
             </small>
-            {
-              selectedEvent.description && selectedEvent.description !== "" ?
-
+            {selectedEvent.description && selectedEvent.description !== "" ? (
               <div className="description">{selectedEvent.description}</div>
-              :
-              <small><HiOutlineBars3BottomLeft /> Aucune description</small>
-            }
-            {selectedEvent.caregivers.length > 0 || selectedEvent.recipients.length > 0 ? <ListGroup className="participants">
-              {selectedEvent.caregivers
-                .concat(selectedEvent.recipients)
-                .map((item) => {
-                  return (
-                    <ListGroup.Item>
-                      {item.first_name} {item.last_name}
-                    </ListGroup.Item>
-                  );
-                })}
-            </ListGroup>
-          :
-          <small><LuUsersRound /> Aucun participant</small>  
-          }
+            ) : (
+              <small>
+                <HiOutlineBars3BottomLeft /> Aucune description
+              </small>
+            )}
+            {selectedEvent.caregivers.length > 0 ||
+            selectedEvent.recipients.length > 0 ? (
+              <ListGroup className="participants">
+                {selectedEvent.caregivers
+                  .concat(selectedEvent.recipients)
+                  .map((item) => {
+                    return (
+                      <ListGroup.Item>
+                        {item.first_name} {item.last_name}
+                      </ListGroup.Item>
+                    );
+                  })}
+              </ListGroup>
+            ) : (
+              <small>
+                <LuUsersRound /> Aucun participant
+              </small>
+            )}
           </div>
         ) : (
           <>
@@ -201,8 +205,13 @@ export default function Agenda() {
                         </div>
                         <div className="event-info">
                           <div className="time">
-                            {(event.start_date && typeof(event.start_date) !== 'string') && event.start_date.toTimeString().slice(0, 5)}-
-                            {(event.end_date && typeof(event.end_date) !== 'string') && event.end_date.toTimeString().slice(0, 5)}
+                            {event.start_date &&
+                              typeof event.start_date !== "string" &&
+                              event.start_date.toTimeString().slice(0, 5)}
+                            -
+                            {event.end_date &&
+                              typeof event.end_date !== "string" &&
+                              event.end_date.toTimeString().slice(0, 5)}
                           </div>
                           <span>{event.title}</span>
                         </div>
@@ -230,32 +239,37 @@ export default function Agenda() {
         </Button>
       </div>
       <div className="right-tab">
-        {!isLoading ? (
-          <Calendar
-            localizer={localizer}
-            events={events}
-            eventPropGetter={(event, start, end, isSelected) => {
-              let newStyle = {
-                backgroundColor: event.category ? event.category.color.background : "#92cfbc75",
-                color: event.category ? event.category.color.text : "#2A534C",
-                borderRadius: "5px",
-                border: event.category ? `1px solid ${event.category.color.text}` : "1px solid #2A534C",
-              };
-
-              return {
-                className: "",
-                style: newStyle,
-              };
-            }}
-            startAccessor="start_date"
-            endAccessor="end_date"
-            onSelectEvent={setSelectedEvent}
-            style={{ height: "100%", width: "100%" }}
-            messages={messages}
-          />
-        ) : (
-          <Loader />
+        {isLoading && (
+          <div className="loading-overlay">
+            <Loader />
+          </div>
         )}
+        <Calendar
+          localizer={localizer}
+          events={events}
+          eventPropGetter={(event, start, end, isSelected) => {
+            let newStyle = {
+              backgroundColor: event.category
+                ? event.category.color.background
+                : "#92cfbc75",
+              color: event.category ? event.category.color.text : "#2A534C",
+              borderRadius: "5px",
+              border: event.category
+                ? `1px solid ${event.category.color.text}`
+                : "1px solid #2A534C",
+            };
+
+            return {
+              className: "",
+              style: newStyle,
+            };
+          }}
+          startAccessor="start_date"
+          endAccessor="end_date"
+          onSelectEvent={setSelectedEvent}
+          style={{ height: "100%", width: "100%" }}
+          messages={messages}
+        />
       </div>
     </div>
   );

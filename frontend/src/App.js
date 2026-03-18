@@ -21,7 +21,21 @@ function App() {
   const { user, space, setRefreshSpace } = useContext(AuthContext);
   const { showToast, setShowToast, message, color } = useContext(ToastContext);
   const { showConfirm, setShowConfirm, action, text, setReturnValue, returnValue } = useContext(ConfirmContext);
+  const [notifications, setNotifications] = useState([])
 
+  const getNotifications = async () => {
+    try {
+      let response = await api.get("http://127.0.0.1:8000/api/notifications/")
+
+      setNotifications(response.data)
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  useEffect(() => {
+    getNotifications()
+  }, [user])
   console.log("user ", user);
   console.log("space ", space)
 
@@ -30,7 +44,7 @@ function App() {
       <Toast show={showToast} setShow={setShowToast} message={message} color={color}/>
       <Confirm show={showConfirm} setShow={setShowConfirm} text={text} action={action} setReturnValue={setReturnValue}/>
       <BrowserRouter>
-        <Navbar />
+        <Navbar notifications={notifications}/>
         <Routes>
           <Route path="login" element={<Sign />} />
           <Route path="account" element={<Account />} />

@@ -55,8 +55,8 @@
     height: 100%;
 
     .todo-item {
-      display: grid;
-      grid-template-columns: 85% 12%;
+      display: flex;
+      justify-content: space-between;
       gap: 5px;
       transition: 0.3s ease-in;
       background: #ffffffcc;

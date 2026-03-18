@@ -74,7 +74,7 @@ class TodoListAdmin(admin.ModelAdmin):
 
 
 @admin.register(Invitation)
-class TodoListAdmin(admin.ModelAdmin):
+class TodoListItemAdmin(admin.ModelAdmin):
     list_display = ('token', 'space', 'email', 'role', 'created_at', 'expires_at', 'sender')
     search_fields = ('token', 'space', 'role')
 

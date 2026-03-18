@@ -10,7 +10,6 @@ import Badge from "react-bootstrap/Badge";
 import { LuCalendarPlus } from "react-icons/lu";
 import { MdOutlinePermContactCalendar } from "react-icons/md";
 import { LuCalendarCheck2 } from "react-icons/lu";
-import api from "../api/api";
 import Loader from "./Loader";
 import { TiArrowBackOutline } from "react-icons/ti";
 import { IoLockClosedOutline } from "react-icons/io5";
@@ -22,6 +21,7 @@ import { BsFilter } from "react-icons/bs";
 import Dropdown from "react-bootstrap/Dropdown";
 import Form from 'react-bootstrap/Form';
 import { PiTagDuotone } from "react-icons/pi";
+import { useNavigate, useParams } from "react-router-dom"; 
 
 export default function Agenda() {
   const [agenda, setAgenda] = useState({});
@@ -34,6 +34,10 @@ export default function Agenda() {
   const [hiddenCategories, setHiddenCategories] = useState([])
 
   const today = new Date();
+
+  const { id } = useParams()
+
+  const navigate = useNavigate()
 
   const date_options = {
     weekday: "long",
@@ -60,6 +64,7 @@ export default function Agenda() {
   };
 
   const resetSelectedEvent = () => {
+    navigate('/calendar')
     setSelectedEvent({});
     setIsLoading(true);
   };
@@ -90,17 +95,14 @@ export default function Agenda() {
   };
 
   useEffect(() => {
-    console.log(space);
     if (space && Object.keys(space).length > 0) {
-      console.log(space.agenda);
       setAgenda(space.agenda);
     }
   }, [space]);
 
   useEffect(() => {
     if (!agenda) return;
-    console.log("formatting");
-    
+
     // Format event
     if (Object.keys(agenda).includes("items") && agenda.items.length > 0) {
       let formatted_events = JSON.stringify(agenda.items);
@@ -109,13 +111,13 @@ export default function Agenda() {
         let find_category = agenda.categories.find(
           (c) => c.id == item.category,
         );
-        console.log(item.category);
-        console.log(find_category);
+
         item.category = find_category ? find_category : item.category;
-        console.log(item);
         item.start_date = new Date(item.start_date);
         item.end_date = new Date(item.end_date);
         item.agenda_id = item.agenda.id;
+
+        item.reminder = typeof(item.reminder) == "str" ? JSON.parse(item.reminder) : {}
       });
       let searchTodaysEvent = formatted_events.filter(
         (item) =>
@@ -130,13 +132,19 @@ export default function Agenda() {
   }, [agenda, isLoading, hiddenCategories]);
 
 
-  console.log(todayAgendaItems);
-  console.log(agenda);
+  useEffect(() => {
+
+    if(isLoading) return
+
+    if(!id || events.length <= 0) {
+      setSelectedEvent({});
+    } else {
+      setSelectedEvent(events.find(e => e.id === id))
+    }
+  }, [id, events])
+
   console.log(isLoading);
-  console.log(events);
-  
-  console.log(hiddenCategories);
-  
+  console.log(selectedEvent);
 
   return (
     <div id="agenda">
@@ -147,7 +155,6 @@ export default function Agenda() {
         setShow={setShowEventForm}
         show={showEventForm}
         preloadedEvent={selectedEvent}
-        // fetchAgenda={fetchAgenda}
         setSelectedEvent={setSelectedEvent}
       />
       <div className="left-tab">

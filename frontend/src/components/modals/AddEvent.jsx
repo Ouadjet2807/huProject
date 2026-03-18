@@ -15,7 +15,7 @@ import { MdOutlineTitle } from "react-icons/md";
 import CreateCategory from "./CreateCategory";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { ToastContext } from "../../context/ToastContext";
-import { ConfirmContext } from "../../context/ConfirmContext.js"
+import { ConfirmContext } from "../../context/ConfirmContext.js";
 import { LuCalendarPlus } from "react-icons/lu";
 import ListGroup from "react-bootstrap/ListGroup";
 import FloatingLabel from "react-bootstrap/FloatingLabel";
@@ -23,14 +23,24 @@ import { IoIosClose } from "react-icons/io";
 import { AiOutlineUsergroupAdd } from "react-icons/ai";
 import { HiOutlineBars3BottomLeft } from "react-icons/hi2";
 import { useSelector } from "react-redux";
+import { BsCheck2 } from "react-icons/bs";
+import { LuAlarmClockCheck } from "react-icons/lu";
 
-export default function AddEvent({ agenda, setAgenda, show, setShow, preloadedEvent, fetchAgenda, setSelectedEvent }) {
+export default function AddEvent({
+  agenda,
+  setAgenda,
+  show,
+  setShow,
+  preloadedEvent,
+  fetchAgenda,
+  setSelectedEvent,
+}) {
   moment.locale("fr");
   const { user } = useContext(AuthContext);
   const space = useSelector((state) => state.space);
   const { setShowToast, setMessage, setColor } = useContext(ToastContext);
   const { showConfirm, setShowConfirm, setText, setAction, returnValue } =
-  useContext(ConfirmContext);
+    useContext(ConfirmContext);
 
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [showCreateCategory, setShowCreateCategory] = useState(false);
@@ -42,6 +52,16 @@ export default function AddEvent({ agenda, setAgenda, show, setShow, preloadedEv
 
   const participantsListRef = useRef();
 
+  const reminders = [
+    { name: "5 minutes avant", value: ["minutes", 5] },
+    { name: "15 minutes avant", value: ["minutes", 15] },
+    { name: "30 minutes avant", value: ["minutes", 30] },
+    { name: "1 heure avant", value: ["hours", 1] },
+    { name: "2 heures avant", value: ["hours", 2] },
+    { name: "12 heures avant", value: ["hours", 12] },
+    { name: "1 jour avant", value: ["days", 1] },
+    { name: "1 semaine avant", value: ["weeks", 1] },
+  ];
 
   let default_start_date = moment()
     .minutes(0)
@@ -58,7 +78,7 @@ export default function AddEvent({ agenda, setAgenda, show, setShow, preloadedEv
     .local()
     .format();
 
-  const [formData, setFormData] = useState({
+    const initialEventData = {
     title: "",
     private: false,
     category: null,
@@ -69,7 +89,11 @@ export default function AddEvent({ agenda, setAgenda, show, setShow, preloadedEv
     agenda: "",
     caregivers: [],
     recipients: [],
-  });
+    reminder: { name: "15 minutes avant", value: ["minutes", 15] },
+  }
+
+  const [formData, setFormData] = useState(initialEventData);
+
 
   const handleChange = (e) => {
     // handling different input types
@@ -106,7 +130,7 @@ export default function AddEvent({ agenda, setAgenda, show, setShow, preloadedEv
   const deselectParticipant = (item) => {
     let key = "";
 
-    if (space.caregivers.some((elem) => elem.id=== item.id)) {
+    if (space.caregivers.some((elem) => elem.id === item.id)) {
       key = "caregivers";
     } else key = "recipients";
 
@@ -119,14 +143,14 @@ export default function AddEvent({ agenda, setAgenda, show, setShow, preloadedEv
     e.stopPropagation();
     let key = "";
 
-    if (space.caregivers.some((elem) => elem.id=== item.id)) {
+    if (space.caregivers.some((elem) => elem.id === item.id)) {
       key = "caregivers";
     } else key = "recipients";
     setFormData((prev) => ({ ...prev, [key]: [...prev[key], item] }));
   };
 
   const selectCategory = (category) => {
-    console.log('select category');
+    console.log("select category");
 
     setFormData((prev) => ({
       ...prev,
@@ -137,16 +161,17 @@ export default function AddEvent({ agenda, setAgenda, show, setShow, preloadedEv
   };
 
   const deleteEvent = async () => {
-    if(!preloadedEvent.id) return
-    setText("Êtes-vous sûr(e) de vouloir supprimer cet évenement ?")
+    if (!preloadedEvent.id) return;
+    setText("Êtes-vous sûr(e) de vouloir supprimer cet évenement ?");
     setAction(() => async () => {
-          await api.delete(`http://127.0.0.1:8000/api/agenda_items/${preloadedEvent.id}`)
-          handleClose()
-          setSelectedEvent({})
-        })
+      await api.delete(
+        `http://127.0.0.1:8000/api/agenda_items/${preloadedEvent.id}`,
+      );
+      handleClose();
+      setSelectedEvent({});
+    });
     setShowConfirm(true);
-  }
-
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -154,23 +179,26 @@ export default function AddEvent({ agenda, setAgenda, show, setShow, preloadedEv
     console.log(formData);
 
     try {
-      let response = ""
-      if(Object.keys(preloadedEvent).length > 0) {
+      let response = "";
+      if (Object.keys(preloadedEvent).length > 0) {
         response = await api.put(
           `http://127.0.0.1:8000/api/agenda_items/${preloadedEvent.id}/`,
           formData,
         );
-        let index = agenda.items.indexOf(formData)
-        let filter = agenda.items.toSpliced(index, 1, formData)
-        setAgenda(prev => ({...prev, "items": filter}))
-         setMessage("Événement modifié avec succès");
+        let index = agenda.items.indexOf(formData);
+        let filter = agenda.items.toSpliced(index, 1, formData);
+        setAgenda((prev) => ({ ...prev, items: filter }));
+        setMessage("Événement modifié avec succès");
       } else {
         response = await api.post(
           "http://127.0.0.1:8000/api/agenda_items/",
           formData,
         );
-        setAgenda(prev => ({...prev, "items": [...prev.items, response.data] }))
-         setMessage("Événement crée avec succès");
+        setAgenda((prev) => ({
+          ...prev,
+          items: [...prev.items, response.data],
+        }));
+        setMessage("Événement crée avec succès");
       }
 
       setShowToast(true);
@@ -194,12 +222,12 @@ export default function AddEvent({ agenda, setAgenda, show, setShow, preloadedEv
       await api.delete(
         `http://127.0.0.1:8000/api/agenda_item_categories/${id}`,
       );
-      let filterCategories = agenda.categories.filter(cat => cat.id !== id)
+      let filterCategories = agenda.categories.filter((cat) => cat.id !== id);
       console.log(filterCategories);
-      setAgenda(prev => ({...prev, categories: filterCategories}))
+      setAgenda((prev) => ({ ...prev, categories: filterCategories }));
       if (selectedCategory.id === id) {
-        setSelectedCategory(null)
-        setFormData(prev => ({...prev, category: ""}))
+        setSelectedCategory(null);
+        setFormData((prev) => ({ ...prev, category: "" }));
       }
     } catch (error) {
       console.log(error);
@@ -208,18 +236,7 @@ export default function AddEvent({ agenda, setAgenda, show, setShow, preloadedEv
 
   const handleClose = () => {
     if (!preloadedEvent) {
-      setFormData({
-        title: "",
-        private: false,
-        category: "",
-        description: "",
-        start_date: default_start_date,
-        end_date: default_end_date,
-        created_by: "",
-        agenda_id: "",
-        caregivers: [],
-        recipients: [],
-      });
+      setFormData({initialEventData});
     }
     setShow(false);
   };
@@ -258,26 +275,19 @@ export default function AddEvent({ agenda, setAgenda, show, setShow, preloadedEv
 
   useEffect(() => {
     if (Object.keys(preloadedEvent).length <= 0) {
-      setFormData({
-        title: "",
-        private: false,
-        category: null,
-        description: "",
+      setFormData(prev => ({
+        ...prev,
         start_date: default_start_date,
         end_date: default_end_date,
-        agenda: (agenda && agenda.id) && agenda.id,
+        agenda: agenda && agenda.id && agenda.id,
         created_by: user && user.id,
-        caregivers: [],
-        recipients: [],
-      });
+      }));
     } else {
       preloadedEvent.start_date = moment(preloadedEvent.start_date).format();
       preloadedEvent.end_date = moment(preloadedEvent.end_date).format();
       setFormData(preloadedEvent);
     }
   }, [preloadedEvent]);
-
-  
 
   useEffect(() => {
     if (!user || !user.id || !space) return;
@@ -286,13 +296,13 @@ export default function AddEvent({ agenda, setAgenda, show, setShow, preloadedEv
       .concat(space.recipients);
     console.log(
       all_participants.filter(
-        (elem) => !selectedParticipants.some((e) => e.id=== elem.id),
+        (elem) => !selectedParticipants.some((e) => e.id === elem.id),
       ),
     );
 
     setParticipantsList(
       all_participants.filter(
-        (elem) => !selectedParticipants.some((e) => e.id=== elem.id),
+        (elem) => !selectedParticipants.some((e) => e.id === elem.id),
       ),
     );
 
@@ -325,9 +335,8 @@ export default function AddEvent({ agenda, setAgenda, show, setShow, preloadedEv
     }
   }, [searchParticipants]);
 
-  console.log(selectedCategory);
+  console.log(agenda.categories);
   console.log(formData);
-  
 
   return (
     <>
@@ -345,82 +354,123 @@ export default function AddEvent({ agenda, setAgenda, show, setShow, preloadedEv
       >
         <Modal.Header closeButton>
           <Modal.Title>
-            <LuCalendarPlus /> {Object.keys(preloadedEvent).length > 0 ? "Modifier" : "Ajouter"} un événement
+            <LuCalendarPlus />{" "}
+            {Object.keys(preloadedEvent).length > 0 ? "Modifier" : "Ajouter"} un
+            événement
           </Modal.Title>{" "}
-          <Dropdown className="categories-dropdown">
-            <Dropdown.Toggle id="dropdown-basic">
-              {selectedCategory ? (
-                <>
-                  <div className="label">
-                    <PiTagDuotone
-                      style={{ color: selectedCategory.color.text }}
-                    />
-                    {selectedCategory.name}
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div className="label">
-                    <PiTagDuotone /> Catégorie
-                  </div>
-                </>
-              )}
-            </Dropdown.Toggle>
+          <div className="parameters">
+            <Dropdown className="categories-dropdown">
+              <Dropdown.Toggle id="dropdown-basic">
+                {selectedCategory ? (
+                  <>
+                    <div className="label">
+                      <PiTagDuotone
+                        style={{ color: selectedCategory.color.text }}
+                      />
+                      {selectedCategory.name}
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="label">
+                      <PiTagDuotone /> Catégorie
+                    </div>
+                  </>
+                )}
+              </Dropdown.Toggle>
 
-            <Dropdown.Menu>
-              {agenda && agenda.categories && agenda.categories.length > 0 &&
-                agenda.categories.map((category) => {
+              <Dropdown.Menu>
+                {agenda &&
+                  agenda.categories &&
+                  agenda.categories.length > 0 &&
+                  agenda.categories.map((category) => {
+                    return (
+                      <Dropdown.Item
+                        className={`${formData.category && formData.category === category.id ? 'selected' : ''}`}
+                        onClick={() => {
+                          selectCategory(category);
+                        }}
+                      >
+                        <div className="tag">
+                          <PiTagDuotone
+                            style={{ color: category.color.background }}
+                          />
+                          {category.name}
+                        </div>
+                        <div
+                          className="delete"
+                          onClick={(e) => handleDelete(e, category.id)}
+                        >
+                          <FaRegTrashAlt />
+                        </div>
+                      </Dropdown.Item>
+                    );
+                  })}
+                <Dropdown.Divider />
+                <Dropdown.Item onClick={() => setShowCreateCategory(true)}>
+                  Nouvelle catégorie
+                </Dropdown.Item>
+                {selectedCategory && (
+                  <Dropdown.Item onClick={() => setSelectedCategory(null)}>
+                    Effacer
+                  </Dropdown.Item>
+                )}
+              </Dropdown.Menu>
+            </Dropdown>
+            <Dropdown className="reminders-dropdown">
+              <Dropdown.Toggle id="dropdown-basic">
+                <div className="label">
+                  <LuAlarmClockCheck />
+                  {formData.reminder
+                    ? formData.reminder.name
+                    : reminders[1].name}
+                </div>
+              </Dropdown.Toggle>
+
+              <Dropdown.Menu>
+                {reminders.map((reminder) => {
                   return (
                     <Dropdown.Item
+                      className={`${formData.reminder && JSON.stringify(formData.reminder.value) === JSON.stringify(reminder.value) ? 'selected' : ''}`}
+                      style={{
+                        display: "flex",
+                        gap: "10px",
+                        alignItems: "center",
+                      }}
                       onClick={() => {
-                        selectCategory(category);
+                        setFormData((prev) => ({
+                          ...prev,
+                          reminder: reminder,
+                        }));
                       }}
                     >
-                      <div className="tag">
-                        <PiTagDuotone
-                          style={{ color: category.color.background }}
-                        />
-                        {category.name}
-                      </div>
-                      <div
-                        className="delete"
-                        onClick={(e) => handleDelete(e, category.id)}
-                      >
-                        <FaRegTrashAlt />
-                      </div>
+                      <BsCheck2 />
+                      {reminder.name}
                     </Dropdown.Item>
                   );
                 })}
-              <Dropdown.Divider />
-              <Dropdown.Item onClick={() => setShowCreateCategory(true)}>
-                Nouvelle catégorie
-              </Dropdown.Item>
-              {selectedCategory && (
-                <Dropdown.Item onClick={() => setSelectedCategory(null)}>
-                  Effacer
-                </Dropdown.Item>
-              )}
-            </Dropdown.Menu>
-          </Dropdown>
-          <Form.Check
-            type="switch"
-            id="custom-switch"
-            checked={formData.private}
-            onChange={() =>
-              setFormData((prev) => ({ ...prev, private: !prev.private }))
-            }
-            label={
-              formData.private ? (
-                <>
-                  <IoLockClosedOutline /> Privé
-                </>
-              ) : (
-                <>
-                  <IoLockOpenOutline /> Privé
-                </>
-              )
-            }
-          />
+              </Dropdown.Menu>
+            </Dropdown>
+            <Form.Check
+              type="switch"
+              id="custom-switch"
+              checked={formData.private}
+              onChange={() =>
+                setFormData((prev) => ({ ...prev, private: !prev.private }))
+              }
+              label={
+                formData.private ? (
+                  <>
+                    <IoLockClosedOutline /> Privé
+                  </>
+                ) : (
+                  <>
+                    <IoLockOpenOutline /> Privé
+                  </>
+                )
+              }
+            />
+          </div>
         </Modal.Header>
         <Modal.Body>
           <Form action="" className="add-event">
@@ -553,12 +603,14 @@ export default function AddEvent({ agenda, setAgenda, show, setShow, preloadedEv
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="md-green" onClick={handleSubmit}>{Object.keys(preloadedEvent).length > 0 ? "Modifier" : "Créer"}</Button>
-          {Object.keys(preloadedEvent).length > 0 && 
-          <Button variant="outline-danger" onClick={deleteEvent}>
-            Supprimer
+          <Button variant="md-green" onClick={handleSubmit}>
+            {Object.keys(preloadedEvent).length > 0 ? "Modifier" : "Créer"}
           </Button>
-          }
+          {Object.keys(preloadedEvent).length > 0 && (
+            <Button variant="outline-danger" onClick={deleteEvent}>
+              Supprimer
+            </Button>
+          )}
           <Button variant="outline-secondary" onClick={handleClose}>
             Annuler
           </Button>

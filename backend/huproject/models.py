@@ -281,6 +281,8 @@ class AgendaItem(models.Model):
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='creator_item')
     caregivers = models.ManyToManyField(Caregiver, related_name='caregivers_item')
     recipients = models.ManyToManyField(Recipient, blank=True, related_name='recipients_item')
+    reminder = models.JSONField(default=dict, null=False)
+    reminder_sent = models.BooleanField(default=False, null=False)
 
 
 class TodoList(models.Model):

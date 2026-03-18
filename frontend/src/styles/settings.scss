@@ -141,7 +141,7 @@ button {
 .btn-outline-md-green {
   border: 1px solid $mediumGreen2 !important;
   color: $mediumGreen2 !important;
-  
+
   &:hover {
     background: $mediumGreen2 !important;
     color: $white !important;
@@ -178,5 +178,10 @@ small {
 .form-check-input,
 .form-range,
 .form-switch {
-  filter: hue-rotate(300deg) !important;
+  filter: hue-rotate(330deg) !important;
+}
+
+.form-control:focus {
+  border-color: #4dc3a5;
+  box-shadow: 0 0 0 0.25rem rgb(99 185 151 / 25%);
 }

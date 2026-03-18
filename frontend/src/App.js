@@ -56,6 +56,7 @@ function App() {
             }
           />
           <Route path="calendar" element={<Agenda space={space}/>} />
+          <Route path="calendar/:id" element={<Agenda space={space}/>} />
           <Route path="create_recipient" element={<CreateRecipient />} />
           <Route path="accept-invite/:token" element={<AcceptInvite />} />
           <Route

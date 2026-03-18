@@ -1,6 +1,8 @@
 .add-event-modal {
   .modal-header {
-    gap: 40px;
+    display: grid;
+    grid-template-columns: 90% 10%;
+    gap: 10px;
 
     .modal-title {
       display: flex;
@@ -13,74 +15,139 @@
       width: 50%;
     }
 
-    .form-switch {
-      label {
-        display: flex;
-        align-items: center;
-        gap: 5px;
+    .btn-close {
+      grid-row: 1;
+      grid-column: 2;
+      margin-right: 0vw;
+    }
+
+    .dropdown {
+      .dropdown-menu {
+
+        .dropdown-item {
+
+          &:active, &:focus-visible {
+            filter: hue-rotate(300deg) !important;
+          }
+
+          &.selected {
+            border: 1px solid $whiteGreen;
+            background: $pearl;
+            border-radius: $borderRadiusSmall;
+          }
+        }
       }
     }
 
-    .categories-dropdown {
-      width: 35%;
+    .parameters {
+      display: grid;
+      grid-template-columns: 32% 32% 32%;
+      grid-row: 2;
+      grid-column: 1/3;
+      width: 100%;
+      gap: 15px;
+      align-items: center;
+      justify-items: center;
+      justify-content: center;
 
-      button {
+      > div {
         width: 100%;
-        text-align: left;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background: transparent;
-        border: 1px solid $bsInputBorderColor;
-        color: $charcoal;
-
-        svg {
-          transform: rotateY(180deg);
-          color: $greyGreen;
-        }
       }
 
-      .label {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-      }
-
-      .dropdown-menu {
-        width: 100%;
-        border-color: $bsInputBorderColor;
-
-        .dropdown-divider {
-          border-color: $bsInputBorderColor;
-        }
-
-        .dropdown-item {
-          cursor: pointer;
+      .form-switch {
+        label {
           display: flex;
           align-items: center;
+          gap: 5px;
+        }
+      }
+      .reminders-dropdown {
+        button {
+          width: 100%;
+          text-align: left;
+          display: flex;
           justify-content: space-between;
+          align-items: center;
+          background: transparent;
+          border: 1px solid $bsInputBorderColor;
+          color: $charcoal;
 
-          .tag {
-            display: flex;
-            gap: 10px;
-            align-items: center;
+          svg {
+            transform: rotateY(180deg);
+            color: $greyGreen;
+          }
+        }
 
-            svg {
-              transform: rotateY(180deg);
-            }
+        .label {
+          display: flex;
+          align-items: center;
+          gap: 5px;
+        }
+
+        .dropdown-menu {
+          width: 100%;
+        }
+      }
+
+      .categories-dropdown {
+        button {
+          width: 100%;
+          text-align: left;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          background: transparent;
+          border: 1px solid $bsInputBorderColor;
+          color: $charcoal;
+
+          svg {
+            transform: rotateY(180deg);
+            color: $greyGreen;
+          }
+        }
+
+        .label {
+          display: flex;
+          align-items: center;
+          gap: 5px;
+        }
+
+        .dropdown-menu {
+          width: 100%;
+          border-color: $bsInputBorderColor;
+
+          .dropdown-divider {
+            border-color: $bsInputBorderColor;
           }
 
-          .delete {
+          .dropdown-item {
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
 
-            svg {
-              color: $whiteGreen;
-              transition: 0.3s ease-in;
+            .tag {
+              display: flex;
+              gap: 10px;
+              align-items: center;
+
+              svg {
+                transform: rotateY(180deg);
+              }
             }
 
-            &:hover {
+            .delete {
+              cursor: pointer;
+
               svg {
-                color: gray;
+                color: $whiteGreen;
+                transition: 0.3s ease-in;
+              }
+
+              &:hover {
+                svg {
+                  color: gray;
+                }
               }
             }
           }
@@ -164,7 +231,6 @@
     }
 
     .form-floating {
-
       > label {
         color: $greyGreen;
         font-size: 14px;

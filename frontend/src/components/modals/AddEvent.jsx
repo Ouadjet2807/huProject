@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import api from "../../api/api";
-import Agenda from "../Agenda";
 import { IoLockClosedOutline } from "react-icons/io5";
 import { IoLockOpenOutline } from "react-icons/io5";
 import { LuClock3 } from "react-icons/lu";

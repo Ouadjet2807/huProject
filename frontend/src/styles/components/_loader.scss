@@ -8,16 +8,19 @@
 
   .loader {
     width: max-content;
-    height:  max-content;
+    height: max-content;
     gap: 15px;
     padding: 8px;
     aspect-ratio: 1;
     border-radius: 50%;
+    transform-origin: center;
     display: grid;
     grid-template-columns: 40% 40%;
     justify-items: center;
     align-items: center;
-    animation: 1s linear 0.3s infinite running spin, 0.3s linear 0s forwards running appear;
+    animation:
+      1s linear 0.3s infinite running spin,
+      0.3s linear 0s forwards running appear;
 
     > * {
       background: $aqua;
@@ -32,24 +35,35 @@
       }
     }
   }
+
+  &.overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    background: #ffffffc4;
+    border-radius: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+  }
 }
 
 @keyframes spin {
-   0% {
+  0% {
     rotate: 0;
-   }
-   100% {
+  }
+  100% {
     rotate: 360deg;
-   }
+  }
 }
 
 @keyframes appear {
-   0% {
-    transform: scale(0);
+  0% {
     opacity: 0;
-   }
-   100% {
-    transform: scale(1);
+  }
+  100% {
     opacity: 1;
-   }
+  }
 }

@@ -22,9 +22,9 @@ export const AuthProvider = ({ children }) => {
   const [refreshSpace, setRefreshSpace] = useState(false);
 
   const fetchSpaces = async () => {
+    setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-
       if (token) {
         const res = await api.get("http://127.0.0.1:8000/api/spaces/");
         dispatch(setValues(res.data[0]));
@@ -37,6 +37,7 @@ export const AuthProvider = ({ children }) => {
       }
     } finally {
       setRefreshSpace(false);
+      setLoading(false);
     }
   };
 
@@ -175,9 +176,15 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    fetchSpaces();
+    if(space.id == "" || refreshSpace) {
+      fetchSpaces();
+    }
   }, [refreshSpace, user]);
 
+  useEffect(() => {
+    console.log(space);
+
+  }, [space])
   useEffect(() => {
     if (!loading) {
       initAuth();

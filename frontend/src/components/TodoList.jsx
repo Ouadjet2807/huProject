@@ -91,7 +91,6 @@ export default function TodoList({ user }) {
 
   const updateTodo = async (todo) => {
     console.log(todo);
-    
     todo.completed = !todo.completed;
     todo.completed_by = user;
     todo.completed_by_id = user.id;
@@ -100,7 +99,6 @@ export default function TodoList({ user }) {
     console.log(todo);
     let initial_index = todoList.indexOf(todo)
     console.log(initial_index);
-    
 
     let filter = todoList.toSpliced(initial_index, 1, todo);
 
@@ -132,9 +130,10 @@ export default function TodoList({ user }) {
   };
 
   useEffect(() => {
-    if (!user || !Object.keys(space).length > 0 || !space.todos) return;
+    if (!user || !Object.keys(space).length > 0 || !space.todos.items) return;
 
-    setTodoList(space.todos.items);
+    let json_todos = JSON.stringify(space.todos.items)
+    setTodoList(JSON.parse(json_todos));
 
     setNewTask({
       todo_list: space.todos.id,
@@ -149,8 +148,6 @@ export default function TodoList({ user }) {
   }, [user, space]);
 
   useEffect(() => {
-    console.log(todoList);
-
     const filterCategories = () => {
       if (activeCategory !== "all") {
         let filter = todoList.filter(
@@ -163,32 +160,6 @@ export default function TodoList({ user }) {
     };
     filterCategories();
   }, [activeCategory, todoList]);
-
-  useEffect(() => {
-
-    // const resetTodo = () => {
-    //   console.log('reset');
-    //   const frequencies = {
-    //     daily: "days",
-    //     weekly: "weeks",
-    //     monthly: "months",
-    //   };
-
-    //   todoList.forEach((todo, index) => {
-    //     console.log(index);
-    //     const updated_date = moment(todo.updated_at);
-    //     if (!todo.completed || todo.frequency === 'punctual') return;
-
-    //     const frequency = frequencies[todo.frequency];
-
-    //     if (moment().diff(updated_date, frequency) >= 1) {
-    //       updateTodo(todo);
-    //     }
-    //   });
-    // };
-
-    // resetTodo();
-  }, [todoList]);
 
   console.log(newTask);
   console.log(todoList);

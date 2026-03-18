@@ -210,6 +210,10 @@ CELERY_BEAT_SCHEDULE = {
         "task": "huproject.tasks.check_treatment_expiration",
         "schedule":crontab(minute='*/1',)
     },
+    "check-event-reminder-daily": {
+        "task": "huproject.tasks.check_events_reminder",
+        "schedule":crontab(minute='*/1',)
+    },
     "reset-todos-daily": {
         "task": "huproject.tasks.reset_todos",
         "schedule":crontab(hour=0, minute=0,)

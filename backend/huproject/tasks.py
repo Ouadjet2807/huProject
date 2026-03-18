@@ -5,17 +5,12 @@ from dateutil.relativedelta import relativedelta
 from .models import *
 import json
 
-def register_notification(item, message, title):
-    space = item.space
-    data = {
-       "type": "treatment",
-       "objects": [str(item.id)]
-    }
-    json_data = json.dumps(data)
-    path = f"/recipient/{item.prescribed_to.id}/treatments/{str(item.id)}"
+def register_notification(message, title, data, path, space, receivers):
 
-    for caregiver in space.caregivers.all():
-        Notification.objects.create(space=item.space, title=title, message=message, user=caregiver, reference_item=json_data, object_path=path)
+    json_data = json.dumps(data)
+
+    for receiver in receivers:
+        Notification.objects.create(space=space, title=title, message=message, user=receiver, reference_item=json_data, object_path=path)
 
 @shared_task
 def check_treatment_expiration():
@@ -28,16 +23,32 @@ def check_treatment_expiration():
 
     for treatment in treatments:
 
+        data = {
+            "type": "treatment",
+            "objects": [str(treatment.id)]
+            }
+
+        path = f"/recipient/{treatment.prescribed_to.id}/treatments/{str(treatment.id)}"
+
+        space = treatment.space
+
         if treatment.end_date == reminder_date and not treatment.reminder_sent:
 
+            title = "Un traitement va bientôt expirer"
+            message = f"Le traitement {treatment.name} arrive à expiration dans 7 jours"
+
             register_notification(
-                treatment, f"Le traitement {treatment.name} arrive à expiration dans 7 jours", "Un traitement va bientôt expirer"
+                message, title, data, path, space, space.caregivers.all()
             )
             treatment.reminder_sent = True
             treatment.save()
         if treatment.end_date == (today - timedelta(1)) and not treatment.expired_notification_sent:
+
+            title = "Un traitement a expiré"
+            message = f"Le traitement {treatment.name} a expiré"
+
             register_notification(
-                treatment, f"Le traitement {treatment.name} a expiré", "Un traitement a expiré"
+                message, title, data, path, space, space.caregivers.all()
             )
 
             treatment.expired_notification_sent = True
@@ -66,6 +77,52 @@ def reset_todos():
                 item.completed = False
                 item.save()
 
+@shared_task
+def check_events_reminder():
+
+    events = AgendaItem.objects.all()
+
+    now = timezone.now() + timedelta(hours=1)
+
+    frequency_fr = {
+        "minutes": "minute(s)",
+        "hours": "heure(s)",
+        "days": "jour(s)",
+        "weeks": "semaine(s)"
+    }
+
+    for event in events:
+
+        if event.reminder_sent or not event.reminder or type(event.reminder) == 'str':
+            continue
+
+        reminder_dict = json.loads(event.reminder)
+
+        timedeltaKwargs = {f"{reminder_dict['value'][0]}": reminder_dict["value"][1]}
+        reminder_time = event.start_date - timedelta(**timedeltaKwargs)
+        print(f"reminder_time: {reminder_time}")
+        print(f"start_date: {event.start_date}")
+        print(f"now: {now.replace(microsecond=0)}")
+        print(now.replace(microsecond=0) == reminder_time)
+        if reminder_time == now.replace(microsecond=0):
 
 
+            title = f"Rappel d'événement"
+            message = f'Rappel de votre événement "{event.title}" dans {reminder_dict["value"][1]} {frequency_fr[str(reminder_dict["value"][0])]}'
+
+            data = {
+                "type": "event",
+                "objects": [str(event.id)]
+            }
+
+            path = f"/calendar/{str(event.id)}"
+
+            space = Space.objects.get(agenda_space=event.agenda)
+
+            register_notification(
+                message, title, data, path, space, event.caregivers.all()
+            )
+
+            event.reminder_sent = True
+            event.save()
 

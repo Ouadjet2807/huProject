@@ -213,15 +213,19 @@ class AgendaItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = AgendaItem
-        fields = ['id', 'agenda', 'category', 'private', 'title', 'description', 'created_at', 'start_date','end_date', 'created_by', 'caregivers', 'recipients']
+        fields = ['id', 'agenda', 'category', 'private', 'title', 'description', 'created_at', 'start_date','end_date', 'created_by', 'caregivers', 'recipients', 'reminder']
         read_only_fields = ['id', 'created_at', 'created_by']
 
     def create(self, validated_data):
 
         caregivers_data = validated_data.pop('caregivers', None)
         recipients_data = validated_data.pop('recipients', None)
+        reminder = validated_data.pop("reminder", None)
 
-        agenda_item = AgendaItem.objects.create(**validated_data)
+        if reminder is not None:
+            reminder = json.dumps(reminder)
+
+        agenda_item = AgendaItem.objects.create(**validated_data, reminder=reminder)
 
         for recipient in recipients_data:
             agenda_item.recipients.add(recipient['id'])

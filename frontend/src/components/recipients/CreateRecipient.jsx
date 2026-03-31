@@ -57,8 +57,6 @@ export default function CreateRecipient({
     }));
   }, [space]);
 
-  console.log(formData);
-
   return (
     <Modal show={show} onHide={handleClose} className="create-recipient-modal">
       <Modal.Header closeButton>

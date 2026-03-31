@@ -6,7 +6,7 @@ import React, {
   useEffectEvent,
 } from "react";
 import { AuthContext } from "../context/AuthContext";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { RiAccountPinCircleLine } from "react-icons/ri";
@@ -69,8 +69,6 @@ export default function Navbar({ notifications }) {
       const refreshToken = localStorage.getItem("refreshToken");
 
       logout(refreshToken);
-
-      console.log(refreshToken);
     } catch (error) {
       console.log(error);
     } finally {
@@ -155,7 +153,7 @@ export default function Navbar({ notifications }) {
         duration: 0.3,
       });
       gsap.to(".notifications-container", {
-        width: "20vw",
+        width: "25vw",
         padding: "20px",
         duration: 0.1,
       });
@@ -192,8 +190,6 @@ export default function Navbar({ notifications }) {
     setNotificationsNotRead(findNotReadNotifications.length);
   }, [notifications]);
 
-  console.log(activeNav);
-  console.log(notifications);
 
   return (
     <div className="navbar-container">

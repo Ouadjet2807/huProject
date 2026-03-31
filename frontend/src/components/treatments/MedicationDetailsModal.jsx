@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import Button from "react-bootstrap/esm/Button";
+import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Dropdown from "react-bootstrap/Dropdown";
 import DropdownButton from "react-bootstrap/DropdownButton";
@@ -129,10 +129,9 @@ export default function MedicationDetailsModal({
       time_range.length > (formData.frequency.intake_number - 1) &&
       !time_range.includes(e.target.value)
     ) {
-      console.log("Intake numer is inferior to time of the day");
+      return
     } else if (time_range.includes(e.target.value)) {
       time_range = time_range.filter((range) => range !== e.target.value);
-      console.log(time_range);
     } else {
       time_range.push(e.target.value)
     }
@@ -209,7 +208,6 @@ export default function MedicationDetailsModal({
   };
 
   const normalizeForRegexes = (str) => {
-    console.log(str);
 
     // Clean str for addImplicitOneIfNeeded function
     let s = str
@@ -362,10 +360,8 @@ export default function MedicationDetailsModal({
         registered_by: user.id,
         prescribed_to: [recipient.id]
       };
-      console.log(data);
 
       if (Object.keys(treatment).length > 1) {
-        console.log(treatment);
 
         const response = await api.put(
         `http://127.0.0.1:8000/api/treatments/${treatment.id}/`,
@@ -374,7 +370,7 @@ export default function MedicationDetailsModal({
 
       let index = treatmentsData.treatments.content.findIndex((elem) => JSON.stringify(sortObjectKeys(elem)) === JSON.stringify(sortObjectKeys(treatment)))
       let splicedArray = treatmentsData.treatments.content.toSpliced(index, 1, response.data);
-      console.log(splicedArray);
+
       setTreatmentsData(prev => ({
         ...prev,
         treatments: {
@@ -382,8 +378,6 @@ export default function MedicationDetailsModal({
         }
       }))
 
-
-      console.log("Success :", response);
       } else {
         const response = await api.post(
         "http://127.0.0.1:8000/api/treatments/",
@@ -393,8 +387,6 @@ export default function MedicationDetailsModal({
         ...prev,
         treatments: {content: [...prev.treatments.content, response.data], status:response.status}
       }))
-
-      console.log("Success :", response);
       }
 
       handleClose();
@@ -469,20 +461,15 @@ export default function MedicationDetailsModal({
   useEffect(() => {
 
     if(!treatment || !show) return
-    console.log(treatment);
 
     fetchMedication(treatment.cis_code)
 
     let treatment_copy = JSON.stringify(treatment)
     let parsed_treatment_copy = JSON.parse(treatment_copy)
-    console.log(parsed_treatment_copy);
-
-    console.log(moment(parsed_treatment_copy.start_date).add(1, 'days').toISOString().split("T")[0]);
 
     if (Object.keys(parsed_treatment_copy).length > 0) {
       let number_of_boxes = parsed_treatment_copy.quantity.number_of_boxes
       delete parsed_treatment_copy.quantity.number_of_boxes
-      console.log(treatment_copy);
 
       setFormData((prev) => ({
         ...prev,
@@ -496,10 +483,6 @@ export default function MedicationDetailsModal({
 
   }, [treatment, show])
 
-  console.log((presentation));
-  console.log(recipient);
-
-   console.log(formData);
   return (
     medication && (
       <Modal

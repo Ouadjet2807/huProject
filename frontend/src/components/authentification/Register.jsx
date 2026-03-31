@@ -1,13 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { v4 as uuidv4 } from "uuid";
-import { AuthContext } from "../context/AuthContext";
+import { AuthContext } from "../../context/AuthContext";
 import { PiEyeBold } from "react-icons/pi";
 import { PiEyeClosedDuotone } from "react-icons/pi";
-import { ToastContext } from "../context/ToastContext";
-import Button from "react-bootstrap/esm/Button";
-import Loader from "./Loader";
+import { ToastContext } from "../../context/ToastContext";
+import Button from "react-bootstrap/Button";
+import Loader from "../Loader";
 
 export default function Register({ data, token, setActiveTab }) {
 
@@ -93,8 +92,6 @@ export default function Register({ data, token, setActiveTab }) {
       email: data.email,
     }));
   }, [data]);
-
-  console.log(data);
 
   return (
     <div id="register">

@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router";
 import api from "../api/api";
-import axios from "axios";
-import RecipientEditForm from "../components/RecipientEditForm";
-import RecipientTreatments from "../components/RecipientTreatments";
-import Specialists from "../components/Specialists";
+import RecipientEditForm from "../components/recipients/RecipientEditForm";
+import RecipientTreatments from "../components/treatments/RecipientTreatments";
+import Specialists from "../components/specialists/Specialists";
 import Loader from "../components/Loader";
 import moment from "moment";
 import { locale } from "moment";
@@ -61,7 +60,6 @@ export default function Recipient({ spaceId, tab}) {
   const renderActiveTab = () => {
     switch (activeTab) {
       case "general":
-        console.log("general tab");
         return (
           <RecipientEditForm
             data={formData}
@@ -70,7 +68,6 @@ export default function Recipient({ spaceId, tab}) {
           />
         );
       case "treatments":
-        console.log("treatments tab");
         return (
           <RecipientTreatments
             formData={formData}
@@ -110,7 +107,6 @@ export default function Recipient({ spaceId, tab}) {
             medical_info: response.data.medical_info,
             space_id: spaceId,
           });
-          console.log("Success", response.data);
         } catch (error) {
           console.log(error);
         }
@@ -131,8 +127,6 @@ export default function Recipient({ spaceId, tab}) {
       recipient.space_id = spaceId;
     }
   }, [recipient, spaceId]);
-
-  console.log(recipient);
 
   useEffect(() => {
     if(tab) setActiveTab(tab)

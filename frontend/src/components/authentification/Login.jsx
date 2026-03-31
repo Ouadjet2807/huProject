@@ -1,12 +1,11 @@
 import React, { useContext, useState, useEffect, use } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import { AuthContext, AuthProvider } from "../context/AuthContext";
-import { ToastContext } from "../context/ToastContext";
+import { useNavigate } from "react-router";
+import { AuthContext, AuthProvider } from "../../context/AuthContext";
+import { ToastContext } from "../../context/ToastContext";
 import { PiEyeBold } from "react-icons/pi";
 import { PiEyeClosedDuotone } from "react-icons/pi";
-import Button from "react-bootstrap/esm/Button";
-import Loader from "./Loader";
+import Button from "react-bootstrap/Button";
+import Loader from "../Loader";
 
 export default function Login({setActiveTab}) {
 
@@ -41,7 +40,6 @@ export default function Login({setActiveTab}) {
   };
 
   useEffect(() => {
-    console.log(message);
 
     if (message.message === "") return;
     setMessage(message.message);

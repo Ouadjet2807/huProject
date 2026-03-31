@@ -1,8 +1,8 @@
 import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { ToastContext } from "../context/ToastContext";
-import Profile from "../components/Profile";
-import Space from "../components/Space";
+import Profile from "../components/account/Profile";
+import Space from "../components/account/Space";
 import api from "../api/api";
 
 export default function () {
@@ -24,17 +24,14 @@ export default function () {
   useEffect(() => {
     const getCaregivers = async () => {
       try {
-        let response = await api.get('http://127.0.0.1:8000/api/caregivers')
-        console.log(response);
-        
+        let response = await api.get("http://127.0.0.1:8000/api/caregivers");
       } catch (error) {
         console.log(error);
-        
       }
-    }
+    };
 
-    getCaregivers()
-  }, []) 
+    getCaregivers();
+  }, []);
 
   const renderActiveTab = () => {
     switch (activeTab) {
@@ -54,30 +51,28 @@ export default function () {
   };
 
   useEffect(() => {
-    if(!activeTab) return
+    if (!activeTab) return;
     sessionStorage.setItem("tab", activeTab);
   }, [activeTab]);
 
   useEffect(() => {
+    let pathname = window.location.pathname.replace("/", "").split("/");
 
-    let pathname = window.location.pathname.replace("/", '').split("/")
-    
-    if(pathname.length > 1) {
-      setActiveTab(pathname[1])
-      return
+    if (pathname.length > 1) {
+      setActiveTab(pathname[1]);
+      return;
     }
-    
+
     let storage = sessionStorage.getItem("tab");
-    
+
     if (storage === "") {
       setActiveTab("profile");
       return;
     }
 
     setActiveTab(storage);
-
   }, []);
-  
+
   return (
     <div id="account">
       <div className="toolbar">

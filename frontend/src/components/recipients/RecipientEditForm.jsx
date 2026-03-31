@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import Button from "react-bootstrap/esm/Button";
+import Button from "react-bootstrap/Button";
 import { FaRegTrashCan } from "react-icons/fa6";
 import { CiEdit } from "react-icons/ci";
 import { MdCancelPresentation } from "react-icons/md";
 import { LuSave } from "react-icons/lu";
-import Loader from "./Loader";
+import Loader from "../Loader";
 export default function RecipientEditForm({
   data,
   medicalInfo,
@@ -33,13 +33,9 @@ export default function RecipientEditForm({
 
   const handleAllergiesField = (e, index) => {
     e.stopPropagation();
-    console.log(e.target);
-
-    console.log(e.target.name);
 
     if (e.target.name === "delete_field") {
       let filter = medicalInfo.allergies.toSpliced(index, 1);
-      console.log(filter);
 
       setMedicalInfo((prev) => ({
         ...prev,
@@ -61,7 +57,6 @@ export default function RecipientEditForm({
         1,
         e.target.value
       );
-      console.log(allergiesArr);
 
       setMedicalInfo((prev) => ({
         ...prev,
@@ -69,8 +64,6 @@ export default function RecipientEditForm({
       }));
     }
   };
-
-  console.log(formData);
 
   useEffect(() => {
     if (Object.keys(data).length < 0) return
@@ -116,12 +109,12 @@ export default function RecipientEditForm({
             disabled={!editionMode}
             onChange={(e) => handleChange(e)}
             />
-          <select name="gender" id="" disabled={!editionMode} onChange={(e) => handleChange(e)}>
-            {genderChoices.map((item) => {
+          <select name="gender" id="" disabled={!editionMode} value={formData.gender} onChange={(e) => handleChange(e)}>
+            {genderChoices.map((item, index) => {
               return (
-                <option
+                <option 
+                key={`option_${index+1}`}
                 value={item.value}
-                selected={formData.gender === item.value}
                 >
                   {item.name}
                 </option>
@@ -144,9 +137,9 @@ export default function RecipientEditForm({
         </Button>
         <div className="field">
           <label htmlFor="birth_date">Allergies</label>
-          {medicalInfo.allergies.map((item, index) => {
+          {Object.keys(medicalInfo).includes("allergies") && medicalInfo.allergies.map((item, index) => {
             return (
-              <div className="deletable_field">
+              <div className="deletable_field" key={`field_${index+1}`}>
                 <input
                   type="text"
                   name="allergies"

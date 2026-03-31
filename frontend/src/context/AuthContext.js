@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import axios from "axios";
 import api, { tokenStore } from "../api/api";
 import { useSelector, useDispatch } from "react-redux";
 import { setValues } from "../redux/spaceSlice";
@@ -60,8 +59,6 @@ export const AuthProvider = ({ children }) => {
         message: "Connexion réussie, bienvenue !",
       });
     } catch (error) {
-      console.log(error);
-
       console.log("Error", error.response.data);
       if (error.response && error.response.data) {
         Object.keys(error.response.data).forEach((field) => {
@@ -151,6 +148,7 @@ export const AuthProvider = ({ children }) => {
 
   const initAuth = async () => {
     const token = localStorage.getItem("accessToken");
+
     if (token) {
       api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       try {
@@ -161,6 +159,7 @@ export const AuthProvider = ({ children }) => {
         logout();
       }
     } else if (
+      Object.keys(window.location).includes("pathname") &&
       window.location.pathname !== "/login" &&
       !window.location.pathname.includes("invite")
     ) {
@@ -176,15 +175,12 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    if(space.id == "" || refreshSpace) {
+    if (space.id == "" || refreshSpace) {
       fetchSpaces();
     }
   }, [refreshSpace, user]);
 
-  useEffect(() => {
-    console.log(space);
-
-  }, [space])
+  useEffect(() => {}, [space]);
   useEffect(() => {
     if (!loading) {
       initAuth();

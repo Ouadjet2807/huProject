@@ -3,14 +3,13 @@ import axios from "axios";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import "moment/locale/fr";
-import EventModal from "./modals/EventModal";
-import AddEvent from "./modals/AddEvent";
-import Button from "react-bootstrap/esm/Button";
+import AddEvent from "./AddEvent";
+import Button from "react-bootstrap/Button";
 import Badge from "react-bootstrap/Badge";
 import { LuCalendarPlus } from "react-icons/lu";
 import { MdOutlinePermContactCalendar } from "react-icons/md";
 import { LuCalendarCheck2 } from "react-icons/lu";
-import Loader from "./Loader";
+import Loader from "../Loader";
 import { TiArrowBackOutline } from "react-icons/ti";
 import { IoLockClosedOutline } from "react-icons/io5";
 import ListGroup from "react-bootstrap/ListGroup";
@@ -19,9 +18,9 @@ import { HiOutlineBars3BottomLeft } from "react-icons/hi2";
 import { useSelector } from "react-redux";
 import { BsFilter } from "react-icons/bs";
 import Dropdown from "react-bootstrap/Dropdown";
-import Form from 'react-bootstrap/Form';
+import Form from "react-bootstrap/Form";
 import { PiTagDuotone } from "react-icons/pi";
-import { useNavigate, useParams } from "react-router-dom"; 
+import { useNavigate, useParams } from "react-router";
 
 export default function Agenda() {
   const [agenda, setAgenda] = useState({});
@@ -31,13 +30,13 @@ export default function Agenda() {
   const [showEventForm, setShowEventForm] = useState(false);
   const space = useSelector((state) => state.space);
   const [isLoading, setIsLoading] = useState(true);
-  const [hiddenCategories, setHiddenCategories] = useState([])
+  const [hiddenCategories, setHiddenCategories] = useState([]);
 
   const today = new Date();
 
-  const { id } = useParams()
+  const { id } = useParams();
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const date_options = {
     weekday: "long",
@@ -64,19 +63,21 @@ export default function Agenda() {
   };
 
   const resetSelectedEvent = () => {
-    navigate('/calendar')
+    navigate("/calendar");
     setSelectedEvent({});
     setIsLoading(true);
   };
 
   const filterCategory = (e, category) => {
-    if(e.target.checked && hiddenCategories.includes(category)) {
-      let filter = hiddenCategories.filter(hiddenCat => hiddenCat !== category) 
-      setHiddenCategories(filter)
+    if (e.target.checked && hiddenCategories.includes(category)) {
+      let filter = hiddenCategories.filter(
+        (hiddenCat) => hiddenCat !== category,
+      );
+      setHiddenCategories(filter);
     } else {
-      setHiddenCategories(prev => [...prev, category])
+      setHiddenCategories((prev) => [...prev, category]);
     }
-  }
+  };
 
   const displayDate = (start_date, end_date) => {
     const start = moment(start_date);
@@ -117,34 +118,38 @@ export default function Agenda() {
         item.end_date = new Date(item.end_date);
         item.agenda_id = item.agenda.id;
 
-        item.reminder = typeof(item.reminder) == "str" ? JSON.parse(item.reminder) : {}
+        item.reminder =
+          typeof item.reminder == "str" ? JSON.parse(item.reminder) : {};
       });
       let searchTodaysEvent = formatted_events.filter(
         (item) =>
-          item.start_date.toLocaleDateString() === today.toLocaleDateString() ||
-          item.end_date.toLocaleDateString() === today.toLocaleDateString(),
+          !hiddenCategories.includes(item.category && item.category.id) &&
+          (item.start_date.toLocaleDateString() ===
+            today.toLocaleDateString() ||
+            item.end_date.toLocaleDateString() === today.toLocaleDateString()),
       );
 
-      setEvents(formatted_events.filter(event => !hiddenCategories.includes(event.category && event.category.id)));
+      setEvents(
+        formatted_events.filter(
+          (event) =>
+            !hiddenCategories.includes(event.category && event.category.id),
+        ),
+      );
       setTodayAgendaItems(searchTodaysEvent);
       setIsLoading(false);
     }
   }, [agenda, isLoading, hiddenCategories]);
 
-
   useEffect(() => {
+    if (isLoading) return;
 
-    if(isLoading) return
-
-    if(!id || events.length <= 0) {
+    if (!id || events.length <= 0) {
       setSelectedEvent({});
     } else {
-      setSelectedEvent(events.find(e => e.id === id))
+      setSelectedEvent(events.find((e) => e.id === id));
     }
-  }, [id, events])
+  }, [id, events]);
 
-  console.log(isLoading);
-  console.log(selectedEvent);
 
   return (
     <div id="agenda">
@@ -258,6 +263,7 @@ export default function Agenda() {
           </>
         )}
         <Button
+          disabled={isLoading}
           variant="aqua"
           className="add-event-btn"
           style={{ margin: "0 auto" }}
@@ -275,11 +281,24 @@ export default function Agenda() {
             <BsFilter />
           </Dropdown.Toggle>
 
-          <Dropdown.Menu >
+          <Dropdown.Menu>
             <Dropdown.Header>Filtrer</Dropdown.Header>
-            {(agenda.categories && agenda.categories.length > 0) &&
+            {agenda.categories &&
+              agenda.categories.length > 0 &&
               agenda.categories.map((category) => {
-                return <Dropdown.Item><Form.Check type="checkbox" checked={!hiddenCategories.includes(category.id)} name={`${category.name}_category`} onChange={(e) => filterCategory(e, category.id)} id=""/> <PiTagDuotone  style={{ color: category.color.text }}/> {category.name}</Dropdown.Item>
+                return (
+                  <Dropdown.Item>
+                    <Form.Check
+                      type="checkbox"
+                      checked={!hiddenCategories.includes(category.id)}
+                      name={`${category.name}_category`}
+                      onChange={(e) => filterCategory(e, category.id)}
+                      id=""
+                    />{" "}
+                    <PiTagDuotone style={{ color: category.color.text }} />{" "}
+                    {category.name}
+                  </Dropdown.Item>
+                );
               })}
           </Dropdown.Menu>
         </Dropdown>

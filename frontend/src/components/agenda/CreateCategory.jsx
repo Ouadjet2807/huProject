@@ -29,7 +29,7 @@ export default function CreateCategory({ show, setShow, agenda, selectCategory }
   };
 
   const handleSubmit = async () => {
-    console.log(newCategory);
+
     
     try {
       let response = await api.post(
@@ -42,7 +42,6 @@ export default function CreateCategory({ show, setShow, agenda, selectCategory }
         name: "",
         color: colors[0],
       });
-      console.log(response);
       
       handleClose();
     } catch (error) {

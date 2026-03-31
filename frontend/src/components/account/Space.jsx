@@ -1,20 +1,29 @@
 import React, { useContext, useEffect, useState } from "react";
-import { AuthContext } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
-import Loader from "./Loader";
+import { AuthContext } from "../../context/AuthContext";
+import { useNavigate } from "react-router";
+import Loader from "../Loader";
 import { PiCrownSimpleDuotone } from "react-icons/pi";
-import Button from "react-bootstrap/esm/Button";
+import Button from "react-bootstrap/Button";
 import { CiEdit } from "react-icons/ci";
 import { LuSave } from "react-icons/lu";
 import Badge from "react-bootstrap/Badge";
-import api from "../api/api";
+import api from "../../api/api";
 import { FaUserMinus } from "react-icons/fa";
 import Modal from "react-bootstrap/Modal";
 import { TbUsersMinus, TbUsersPlus } from "react-icons/tb";
-import InviteUserModal from "../components/modals/InviteUserModal";
-import CreateRecipient from "../components/modals/CreateRecipient";
+import InviteUserModal from "../modals/InviteUserModal";
+import CreateRecipient from "../recipients/CreateRecipient";
 import { TiDelete } from "react-icons/ti";
 import { useSelector } from "react-redux";
+
+  export const canEdit = (accessLevel) => {
+    if (!accessLevel) return;
+
+    if (accessLevel < 3) return true;
+
+    return false;
+  };
+
 
 export default function Space({ editMode, setEditMode, roles }) {
   const { user } = useContext(AuthContext);
@@ -72,17 +81,6 @@ export default function Space({ editMode, setEditMode, roles }) {
     }
   };
 
-  const canEdit = (user) => {
-    if (!user) return;
-
-    let caregiver = space.caregivers.find((e) => e.user === user);
-
-    console.log(caregiver.access_level);
-    if (caregiver.access_level < 3) return true;
-
-    return false;
-  };
-
   const getSpaceMemberships = async () => {
     if (!space || !space.id) return;
     try {
@@ -105,8 +103,6 @@ export default function Space({ editMode, setEditMode, roles }) {
   const getAccessDate = (caregiver) => {
     if (!spaceMemberships.length > 0) return;
 
-    console.log(caregiver.user);
-
     const membership = spaceMemberships.find(
       (e) => e.user.id === caregiver.user
     );
@@ -128,7 +124,6 @@ export default function Space({ editMode, setEditMode, roles }) {
         `http://127.0.0.1:8000/api/caregivers/${targetCaregiver.id}/`,
         targetCaregiver
       );
-      console.log("success");
     } catch (error) {
       console.log(error);
     }
@@ -145,7 +140,6 @@ export default function Space({ editMode, setEditMode, roles }) {
     } catch (error) {
       console.log(error);
     }
-    console.log(membership);
   };
 
   const deleteRecipient = async (recipient) => {
@@ -166,10 +160,13 @@ export default function Space({ editMode, setEditMode, roles }) {
 
   useEffect(() => {
 
-    if(!user && (!space || Object.keys(space).length <= 0)) return
+    if(user == null || user == undefined && (!space || Object.keys(space).length <= 0)) return
+
     getSpaceMemberships();
 
-    setSpaceCreator(space.created_by.id === user.id ? 'vous' : `${space.created_by.first_name} ${space.last_name}`)
+    if(Object.keys(user).includes("id")) { 
+      setSpaceCreator(space.created_by.id === user.id ? 'vous' : `${space.created_by.first_name} ${space.last_name}`)
+    }
 
   }, [space]);
 
@@ -179,9 +176,6 @@ export default function Space({ editMode, setEditMode, roles }) {
     }
   }, [refreshSpace]);
 
-  console.log(validationField);
-  console.log(selectedRecipient);
-  console.log(space.caregivers);
   
   return Object.keys(space).length > 0 && user ? (
     <div className="space-container">
@@ -425,7 +419,7 @@ export default function Space({ editMode, setEditMode, roles }) {
             <small style={{ textAlign: "center" }}>Aucun aidé</small>
           )}
         </ul>
-        {canEdit(user.id) && (
+        {canEdit(space.caregivers.find((e) => e.user === user).access_level) && (
           <Button onClick={() => setAddRecipient(true)} className="add-person">
             <TbUsersPlus /> Ajouter un aidé
           </Button>

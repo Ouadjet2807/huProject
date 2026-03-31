@@ -1,14 +1,13 @@
 import React, { useState, useEffect, useContext } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { AuthContext } from "../context/AuthContext";
-import CreateRecipient from "../components/modals/CreateRecipient";
-import TodoList from "../components/TodoList";
+import CreateRecipient from "../components/recipients/CreateRecipient";
+import TodoList from "../components/todoList/TodoList";
 import Loader from "../components/Loader";
 import InviteUserModal from "../components/modals/InviteUserModal";
 import { TbUsersPlus } from "react-icons/tb";
 import { FaUserCircle } from "react-icons/fa";
-import Button from "react-bootstrap/esm/Button";
+import Button from "react-bootstrap/Button";
 import api from "../api/api";
 import { useSelector } from "react-redux";
 
@@ -21,15 +20,12 @@ export default function Home({ setRefreshSpace }) {
   const { user, logout, loading } = useContext(AuthContext);
   const space = useSelector((state) => state.space);
 
-  console.log(space);
-
   useEffect(() => {
     if (Object.keys(space).length <= 0) {
       setRefreshSpace(true);
     }
   }, [space]);
 
-  console.log(loading);
 
   return (
     <div id="home">

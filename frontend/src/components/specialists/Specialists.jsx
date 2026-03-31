@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useContext } from "react";
-import Loader from "./Loader";
+import Loader from "../Loader";
 import { FaUserMd } from "react-icons/fa";
-import Button from "react-bootstrap/esm/Button";
-import api from "../api/api";
-import CreateSpecialist from "./modals/CreateSpecialist";
-import { AuthContext } from "../context/AuthContext";
+import Button from "react-bootstrap/Button";
+import api from "../../api/api";
+import CreateSpecialist from "./CreateSpecialist";
+import { AuthContext } from "../../context/AuthContext";
 import { LuPhone } from "react-icons/lu";
 import { HiOutlineLocationMarker } from "react-icons/hi";
 import { useSelector } from "react-redux";
@@ -18,15 +18,12 @@ export default function Specialists({ recipient }) {
   const space = useSelector((state) => state.space);
 
   const selectSpecialist = (specialist) => {
-    console.log(specialist);
     let json_specialist = JSON.stringify(specialist);
     setSelectedSpecialist(JSON.parse(json_specialist));
     setShowAddSpecialist(true);
   };
 
   const formatSpecialist = (data) => {
-    console.log(data);
-
     let formatted_data = data;
 
     data.forEach((item, index) => {
@@ -71,7 +68,6 @@ export default function Specialists({ recipient }) {
         const res = await api.get(
           "http://127.0.0.1:8000/api/healthcare_professionals/",
         );
-        console.log(res.data);
       } catch (error) {
         console.log(error);
       }
@@ -81,19 +77,16 @@ export default function Specialists({ recipient }) {
   }, []);
 
   useEffect(() => {
-    console.log("format");
+    if (
+      Object.keys(recipient).length <= 0 ||
+      !Object.keys(recipient).includes("healthcare_professionals")
+    )
+      return;
 
-    if (Object.keys(recipient).includes("healthcare_professionals")) {
-      const formatted_data = formatSpecialist(
-        recipient.healthcare_professionals,
-      );
-      setSpecialists(formatted_data);
-      setLoading(false);
-    }
-  }, [recipient, recipient.healthcare_professionals.length]);
-
-  console.log(specialists);
-  console.log(recipient.healthcare_professionals);
+    const formatted_data = formatSpecialist(recipient.healthcare_professionals);
+    setSpecialists(formatted_data);
+    setLoading(false);
+  }, [recipient]);
 
   return (
     <div id="recipientSpecialists">

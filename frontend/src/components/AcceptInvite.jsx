@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import api from '../api/api';
 import { useAuth } from '../context/AuthContext';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router';
 import axios from 'axios';
-import Register from './Register';
+import Register from './authentification/Register';
 
 export default function AcceptInvite() {
   const { token } = useParams(); // route: /accept-invite/:token
@@ -34,9 +34,6 @@ export default function AcceptInvite() {
   useEffect(() => {
     getInvitation()
   }, [])
-  console.log(token);
-  console.log(invitation);
-
 
   return (
   <div id="acceptInvite">

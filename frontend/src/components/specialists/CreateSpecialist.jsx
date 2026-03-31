@@ -51,9 +51,6 @@ export default function CreateSpecialist({
 
     let value = e.target.value;
     let isValid = regex.test(e.target.value);
-    console.log(isValid);
-
-    console.log(value.match(regex));
 
     if (isValid) {
       setContact((prev) => ({
@@ -94,8 +91,6 @@ export default function CreateSpecialist({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    console.log(formData);
 
     if (!formData.space) return;
 
@@ -207,7 +202,6 @@ export default function CreateSpecialist({
         .toLowerCase()
         .startsWith(contact.address.toLowerCase())
     ) {
-      console.log(placeholder.fulltext.length);
       setPlaceholderSuggestion(
         placeholder.fulltext.length > 45
           ? placeholder.fulltext.slice(0, 45).padEnd(48, "...")
@@ -245,12 +239,7 @@ export default function CreateSpecialist({
     recipient.healthcare_professionals = filter
 
   }, [returnValue])
-  console.log(preloadedData);
 
-  console.log(formData);
-  console.log(contact);
-  console.log(addressSuggestions);
-  console.log(recipient);
 
   return (
     <Modal show={show} onHide={handleClose} className="create-specialist-modal">

@@ -1,6 +1,6 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router";
 import Home from "./pages/Home";
-import CreateRecipient from "./components/modals/CreateRecipient";
+import CreateRecipient from "./components/recipients/CreateRecipient";
 import AcceptInvite from "./components/AcceptInvite";
 import Navbar from "./components/Navbar";
 import Recipient from "./pages/Recipient";
@@ -10,12 +10,12 @@ import { useContext } from "react";
 import { AuthContext } from "./context/AuthContext";
 import Account from "./pages/Account";
 import Sign from "./pages/Sign";
-import Agenda from "./components/Agenda";
+import Agenda from "./components/agenda/Agenda";
 import Toast from "./components/Toast";
 import { ToastContext } from "./context/ToastContext";
 import { ConfirmContext } from "./context/ConfirmContext";
 import Confirm from "./components/modals/Confirm";
-import TreatmentPage from "./components/TreatmentPage";
+import TreatmentPage from "./components/treatments/TreatmentPage";
 
 function App() {
   const { user, space, setRefreshSpace } = useContext(AuthContext);
@@ -36,8 +36,8 @@ function App() {
   useEffect(() => {
     getNotifications()
   }, [user])
-  console.log("user ", user);
-  console.log("space ", space)
+  // console.log("user ", user);
+  // console.log("space ", space)
 
   return (
     <div className="App">
@@ -49,6 +49,12 @@ function App() {
           <Route path="login" element={<Sign />} />
           <Route path="account" element={<Account />} />
           <Route path="account/:tab" element={<Account />} />
+          <Route
+            path="/"
+            element={
+              <Home setRefreshSpace={setRefreshSpace} />
+            }
+          />
           <Route
             path="home"
             element={

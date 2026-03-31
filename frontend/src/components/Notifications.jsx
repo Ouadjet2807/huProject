@@ -4,7 +4,7 @@ import { BsX } from "react-icons/bs";
 import { BsXLg } from "react-icons/bs";
 import { LuBell } from "react-icons/lu";
 import api from "../api/api";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 export default function Notifications({
   notifications,

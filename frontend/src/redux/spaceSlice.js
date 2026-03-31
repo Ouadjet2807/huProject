@@ -22,15 +22,10 @@ const spaceSlice = createSlice({
         state[key] = value
       }
     },
-    alterValue(state, action) {
-      console.log(action.payload);
-
-    }
   },
 });
 
 
-console.log(spaceSlice);
 
 export const { setValues, alterValue } = spaceSlice.actions;
 export default spaceSlice.reducer;

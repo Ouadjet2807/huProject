@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useContext } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router";
 import {
   LuSunrise,
   LuSunset,
@@ -7,8 +7,8 @@ import {
   LuTrash2,
   LuCalendarFold,
 } from "react-icons/lu";
-import api from "../api/api";
-import Loader from "./Loader";
+import api from "../../api/api";
+import Loader from "../Loader";
 import moment from "moment";
 import "moment/locale/fr";
 import { BsBoxSeam } from "react-icons/bs";
@@ -16,10 +16,10 @@ import Button from "react-bootstrap/Button";
 import { CiEdit, CiCircleInfo } from "react-icons/ci";
 import { PiPillDuotone } from "react-icons/pi";
 import { TiArrowBackOutline } from "react-icons/ti";
-import { AuthContext } from "../context/AuthContext";
-import MedicationDetailsModal from "./modals/MedicationDetailsModal";
-import { ConfirmContext } from "../context/ConfirmContext";
-import Badge from "react-bootstrap/esm/Badge";
+import { AuthContext } from "../../context/AuthContext";
+import MedicationDetailsModal from "./MedicationDetailsModal";
+import { ConfirmContext } from "../../context/ConfirmContext";
+import Badge from "react-bootstrap/Badge";
 import { useSelector } from "react-redux";
 
 export default function TreatmentPage() {
@@ -28,7 +28,7 @@ export default function TreatmentPage() {
     useContext(ConfirmContext);
   const space = useSelector((state) => state.space)
   const navigate = useNavigate();
-  const pathname = window.location.pathname.split("/");
+  let pathname = "";
   const today = moment(new Date());
   const tabletRef = useRef();
 
@@ -120,13 +120,11 @@ export default function TreatmentPage() {
     } else {
       totalUnits = item.quantity.units_per_unit * item.quantity.number_of_boxes;
     }
-    console.log(totalUnits);
     
     if (start_date > today) return totalUnits;
 
     let todaysIntakeCount = checkTodaysIntake(intake_number, intake_time_range);
 
-    console.log(todaysIntakeCount);
 
     let frequency = item.frequency.intake_frequency;
 
@@ -216,14 +214,17 @@ export default function TreatmentPage() {
   useEffect(() => {
     let reg = /^[0-9]+$/g;
     if (Object.keys(space).length > 1 && reg.test(pathname[2])) {
-      console.log(space.recipients.find((r) => r.id === pathname[2]));
       setRecipient(space.recipients.find((r) => r.id === pathname[2]));
     }
   }, [space]);
 
   useEffect(() => {
+
+    if(window.location.pathname) {
+      pathname = window.location.pathname.split("/")
+    }
     const getTreatments = async () => {
-      if (!pathname[2].match("^/0-9/$")) return;
+      if (pathname.length == 0 || !pathname[2].match("^/0-9/$")) return;
       try {
         const response = await api.get(
           `http://127.0.0.1:8000/api/treatments/?archives=False&recipient=${pathname[2].id}`,
@@ -238,7 +239,6 @@ export default function TreatmentPage() {
           ...prev,
           treatments: data,
         }));
-        console.log(response);
       } catch (error) {
         console.log(error);
       }
@@ -247,8 +247,6 @@ export default function TreatmentPage() {
     getTreatments();
   }, []);
 
-  console.log(treatmentData);
-  console.log(remainingUnits);
 
   return (
     <div className="treatment-container">

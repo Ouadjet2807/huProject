@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import api from "../api/api";
-import Button from "react-bootstrap/esm/Button";
+import api from "../../api/api";
+import Button from "react-bootstrap/Button";
 import { LuTrash2 } from "react-icons/lu";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
@@ -62,14 +62,12 @@ export default function TodoList({ user }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(newTask);
 
     try {
       let response = await api.post(
         "http://127.0.0.1:8000/api/todo_list_items/",
         newTask,
       );
-      console.log("success", response);
 
       newTask.id = response.data.id;
       setTodoList((prev) => [...prev, newTask]);
@@ -90,15 +88,12 @@ export default function TodoList({ user }) {
   };
 
   const updateTodo = async (todo) => {
-    console.log(todo);
     todo.completed = !todo.completed;
     todo.completed_by = user;
     todo.completed_by_id = user.id;
     todo.updated_at = moment(new Date()).format();
 
-    console.log(todo);
     let initial_index = todoList.indexOf(todo)
-    console.log(initial_index);
 
     let filter = todoList.toSpliced(initial_index, 1, todo);
 
@@ -161,16 +156,12 @@ export default function TodoList({ user }) {
     filterCategories();
   }, [activeCategory, todoList]);
 
-  console.log(newTask);
-  console.log(todoList);
-  console.log(filteredTodoList);
-
   return (
     <div id="todoList">
       <ButtonGroup className="todo-category">
-        {todoCategory.map((category) => {
+        {todoCategory.length > 0 && todoCategory.map((category, index) => {
           return (
-            <Button
+            <Button key={`category_${index+1}`}
               className={`${
                 activeCategory === category.value ? "activeCategory" : ""
               } `}
@@ -185,7 +176,7 @@ export default function TodoList({ user }) {
         {filteredTodoList && filteredTodoList.length > 0 &&
           filteredTodoList.map((todo, index) => {
             return (
-              <div className={`todo-item ${todo.completed ? "completed" : ""}`}>
+              <div key={`todo_${todo.id}`} className={`todo-item ${todo.completed ? "completed" : ""}`}>
                 <Form.Check
                   type="checkbox"
                   label={todo.title}
@@ -228,11 +219,12 @@ export default function TodoList({ user }) {
             id="input-group-dropdown-2"
             align="end"
           >
-            {todoCategory
+            {todoCategory.length > 0 && todoCategory
               .filter((item) => item.value !== "all")
-              .map((category) => {
+              .map((category, index) => {
                 return (
                   <Dropdown.Item
+                    key={`category_${index+1}`}
                     onClick={() =>
                       setNewTask((prev) => ({
                         ...prev,

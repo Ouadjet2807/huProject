@@ -12,7 +12,7 @@ import moment from "moment";
 import "moment/locale/fr";
 import { PiTagDuotone } from "react-icons/pi";
 import { MdOutlineTitle } from "react-icons/md";
-import CreateCategory from "./CreateCategory";
+import CreateCategory from "./CreateCategory.jsx";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { ToastContext } from "../../context/ToastContext";
 import { ConfirmContext } from "../../context/ConfirmContext.js";
@@ -102,7 +102,6 @@ export default function AddEvent({
     if (e.target.type === "text" || e.target.type === "textarea") {
       value = e.target.value;
     } else if (e.target.type === "checkbox") {
-      console.log(e.target.value);
       const parsed_value = JSON.parse(e.target.value);
       if (
         e.target.checked &&
@@ -111,7 +110,6 @@ export default function AddEvent({
         formData[key].push(parsed_value);
         value = formData[key];
       } else {
-        console.log("uncheck");
         value = formData[key].filter((item) => item.id !== parsed_value.id);
       }
     } else if (e.target.type === "time" || e.target.type === "date") {
@@ -150,7 +148,6 @@ export default function AddEvent({
   };
 
   const selectCategory = (category) => {
-    console.log("select category");
 
     setFormData((prev) => ({
       ...prev,
@@ -176,7 +173,6 @@ export default function AddEvent({
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log(formData);
 
     try {
       let response = "";
@@ -205,7 +201,6 @@ export default function AddEvent({
       setColor("success");
       handleClose();
     } catch (error) {
-      console.log(error);
       setShowToast(true);
       setMessage(
         "Une erreur s'est produite lors de la création de l'événement",
@@ -223,7 +218,7 @@ export default function AddEvent({
         `http://127.0.0.1:8000/api/agenda_item_categories/${id}`,
       );
       let filterCategories = agenda.categories.filter((cat) => cat.id !== id);
-      console.log(filterCategories);
+
       setAgenda((prev) => ({ ...prev, categories: filterCategories }));
       if (selectedCategory.id === id) {
         setSelectedCategory(null);
@@ -264,8 +259,8 @@ export default function AddEvent({
 
   useEffect(() => {
     if (formData.start_date) {
-      let start_date = moment(formData.start_date);
 
+      let start_date = moment(formData.start_date);
       setFormData((prev) => ({
         ...prev,
         end_date: start_date.add(1, "hours").format(),
@@ -294,11 +289,6 @@ export default function AddEvent({
     const all_participants = space.caregivers
       .filter((e) => e.user !== user.id)
       .concat(space.recipients);
-    console.log(
-      all_participants.filter(
-        (elem) => !selectedParticipants.some((e) => e.id === elem.id),
-      ),
-    );
 
     setParticipantsList(
       all_participants.filter(
@@ -334,9 +324,6 @@ export default function AddEvent({
       setParticipantsList(initial_participants);
     }
   }, [searchParticipants]);
-
-  console.log(agenda.categories);
-  console.log(formData);
 
   return (
     <>

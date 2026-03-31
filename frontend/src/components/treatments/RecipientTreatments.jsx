@@ -1,10 +1,10 @@
 import React, { use, useContext, useEffect, useState } from "react";
-import Button from "react-bootstrap/esm/Button";
+import Button from "react-bootstrap/Button";
 import ProgressBar from "react-bootstrap/ProgressBar";
-import SearchTreatmentsModal from "./modals/SearchTreatmentsModal";
-import MedicationDetailsModal from "./modals/MedicationDetailsModal";
-import Loader from "./Loader";
-import api from "../api/api";
+import SearchTreatmentsModal from "./SearchTreatmentsModal";
+import MedicationDetailsModal from "./MedicationDetailsModal";
+import Loader from "../Loader";
+import api from "../../api/api";
 import Card from "react-bootstrap/Card";
 import Container from "react-bootstrap/Container";
 import Col from "react-bootstrap/Col";
@@ -23,16 +23,16 @@ import {
 import { GoArchive } from "react-icons/go";
 import moment from "moment";
 import "moment/locale/fr";
-import { UseDimensionsContext } from "../context/UseDimensionsContext";
-import { AuthContext } from "../context/AuthContext";
+import { UseDimensionsContext } from "../../context/UseDimensionsContext";
+import { AuthContext } from "../../context/AuthContext";
 import { MdOutlineAutorenew } from "react-icons/md";
-import { ConfirmContext } from "../context/ConfirmContext";
+import { ConfirmContext } from "../../context/ConfirmContext";
 import { CiMedicalClipboard } from "react-icons/ci";
 import { TbLayoutList } from "react-icons/tb";
 import { TbLayoutListFilled } from "react-icons/tb";
 import { TbLayoutGrid } from "react-icons/tb";
 import { TbLayoutGridFilled } from "react-icons/tb";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 export default function RecipientTreatments({ recipient }) {
   const [showAddTreatment, setShowAddTreatement] = useState(false);
@@ -80,7 +80,6 @@ export default function RecipientTreatments({ recipient }) {
         ...prev,
         treatments: data,
       }));
-      console.log(response);
     } catch (error) {
       console.log(error);
     }
@@ -105,7 +104,6 @@ export default function RecipientTreatments({ recipient }) {
   };
 
   const restoreTreatment = async (treatment) => {
-    console.log('restore');
 
     try {
       const response = await api.post(
@@ -252,8 +250,6 @@ export default function RecipientTreatments({ recipient }) {
 
     let breakPoints =
       treatmentLayout === "list" || width < 800 ? 1 : width > 1200 ? 3 : 2;
-
-    console.log(breakPoints);
 
     treatmentsList.sort((a, b) => {
       return new Date(b.end_date) - new Date(a.end_date);
@@ -412,7 +408,7 @@ export default function RecipientTreatments({ recipient }) {
     const filter = treatmentsData.treatments.content.filter(
       (treatment) => treatment.id !== treatmentToDelete,
     );
-    console.log(filter);
+
     setTreatmentsData((prev) => ({
       ...prev,
       treatments: {
@@ -426,8 +422,6 @@ export default function RecipientTreatments({ recipient }) {
     window.localStorage.setItem('treatments-layout', treatmentLayout)
   }, [treatmentLayout])
 
-  console.log(treatmentsData);
-  console.log(returnValue);
 
   return (
     <div

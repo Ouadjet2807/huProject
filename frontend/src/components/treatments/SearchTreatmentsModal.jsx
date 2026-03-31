@@ -22,9 +22,9 @@ export default function SearchTreatmentsModal({
   }, [inputValue]);
 
   const displayMedName = (med) => {
-    console.log(debouncedValue.length);
+
     const regex = new RegExp(debouncedValue, "i");
-    console.log(regex);
+
     let index = med.search(regex);
     let endIndex = index + debouncedValue.length;
 
@@ -70,8 +70,6 @@ export default function SearchTreatmentsModal({
             `https://medicaments-api.giygas.dev/medicament/${debouncedValue}`
           );
 
-          console.log("Success", response.data);
-          console.log(response.headers);
           setSearchResults(response.data);
         } catch (error) {
           console.log(error);
@@ -87,7 +85,7 @@ export default function SearchTreatmentsModal({
     setShow(false);
   };
 
-  console.log(searchResults);
+
 
   return (
     <Modal size="lg" show={show} onHide={handleClose} id="searchTreatmentModal">

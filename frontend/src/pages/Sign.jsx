@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import Login from "../components/Login";
-import Register from "../components/Register";
+import Login from "../components/authentification/Login";
+import Register from "../components/authentification/Register";
 
 export default function Sign() {
   const [activeTab, setActiveTab] = useState("login");

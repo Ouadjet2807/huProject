@@ -1,13 +1,13 @@
 import React, { act, useContext, useEffect, useState } from "react";
 import { FaUserCircle } from "react-icons/fa";
-import Loader from "../components/Loader";
+import Loader from "../Loader";
 import { CiEdit } from "react-icons/ci";
 import { LuSave } from "react-icons/lu";
-import Button from "react-bootstrap/esm/Button";
-import api from "../api/api";
+import Button from "react-bootstrap/Button";
+import api from "../../api/api";
 import { PiAtLight } from "react-icons/pi";
-import { AuthContext } from "../context/AuthContext";
-import { ToastContext } from "../context/ToastContext";
+import { AuthContext } from "../../context/AuthContext";
+import { ToastContext } from "../../context/ToastContext";
 
 export default function Profile({ editMode, setEditMode, roles }) {
     
@@ -27,7 +27,6 @@ export default function Profile({ editMode, setEditMode, roles }) {
   };
 
   const handleChange = (e) => {
-    console.log(e.target);
     if (e.target.className === "caregiver-input") {
       setCaregiverFormData((prev) => ({
         ...prev,

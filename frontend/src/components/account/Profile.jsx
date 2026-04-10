@@ -8,11 +8,12 @@ import api from "../../api/api";
 import { PiAtLight } from "react-icons/pi";
 import { AuthContext } from "../../context/AuthContext";
 import { ToastContext } from "../../context/ToastContext";
+import { useSelector } from "react-redux";
 
 export default function Profile({ editMode, setEditMode, roles }) {
-    
   const { user } = useContext(AuthContext);
   const { setMessage, setColor, setShowToast } = useContext(ToastContext);
+  const space = useSelector((state) => state.space);
   const [caregiverProfile, setCaregiverProfile] = useState({});
   const [caregiverFormData, setCaregiverFormData] = useState({});
   const [userFormData, setUserFormData] = useState({});
@@ -20,7 +21,7 @@ export default function Profile({ editMode, setEditMode, roles }) {
   const getAccessLevel = () => {
     if (!caregiverProfile) return;
     const access_level = roles.find(
-      (r) => r[0] === caregiverProfile.access_level
+      (r) => r[0] === caregiverProfile.access_level,
     );
 
     if (access_level && access_level.length > 0) return access_level[1];
@@ -41,13 +42,12 @@ export default function Profile({ editMode, setEditMode, roles }) {
   };
 
   const handleSubmit = async () => {
-
     try {
       if (
         JSON.stringify(user) === JSON.stringify(userFormData) &&
         JSON.stringify(caregiverProfile) === JSON.stringify(caregiverFormData)
       ) {
-        setEditMode({ active: false, target: ''});
+        setEditMode({ active: false, target: "" });
         return;
       } else {
         let userHasChanged =
@@ -58,16 +58,16 @@ export default function Profile({ editMode, setEditMode, roles }) {
         if (userHasChanged) {
           let put = await api.post(
             `http://127.0.0.1:8000/api/update_user/${user.id}/`,
-            userFormData
+            userFormData,
           );
         } else if (caregiverHasChanged) {
           let put = await api.put(
             `http://127.0.0.1:8000/api/caregivers/${caregiverProfile.id}/`,
-            caregiverFormData
+            caregiverFormData,
           );
         }
       }
-      setEditMode({ active: false, target: ''});
+      setEditMode({ active: false, target: "" });
       setShowToast(true);
       setColor("success");
       setMessage("Vos modifications ont bien été prises en compte");
@@ -82,7 +82,7 @@ export default function Profile({ editMode, setEditMode, roles }) {
             setMessage(errorMessages[0]);
           } else {
             setMessage(
-              "Une erreur inconnue s'est produite, veuillez réessayer ultérieurement"
+              "Une erreur inconnue s'est produite, veuillez réessayer ultérieurement",
             );
           }
         });
@@ -106,21 +106,15 @@ export default function Profile({ editMode, setEditMode, roles }) {
 
   useEffect(() => {
     const getCaregiverProfile = async () => {
-      if (!user) return;
+      if (!user || !space) return;
 
-      try {
-        let res = await api.get(
-          `http://127.0.0.1:8000/api/caregivers/?id=${user.id}`
-        );
-        setCaregiverProfile(res.data[0]);
-      } catch (error) {
-        console.log(error);
-      }
+      const caregiver = space.caregivers.find((c) => c.user == user.id);
+      setCaregiverProfile(caregiver);
     };
 
     getCaregiverProfile();
     setUserFormData(user);
-  }, [user]);
+  }, [user, space]);
 
   useEffect(() => {
     setCaregiverFormData(caregiverProfile);

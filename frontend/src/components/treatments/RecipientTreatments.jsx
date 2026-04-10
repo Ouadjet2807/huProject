@@ -66,6 +66,8 @@ export default function RecipientTreatments({ recipient }) {
   const today = moment(new Date());
 
   const getTreatments = async () => {
+
+    if(!recipient || Object.keys(recipient).length == 0) return
     try {
       const response = await api.get(
         `http://127.0.0.1:8000/api/treatments/?archives=False&recipient=${recipient.id}`,
@@ -86,6 +88,7 @@ export default function RecipientTreatments({ recipient }) {
   };
 
   const getArchivedTreatments = async () => {
+    if(!recipient || Object.keys(recipient).length == 0) return
     try {
       const response = await api.get(
         `http://127.0.0.1:8000/api/treatments/?archives=True&recipient=${recipient.id}`,

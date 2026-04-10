@@ -150,6 +150,8 @@ export default function Agenda() {
     }
   }, [id, events]);
 
+  console.log(agenda);
+
 
   return (
     <div id="agenda">
@@ -217,7 +219,7 @@ export default function Agenda() {
           <>
             <div className="header">
               <h3>Aujourd'hui</h3>
-              <div className="date">
+              <div data-testid="date" className="date">
                 {today.toLocaleDateString("fr-Fr", date_options)}
               </div>
             </div>

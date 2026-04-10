@@ -72,7 +72,6 @@ export default function InviteUserModal({ show, setShow }) {
     }))
     }, [space, user])
 
-  console.log(formData);
 
   return (
     <Modal show={show} onHide={handleClose} id="inviteUserModal">

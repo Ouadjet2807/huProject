@@ -3,12 +3,31 @@
 // expect(element).toHaveTextContent(/react/i)
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
+import { ReadableStream, WritableStream, TransformStream } from "web-streams-polyfill";
 import { TextEncoder, TextDecoder } from 'node:util'
+import {
+  BroadcastChannel
+} from 'worker_threads'
+
+Reflect.set(globalThis, 'BroadcastChannel', BroadcastChannel)
+
+
 
 if (!global.TextEncoder) {
   global.TextEncoder = TextEncoder
 }
 
+if (!global.WritableStream) {
+  global.WritableStream = WritableStream
+}
+
+if (!globalThis.TransformStream) {
+  global.TransformStream = TransformStream
+}
+
+if (!global.TextDecoder) {
+  global.TextDecoder = TextDecoder
+}
 if (!global.TextDecoder) {
   global.TextDecoder = TextDecoder
 }

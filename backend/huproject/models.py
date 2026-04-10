@@ -65,6 +65,11 @@ class CustomUser(AbstractUser):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS=['username']
 
+    @property
+    def is_admin(self) -> bool:
+        membership = SpaceMembership.objects.get(user=self)
+        return membership.role == 1
+
     def __str__(self) -> str:
         return self.email
 

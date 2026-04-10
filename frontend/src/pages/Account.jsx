@@ -56,6 +56,7 @@ export default function () {
   }, [activeTab]);
 
   useEffect(() => {
+    if(!window.location.pathname) return
     let pathname = window.location.pathname.replace("/", "").split("/");
 
     if (pathname.length > 1) {

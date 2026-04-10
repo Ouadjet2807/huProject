@@ -5,8 +5,6 @@ import { BsFillPatchCheckFill } from "react-icons/bs";
 import { BsPatchPlusFill } from "react-icons/bs";
 export default function Toaster({ setShow, show, delay, message, color }) {
 
-  
-  console.log(message);
 
   useEffect(() => {
     if(Object.keys(message).length > 0) {
@@ -16,11 +14,10 @@ export default function Toaster({ setShow, show, delay, message, color }) {
     }
   }, [message])
 
- 
-    
   return (
     <ToastContainer className="p-3" position="top-end" style={{ zIndex: 1 }}>
       <Toast
+        data-testid="toast"
         onClose={() => setShow(false)}
         show={show}
         delay={delay}
@@ -50,7 +47,7 @@ export default function Toaster({ setShow, show, delay, message, color }) {
                 : color === "danger" &&
                 "Erreur"
             }</strong>
-          <p>{message}</p>
+          <p data-testid="toast-message">{message}</p>
           </div>
         </div>
           {/* <small>11 mins ago</small> */}

@@ -8,7 +8,8 @@ from datetime import timedelta
 class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ('id', 'username', 'last_name', 'first_name', 'email')
+        fields = ('id', 'username', 'last_name', 'first_name', 'email',)
+
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -16,8 +17,9 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ('id', 'username', 'email', 'last_name', 'first_name', 'password', 'confirm_password', 'invited')
+        fields = ('id', 'username', 'email', 'last_name', 'first_name', 'password', 'confirm_password', 'invited', 'is_admin')
         extra_kwargs = {'password': {"write_only": True}}
+        read_only_fields = ('id', 'is_admin')
 
     def validate(self, attrs):
         if attrs["password"] != attrs["confirm_password"]:

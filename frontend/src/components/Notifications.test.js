@@ -10,12 +10,12 @@ import { BrowserRouter } from "react-router";
 
 
 describe("Notifications", () => {
+  delete window.location;
+  window.location = {
+    reload: jest.fn(),
+    href: "http://dummy.com?page=1&name=testing",
+  };
   test("Should render without crash", async () => {
-    delete window.location;
-    window.location = {
-      reload: jest.fn(),
-      href: "http://dummy.com?page=1&name=testing",
-    };
     render (
       <Provider store={store}>
         <AuthProvider>

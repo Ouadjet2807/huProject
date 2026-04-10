@@ -16,35 +16,63 @@ import { ToastContext } from "./context/ToastContext";
 import { ConfirmContext } from "./context/ConfirmContext";
 import Confirm from "./components/modals/Confirm";
 import TreatmentPage from "./components/treatments/TreatmentPage";
+import { useSelector } from "react-redux";
 
 function App() {
-  const { user, space, setRefreshSpace } = useContext(AuthContext);
+  const { user, logout, loading, setRefreshSpace } =
+    useContext(AuthContext);
   const { showToast, setShowToast, message, color } = useContext(ToastContext);
-  const { showConfirm, setShowConfirm, action, text, setReturnValue, returnValue } = useContext(ConfirmContext);
-  const [notifications, setNotifications] = useState([])
+  const {
+    showConfirm,
+    setShowConfirm,
+    action,
+    text,
+    setReturnValue,
+    returnValue,
+  } = useContext(ConfirmContext);
+
+    const space = useSelector((state) => state.space);
+  const [notifications, setNotifications] = useState([]);
 
   const getNotifications = async () => {
     try {
-      let response = await api.get("http://127.0.0.1:8000/api/notifications/")
+      let response = await api.get("http://127.0.0.1:8000/api/notifications/");
 
-      setNotifications(response.data)
+      setNotifications(response.data);
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   useEffect(() => {
-    getNotifications()
-  }, [user])
+    getNotifications();
+  }, [user]);
+
+  useEffect(() => {
+    if (space && Object.keys(space).length <= 0) {
+      setRefreshSpace(true);
+    }
+  }, [space]);
   // console.log("user ", user);
-  // console.log("space ", space)
+  console.log("space ", space)
 
   return (
     <div className="App">
-      <Toast show={showToast} setShow={setShowToast} message={message} color={color}/>
-      <Confirm show={showConfirm} setShow={setShowConfirm} text={text} action={action} setReturnValue={setReturnValue}/>
+      <Toast
+        show={showToast}
+        setShow={setShowToast}
+        message={message}
+        color={color}
+      />
+      <Confirm
+        show={showConfirm}
+        setShow={setShowConfirm}
+        text={text}
+        action={action}
+        setReturnValue={setReturnValue}
+      />
       <BrowserRouter>
-        <Navbar notifications={notifications}/>
+        <Navbar notifications={notifications} />
         <Routes>
           <Route path="login" element={<Sign />} />
           <Route path="account" element={<Account />} />
@@ -52,17 +80,29 @@ function App() {
           <Route
             path="/"
             element={
-              <Home setRefreshSpace={setRefreshSpace} />
+              <Home
+                caregivers={space && space.caregivers}
+                recipients={space && space.recipients}
+                user={user}
+                logout={logout}
+                loading={loading}
+              />
             }
           />
           <Route
             path="home"
             element={
-              <Home setRefreshSpace={setRefreshSpace} />
+              <Home
+                caregivers={space && space.caregivers}
+                recipients={space && space.recipients}
+                user={user}
+                logout={logout}
+                loading={loading}
+              />
             }
           />
-          <Route path="calendar" element={<Agenda space={space}/>} />
-          <Route path="calendar/:id" element={<Agenda space={space}/>} />
+          <Route path="calendar" element={<Agenda space={space} />} />
+          <Route path="calendar/:id" element={<Agenda space={space} />} />
           <Route path="create_recipient" element={<CreateRecipient />} />
           <Route path="accept-invite/:token" element={<AcceptInvite />} />
           <Route
@@ -71,20 +111,19 @@ function App() {
           />
           <Route
             path="recipient/:id/treatments/"
-            element={<Recipient spaceId={space && space.id} tab="treatments"/>}
+            element={<Recipient spaceId={space && space.id} tab="treatments" />}
           />
           <Route
             path="recipient/:id/specialists/"
-            element={<Recipient spaceId={space && space.id} tab="specialists"/>}
+            element={
+              <Recipient spaceId={space && space.id} tab="specialists" />
+            }
           />
           <Route
             path="recipient/:id/treatments/:id"
-            element={<TreatmentPage spaceId={space && space.id}/>}
+            element={<TreatmentPage spaceId={space && space.id} />}
           />
-          <Route
-            path="invite/:token"
-            element={<AcceptInvite />}
-          />
+          <Route path="invite/:token" element={<AcceptInvite />} />
         </Routes>
       </BrowserRouter>
     </div>

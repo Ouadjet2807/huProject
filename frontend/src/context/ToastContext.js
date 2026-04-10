@@ -15,8 +15,6 @@ export const ToastProvider = ({ children }) => {
       setMessage('')
     }
   }, [showToast])
-
-  console.log(message);
   
 
     return <ToastContext.Provider value={value}>{children}</ToastContext.Provider>;

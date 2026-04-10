@@ -10,12 +10,12 @@ import { act } from "react";
 import { UseDimensionProvider } from "../../context/UseDimensionsContext";
 
 describe("RecipientTreatments", () => {
+  delete window.location;
+  window.location = {
+    reload: jest.fn(),
+    href: "http://dummy.com?page=1&name=testing",
+  };
   test("Should render without crash", async () => {
-    delete window.location;
-    window.location = {
-      reload: jest.fn(),
-      href: "http://dummy.com?page=1&name=testing",
-    };
 
     await act(async () => {
       render(

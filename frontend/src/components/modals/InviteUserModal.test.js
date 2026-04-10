@@ -9,12 +9,12 @@ import { ConfirmProvider } from "../../context/ConfirmContext";
 
 
 describe("CreateRecipient", () => {
-  test("Should render without crash", async () => {
     delete window.location;
     window.location = {
       reload: jest.fn(),
       href: "http://dummy.com?page=1&name=testing",
     };
+  test("Should render without crash", async () => {
     render (
       <Provider store={store}>
         <AuthProvider>

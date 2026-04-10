@@ -6,18 +6,14 @@ import { Provider } from "react-redux";
 import { ToastProvider } from "../../context/ToastContext";
 import { BrowserRouter } from "react-router";
 
-// test("Check if user can edit", () => {
-//   const result = canEdit(3);
-//   expect(result).toBe(false);
-// });
 
 describe("Profile", () => {
+  delete window.location;
+  window.location = {
+    reload: jest.fn(),
+    href: "http://dummy.com?page=1&name=testing",
+  };
   test("Should render without crash", async () => {
-    delete window.location;
-    window.location = {
-      reload: jest.fn(),
-      href: "http://dummy.com?page=1&name=testing",
-    };
     render(
       <Provider store={store}>
         <AuthProvider>

@@ -96,7 +96,6 @@
               background: #00000021;
               transform: scale(0.8);
             }
-
           }
         }
       }
@@ -137,7 +136,7 @@
           color: $white;
         }
 
-        > div:not(.overlay) {
+        li {
           height: 3vw;
           background: rgba(255, 255, 255, 0.8);
           border-radius: $borderRadius;
@@ -163,9 +162,17 @@
           background: #00464380;
           border: 1px solid $green;
 
-          .recipient {
-            svg {
-              color: #00464380;
+          ul {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 0;
+            padding: 0;
+
+            .recipient {
+              svg {
+                color: #00464380;
+              }
             }
           }
         }
@@ -174,9 +181,17 @@
           background: #1182684d;
           border: 1px solid $mediumGreen2;
 
-          .caregiver {
-            svg {
-              color: #1182684d;
+          ul {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 0;
+            padding: 0;
+
+            .caregiver {
+              svg {
+                color: #1182684d;
+              }
             }
           }
         }

@@ -11,21 +11,14 @@ import Button from "react-bootstrap/Button";
 import api from "../api/api";
 import { useSelector } from "react-redux";
 
-export default function Home({ setRefreshSpace }) {
+export default function Home({ user, loading, caregivers, recipients }) {
   const [addRecipient, setAddRecipient] = useState(false);
   const [showInviteModal, setShowInviteModal] = useState(false);
 
   const navigate = useNavigate();
 
-  const { user, logout, loading } = useContext(AuthContext);
-  const space = useSelector((state) => state.space);
-
-  useEffect(() => {
-    if (Object.keys(space).length <= 0) {
-      setRefreshSpace(true);
-    }
-  }, [space]);
-
+  console.log(caregivers);
+  
 
   return (
     <div id="home">
@@ -37,25 +30,32 @@ export default function Home({ setRefreshSpace }) {
           <div className="recipients box">
             {loading && <Loader overlay={true} />}
             <h3>Your recipients</h3>
-            {space &&
-              Object.keys(space).includes("recipients") &&
-              space.recipients.map((item) => {
-                return (
-                  <div
-                    className="recipient"
-                    onClick={() => navigate(`/recipient/${item.id}`)}
-                  >
-                    <span>
-                      <div className="icon">
-                        <FaUserCircle />
-                      </div>
+
+            {recipients && recipients.length > 0 ? (
+              <ul>
+                {recipients.map((item) => {
+                  return (
+                    <li
+                      role="recipientListItem"
+                      data-testid={`${item.first_name}_${item.last_name}`}
+                      className="recipient"
+                      onClick={() => navigate(`/recipient/${item.id}`)}
+                    >
                       <span>
-                        {item.first_name} {item.last_name}
+                        <div className="icon">
+                          <FaUserCircle />
+                        </div>
+                        <span>
+                          {item.first_name} {item.last_name}
+                        </span>
                       </span>
-                    </span>
-                  </div>
-                );
-              })}
+                    </li>
+                  );
+                })}
+              </ul>
+            ) : (
+              <p data-testid="noRecipients">Aucun aidé</p>
+            )}
 
             <Button variant="aqua" onClick={() => setAddRecipient(true)}>
               Add a recipient
@@ -64,46 +64,53 @@ export default function Home({ setRefreshSpace }) {
           <div className="caregivers box">
             {loading && <Loader overlay={true} />}
             <h3>Your recipients</h3>
-            {space &&
-              Object.keys(space).includes("caregivers") &&
-              space.caregivers.map((item) => {
-                return (
-                  <div
-                    className="caregiver"
-                    onClick={() => navigate(`/account/space`)}
-                  >
-                    <span>
-                      <div className="icon">
-                        <FaUserCircle />
-                      </div>
-                      <span>
-                        {item.first_name} {item.last_name}{" "}
-                        {space.created_by === item.user && (
-                          <small>(administrateur)</small>
-                        )}
-                      </span>
-                    </span>
-                  </div>
-                );
-              })}
-            {user && space.created_by && space.created_by.id === user.id && (
-              <Button variant="aqua" onClick={() => setShowInviteModal(true)}>
+            {caregivers && caregivers.length > 1 ? (
+              <ul>
+                {caregivers
+                  .filter((caregiver) => caregiver.user !== user.id)
+                  .map((item) => {
+                    return (
+                      <li
+                        role="caregiverListItem"
+                        data-testid={`${item.first_name}_${item.last_name}`}
+                        className="caregiver"
+                        onClick={() => navigate(`/account/space`)}
+                      >
+                        <span>
+                          <div className="icon">
+                            <FaUserCircle />
+                          </div>
+                          <span>
+                            {item.first_name} {item.last_name}{" "}
+                            {item.access_level == 1 && (
+                              <small data-testid="adminTag">(administrateur)</small>
+                            )}
+                          </span>
+                        </span>
+                      </li>
+                    );
+                  })}
+              </ul>
+            ) : (
+              <p data-testid="noCaregivers">Aucun aidant</p>
+            )}
+            {user && user.is_admin && (
+              <Button
+                data-testid="inviteUser"
+                variant="aqua"
+                onClick={() => setShowInviteModal(true)}
+              >
                 <TbUsersPlus /> Inviter une personne
               </Button>
             )}
           </div>
         </div>
 
-        <CreateRecipient
-          show={addRecipient}
-          setShow={setAddRecipient}
-          space={space}
-          setRefreshRecipients={setRefreshSpace}
-        />
+        <CreateRecipient show={addRecipient} setShow={setAddRecipient} />
         <div className="right-tab">
           {loading && <Loader overlay={true} />}
           <h3>Todo list</h3>
-          <TodoList user={user} space={space} />
+          <TodoList user={user} />
         </div>
       </div>
     </div>

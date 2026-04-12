@@ -325,6 +325,9 @@ export default function AddEvent({
     }
   }, [searchParticipants]);
 
+  console.log(formData);
+  
+
   return (
     <>
       <CreateCategory
@@ -334,6 +337,7 @@ export default function AddEvent({
         agenda={agenda}
       />
       <Modal
+      data-testid="addEventModal"
         size="lg"
         show={show}
         onHide={handleClose}

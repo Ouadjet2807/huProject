@@ -1,15 +1,12 @@
 import React, { useContext, useState, useEffect, use } from "react";
 import { useNavigate } from "react-router";
-import { AuthContext, AuthProvider } from "../../context/AuthContext";
 import { ToastContext } from "../../context/ToastContext";
 import { PiEyeBold } from "react-icons/pi";
 import { PiEyeClosedDuotone } from "react-icons/pi";
 import Button from "react-bootstrap/Button";
 import Loader from "../Loader";
 
-export default function Login({setActiveTab}) {
-
-
+export default function Login({ setActiveTab, login, loading, message }) {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -19,13 +16,15 @@ export default function Login({setActiveTab}) {
 
   const navigate = useNavigate();
 
-  const { login, message, loading } = useContext(AuthContext);
   const { setShowToast, setMessage, setColor } = useContext(ToastContext);
 
   const handleChange = (e) => {
     setFormData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.type == 'email' ? e.target.value.toLowerCase() : e.target.value,
+      [e.target.name]:
+        e.target.type == "email"
+          ? e.target.value.toLowerCase()
+          : e.target.value,
     }));
   };
 
@@ -36,11 +35,9 @@ export default function Login({setActiveTab}) {
     }
 
     login(formData.email, formData.password);
-
   };
 
   useEffect(() => {
-
     if (message.message === "") return;
     setMessage(message.message);
     if (message.status === "success") {
@@ -54,7 +51,7 @@ export default function Login({setActiveTab}) {
   }, [message]);
 
   return (
-    <div id="login">
+    <div id="login" data-testid="loginComponent">
       <h2>Se connecter</h2>
       <form onKeyDown={(e) => e.key === "Enter" && handleSubmit(e)}>
         <input
@@ -67,6 +64,7 @@ export default function Login({setActiveTab}) {
         />
         <div className="password-field">
           <input
+            role="input"
             type={showPassword ? "text" : "password"}
             name="password"
             id=""
@@ -75,20 +73,37 @@ export default function Login({setActiveTab}) {
             onChange={(e) => handleChange(e)}
           />
           <div
+            data-testid="showPassword"
             className="show-hide-password"
             onClick={() => setShowPassword(!showPassword)}
           >
             {showPassword ? <PiEyeBold /> : <PiEyeClosedDuotone />}
           </div>
         </div>
-        <div className="button-container" style={{display: 'flex', gap: '15px', alignItems: 'center', marginTop: loading ? 0 : '0.9vw', marginLeft: loading ? '-5.8vw' : 0}}>
+        <div
+          className="button-container"
+          style={{
+            display: "flex",
+            gap: "15px",
+            alignItems: "center",
+            marginTop: loading ? 0 : "0.9vw",
+            marginLeft: loading ? "-5.8vw" : 0,
+          }}
+        >
           {loading && <Loader />}
-          <Button disabled={loading} onClick={(e) => handleSubmit(e)} variant="aqua">
+          <Button
+            disabled={loading}
+            onClick={(e) => handleSubmit(e)}
+            variant="aqua"
+            data-testid="loginButton"
+          >
             Connexion
           </Button>
-
         </div>
-          <p className="account-question">Pas encore de compte ? <span onClick={() => setActiveTab('register')}>S'inscrire</span></p>
+        <p className="account-question">
+          Pas encore de compte ?{" "}
+          <span onClick={() => setActiveTab("register")}>S'inscrire</span>
+        </p>
       </form>
     </div>
   );

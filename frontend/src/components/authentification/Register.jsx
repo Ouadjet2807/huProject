@@ -1,15 +1,13 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { v4 as uuidv4 } from "uuid";
-import { AuthContext } from "../../context/AuthContext";
 import { PiEyeBold } from "react-icons/pi";
 import { PiEyeClosedDuotone } from "react-icons/pi";
 import { ToastContext } from "../../context/ToastContext";
 import Button from "react-bootstrap/Button";
 import Loader from "../Loader";
 
-export default function Register({ data, token, setActiveTab }) {
-
+export default function Register({ data, token, setActiveTab, register, loading, message }) {
   const [formData, setFormData] = useState({
     invited: {
       invited: false,
@@ -29,14 +27,15 @@ export default function Register({ data, token, setActiveTab }) {
 
   const navigate = useNavigate();
 
-  const { register, message, user, loading } = useContext(AuthContext);
-
   const { setShowToast, setMessage, setColor } = useContext(ToastContext);
 
   const handleChange = (e) => {
     setFormData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.type == 'email' ? e.target.value.toLowerCase() : e.target.value,
+      [e.target.name]:
+        e.target.type == "email"
+          ? e.target.value.toLowerCase()
+          : e.target.value,
     }));
   };
 
@@ -47,7 +46,6 @@ export default function Register({ data, token, setActiveTab }) {
     }
 
     register(formData);
-
   };
 
   useEffect(() => {
@@ -94,7 +92,7 @@ export default function Register({ data, token, setActiveTab }) {
   }, [data]);
 
   return (
-    <div id="register">
+    <div id="register" data-testid="registerComponent">
       <h2>Register</h2>
       <form onKeyDown={(e) => e.key === "Enter" && handleSubmit(e)}>
         <input
@@ -131,6 +129,7 @@ export default function Register({ data, token, setActiveTab }) {
             onChange={(e) => handleChange(e)}
           />
           <div
+            data-testid="showPassword"
             className="show-hide-password"
             onClick={() => setShowPassword(!showPassword)}
           >
@@ -147,6 +146,7 @@ export default function Register({ data, token, setActiveTab }) {
             onChange={(e) => handleChange(e)}
           />
           <div
+            data-testid="showPassword"
             className="show-hide-password"
             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
           >
@@ -154,14 +154,31 @@ export default function Register({ data, token, setActiveTab }) {
           </div>
         </div>
 
-        <div className="button-container" style={{display: 'flex', gap: '15px', alignItems: 'center', marginTop: loading ? 0 : '0.9vw', marginLeft: loading ? '-5.8vw' : 0}}>
+        <div
+          className="button-container"
+          style={{
+            display: "flex",
+            gap: "15px",
+            alignItems: "center",
+            marginTop: loading ? 0 : "0.9vw",
+            marginLeft: loading ? "-5.8vw" : 0,
+          }}
+        >
           {loading && <Loader />}
-          <Button disabled={loading} onClick={(e) => handleSubmit(e)} variant="aqua">
+          <Button
+          data-testid="registerButton"
+            disabled={loading}
+            onClick={(e) => handleSubmit(e)}
+            variant="aqua"
+          >
             {" "}
             S'enregistrer
           </Button>
         </div>
-           <p className="account-question">Déjà un compte ? <span onClick={() => setActiveTab('login')}>Se connecter</span></p>
+        <p className="account-question">
+          Déjà un compte ?{" "}
+          <span onClick={() => setActiveTab("login")}>Se connecter</span>
+        </p>
       </form>
     </div>
   );

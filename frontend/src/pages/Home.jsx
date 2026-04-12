@@ -17,9 +17,6 @@ export default function Home({ user, loading, caregivers, recipients }) {
 
   const navigate = useNavigate();
 
-  console.log(caregivers);
-  
-
   return (
     <div id="home">
       <div className="home-container">

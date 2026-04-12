@@ -8,6 +8,17 @@ import { ToastProvider } from "../../context/ToastContext";
 import { ConfirmProvider } from "../../context/ConfirmContext";
 import { act } from "react";
 
+const ProviderWrapper = ({ children }) => {
+  <Provider store={store}>
+    <AuthProvider>
+      <ToastProvider>
+        <ConfirmProvider>
+          <BrowserRouter>{children}</BrowserRouter>
+        </ConfirmProvider>
+      </ToastProvider>
+    </AuthProvider>
+  </Provider>;
+};
 describe("TodoList", () => {
   delete window.location;
   window.location = {
@@ -15,21 +26,8 @@ describe("TodoList", () => {
     href: "http://dummy.com?page=1&name=testing",
   };
   test("Should render without crash", async () => {
-
     await act(async () => {
-      render(
-        <Provider store={store}>
-          <AuthProvider>
-            <ToastProvider>
-              <ConfirmProvider>
-                <BrowserRouter>
-                  <TodoList />
-                </BrowserRouter>
-              </ConfirmProvider>
-            </ToastProvider>
-          </AuthProvider>
-        </Provider>,
-      );
+      render(<TodoList />, { wrapper: ProviderWrapper });
     });
   });
 });

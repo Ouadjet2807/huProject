@@ -19,7 +19,7 @@ import TreatmentPage from "./components/treatments/TreatmentPage";
 import { useSelector } from "react-redux";
 
 function App() {
-  const { user, logout, loading, setRefreshSpace } =
+  const { user, logout, loading, setLoading, setRefreshSpace } =
     useContext(AuthContext);
   const { showToast, setShowToast, message, color } = useContext(ToastContext);
   const {
@@ -31,7 +31,7 @@ function App() {
     returnValue,
   } = useContext(ConfirmContext);
 
-    const space = useSelector((state) => state.space);
+  const space = useSelector((state) => state.space);
   const [notifications, setNotifications] = useState([]);
 
   const getNotifications = async () => {
@@ -54,8 +54,9 @@ function App() {
     }
   }, [space]);
   // console.log("user ", user);
-  console.log("space ", space)
 
+  console.log(space);
+  
   return (
     <div className="App">
       <Toast
@@ -101,8 +102,8 @@ function App() {
               />
             }
           />
-          <Route path="calendar" element={<Agenda space={space} />} />
-          <Route path="calendar/:id" element={<Agenda space={space} />} />
+          <Route path="calendar" element={<Agenda agenda={space.agenda} loading={loading} setLoading={setLoading}/>} />
+          <Route path="calendar/:id" element={<Agenda agenda={space.agenda} loading={loading} setLoading={setLoading}/>} />
           <Route path="create_recipient" element={<CreateRecipient />} />
           <Route path="accept-invite/:token" element={<AcceptInvite />} />
           <Route

@@ -29,8 +29,6 @@ export default function CreateCategory({ show, setShow, agenda, selectCategory }
   };
 
   const handleSubmit = async () => {
-
-    
     try {
       let response = await api.post(
         "http://127.0.0.1:8000/api/agenda_item_categories/",
@@ -42,7 +40,6 @@ export default function CreateCategory({ show, setShow, agenda, selectCategory }
         name: "",
         color: colors[0],
       });
-      
       handleClose();
     } catch (error) {
       console.log(error);
@@ -59,7 +56,7 @@ export default function CreateCategory({ show, setShow, agenda, selectCategory }
   }, [agenda]);
 
   return (
-    <Modal show={show} onHide={handleClose} className="create-category-modal">
+    <Modal data-testid="createCategoryModal" show={show} onHide={handleClose} className="create-category-modal">
       <Modal.Header closeButton>
         <Modal.Title>Créer une catégorie</Modal.Title>
       </Modal.Header>

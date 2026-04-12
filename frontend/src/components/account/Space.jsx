@@ -177,7 +177,10 @@ export default function Space({ editMode, setEditMode, roles }) {
   }, [refreshSpace]);
 
   
-  return Object.keys(space).length > 0 && user ? (
+  return (
+  <div data-testid="spaceComponent">
+
+  {Object.keys(space).length > 0 && user ? (
     <div className="space-container">
       <InviteUserModal show={showInviteModal} setShow={setShowInviteModal} />
 
@@ -186,12 +189,12 @@ export default function Space({ editMode, setEditMode, roles }) {
         setShow={setAddRecipient}
         space={space}
         setRefreshRecipients={setRefreshSpace}
-      />
+        />
       <Modal
         show={deleteCaregiverModal}
         onHide={(e) => handleClose(e)}
         id="revokeCaregiverModal"
-      >
+        >
         <Modal.Header closeButton>
           <Modal.Title>Révoquer l'accès</Modal.Title>
         </Modal.Header>
@@ -210,7 +213,7 @@ export default function Space({ editMode, setEditMode, roles }) {
           <Button
             variant="outline-danger"
             onClick={() => revokeAccess(selectedCaregiver)}
-          >
+            >
             Continuer
           </Button>
 
@@ -224,7 +227,7 @@ export default function Space({ editMode, setEditMode, roles }) {
         show={removeRecipient}
         onHide={(e) => handleClose(e)}
         id="removeRecipientModal"
-      >
+        >
         <Modal.Header closeButton>
           <Modal.Title>Supprimer un aidé</Modal.Title>
         </Modal.Header>
@@ -252,7 +255,7 @@ export default function Space({ editMode, setEditMode, roles }) {
           <Button
             variant="outline-danger"
             onClick={() => deleteRecipient(selectedRecipient)}
-          >
+            >
             Continuer
           </Button>
 
@@ -274,15 +277,15 @@ export default function Space({ editMode, setEditMode, roles }) {
           <strong>Membres</strong>
           {space.created_by.id === user.id && (
             <Button
-              className={`edit-button
-               ${
-                 editMode.active && editMode.target === "caregivers"
-                   ? "active"
-                   : ""
-               }
-              `}
-              onClick={(e) => handleEditMode(e)}
-            >
+            className={`edit-button
+              ${
+                editMode.active && editMode.target === "caregivers"
+                ? "active"
+                : ""
+                }
+                `}
+                onClick={(e) => handleEditMode(e)}
+                >
               {editMode.active && editMode.target === "caregivers" ? (
                 <>
                   Enregistrer <LuSave />
@@ -300,10 +303,10 @@ export default function Space({ editMode, setEditMode, roles }) {
             space.caregivers.map((item) => {
               return (
                 <li
-                  className={`caregiver ${
-                    item.user === user.id ? "current-user" : ""
+                className={`caregiver ${
+                  item.user === user.id ? "current-user" : ""
                   }`}
-                >
+                  >
                   <div className="status-badge">
                     {space.created_by.id === item.user && <PiCrownSimpleDuotone />}
                   </div>
@@ -322,12 +325,12 @@ export default function Space({ editMode, setEditMode, roles }) {
                           name="access_level"
                           id=""
                           onChange={(e) => handleChange(e, item.id)}
-                        >
+                          >
                           {roles.map((role) => {
                             return (
                               <option
-                                value={role[0]}
-                                selected={item.access_level === role[0]}
+                              value={role[0]}
+                              selected={item.access_level === role[0]}
                               >
                                 {role[1]}
                               </option>
@@ -340,7 +343,7 @@ export default function Space({ editMode, setEditMode, roles }) {
                           className="revoke"
                           onClick={(e) => handleDeleteModal(e, item)}
                           size="sm"
-                        >
+                          >
                           <FaUserMinus />
                         </Button>
                       </div>
@@ -356,8 +359,8 @@ export default function Space({ editMode, setEditMode, roles }) {
         </ul>
         {space.created_by.id === user.id && (
           <Button
-            onClick={() => setShowInviteModal(true)}
-            className="add-person"
+          onClick={() => setShowInviteModal(true)}
+          className="add-person"
           >
             <TbUsersPlus /> Inviter un membre
           </Button>
@@ -369,13 +372,13 @@ export default function Space({ editMode, setEditMode, roles }) {
           <strong>Aidés</strong>
           {space.caregivers.find(c => c.user === user.id).can_edit && (
             <Button
-              className={`edit-button ${
-                editMode.active && editMode.target === "recipients"
-                  ? "active"
-                  : ""
+            className={`edit-button ${
+              editMode.active && editMode.target === "recipients"
+              ? "active"
+              : ""
               }`}
               onClick={(e) => handleEditMode(e)}
-            >
+              >
               {editMode.active && editMode.target === "recipients" ? (
                 <>
                   Enregistrer <LuSave />
@@ -394,19 +397,19 @@ export default function Space({ editMode, setEditMode, roles }) {
               return (
                 <li
                 onClick={() => navigate(`/recipient/${item.id}`)}
-                  className={`recipient ${
-                    item.user === user.id ? "current-user" : ""
+                className={`recipient ${
+                  item.user === user.id ? "current-user" : ""
                   }`}
-                >
+                  >
                   <div className="info">
                     <p>
                       {item.first_name} {item.last_name}
                     </p>
                     {editMode.active && editMode.target === "recipients" && space.caregivers.find(c => c.user === user.id).can_edit && (
                       <Button
-                        onClick={(e) => handleDeleteModal(e, item)}
-                        className="remove-person"
-                        variant="outline-danger"
+                      onClick={(e) => handleDeleteModal(e, item)}
+                      className="remove-person"
+                      variant="outline-danger"
                       >
                         <FaUserMinus />
                       </Button>
@@ -428,5 +431,6 @@ export default function Space({ editMode, setEditMode, roles }) {
     </div>
   ) : (
     <Loader />
-  );
+  )};
+        </div>)
 }

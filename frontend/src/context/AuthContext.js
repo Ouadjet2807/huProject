@@ -195,6 +195,7 @@ export const AuthProvider = ({ children }) => {
     loading,
     refreshSpace,
     setRefreshSpace,
+    setLoading,
     message,
   };
 

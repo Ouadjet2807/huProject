@@ -7,6 +7,8 @@ const api = axios.create({
   },
 });
 
+
+
 // small helper to read tokens
 export const tokenStore = {
   getAccess: () => localStorage.getItem('accessToken'),
@@ -26,6 +28,7 @@ export const tokenStore = {
 // attach access on every request (reads from localStorage in case of reload)
 api.interceptors.request.use((config) => {
 
+  // if(process.env.NODE_ENV === "test") return
   const lang = localStorage.getItem("lang") || navigator.language || "fr";
 
   config.headers["Accept-Language"] = lang.split("-")[0];

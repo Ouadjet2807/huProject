@@ -6,37 +6,45 @@ import { ToastProvider } from "../context/ToastContext";
 import { ConfirmProvider } from "../context/ConfirmContext";
 import { store } from "../redux/store";
 import { BrowserRouter } from "react-router";
+import userEvent from "@testing-library/user-event";
+
+const ProviderWrapper = ({ children }) => (
+  <Provider store={store}>
+    <AuthProvider>
+      <ToastProvider>
+        <ConfirmProvider>
+          <BrowserRouter>{children}</BrowserRouter>
+        </ConfirmProvider>
+      </ToastProvider>
+    </AuthProvider>
+  </Provider>
+);
 
 describe("Account", () => {
-//   const user = {
-//     id: "34263dg4-3536w-23665-2455-2426578ewtg34",
-//     email: "john.doe@mail.fr",
-//     first_name: "John",
-//     last_name: "Doe",
-//     username: "jDoe1234",
-//     invited: {},
-//     isAuthenticated: true,
-//   };
+  delete window.location;
+  window.location = {
+    reload: jest.fn(),
+    href: "http://dummy.com?page=1&name=testing",
+  };
+  it("Should render without crash", async () => {
+    render(<Account />, { wrapper: ProviderWrapper });
+  });
+  it("Should render profile tab when user click on list item", async () => {
+    render(<Account />, { wrapper: ProviderWrapper });
 
-delete window.location;
-window.location = {
-  reload: jest.fn(),
-  href: "http://dummy.com?page=1&name=testing",
-};
-  test("Should render without crash", async () => {
-    render(
-      <Provider store={store}>
-        <AuthProvider>
-          <ToastProvider>
-            <ConfirmProvider>
-              <BrowserRouter>
-                <Account />
-              </BrowserRouter>
-            </ConfirmProvider>
-          </ToastProvider>
-        </AuthProvider>
-      </Provider>,
-    );
+    const profileTab = screen.getByTestId('profileTab')
 
+    await userEvent.click(profileTab)
+
+    expect(screen.getByTestId("profileComponent")).toBeInTheDocument()
+  });
+  it("Should render space tab when user click on list item", async () => {
+    render(<Account />, { wrapper: ProviderWrapper });
+
+    const spaceTab = screen.getByTestId('spaceTab')
+
+    await userEvent.click(spaceTab)
+
+    expect(screen.getByTestId("spaceComponent")).toBeInTheDocument()
   });
 });

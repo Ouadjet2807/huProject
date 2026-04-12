@@ -22,6 +22,6 @@ root.render(
         </ConfirmProvider>
       </ToastProvider>
     </AuthProvider>
-  </UseDimensionProvider>,
+  </UseDimensionProvider>
   </Provider>
 );

@@ -1,16 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import api from '../api/api';
-import { useAuth } from '../context/AuthContext';
+import { AuthContext, useAuth } from '../context/AuthContext';
 import { useParams, useNavigate } from 'react-router';
 import axios from 'axios';
 import Register from './authentification/Register';
 
 export default function AcceptInvite() {
   const { token } = useParams(); // route: /accept-invite/:token
-
+  const { register, loading, setLoading, message } = useContext(AuthContext)
   const navigate = useNavigate();
   const [invitation, setInvitation] = useState({});
-  const [loading, setLoading] = useState(true)
   const [errorMessage, setErrorMessage] = useState('')
 
   const getInvitation = async () => {
@@ -39,7 +38,7 @@ export default function AcceptInvite() {
   <div id="acceptInvite">
     {errorMessage}
     <div className="container">
-    <Register data={invitation} token={token}/>
+    <Register data={invitation} token={token} register={register} loading={loading} message={message}/>
     </div>
   </div>
 );

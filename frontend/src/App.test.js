@@ -7,19 +7,22 @@ import { store } from "./redux/store";
 import { ConfirmProvider } from "./context/ConfirmContext";
 import { act } from "react";
 
-test("renders App", async () => {
+describe("App", () => {
 
-  await act(async () => {
-    render(
-      <Provider store={store}>
-        <ToastProvider>
-          <AuthProvider>
-            <ConfirmProvider>
-              <App />
-            </ConfirmProvider>
-          </AuthProvider>
-        </ToastProvider>
-      </Provider>,
-    );
+
+  it("Should render App", async () => {
+    await act(async () => {
+      render(
+        <Provider store={store}>
+          <ToastProvider>
+            <AuthProvider>
+              <ConfirmProvider>
+                <App />
+              </ConfirmProvider>
+            </AuthProvider>
+          </ToastProvider>
+        </Provider>,
+      );
+    });
   });
 });

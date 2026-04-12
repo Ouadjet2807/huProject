@@ -5,7 +5,7 @@ import Profile from "../components/account/Profile";
 import Space from "../components/account/Space";
 import api from "../api/api";
 
-export default function () {
+export default function Account() {
   const { user } = useContext(AuthContext);
   const { setMessage, setColor, setShowToast } = useContext(ToastContext);
 
@@ -56,9 +56,10 @@ export default function () {
   }, [activeTab]);
 
   useEffect(() => {
-    if(!window.location.pathname) return
+    if (!window.location.pathname) return;
     let pathname = window.location.pathname.replace("/", "").split("/");
-
+    console.log(window.pathname);
+    
     if (pathname.length > 1) {
       setActiveTab(pathname[1]);
       return;
@@ -79,12 +80,14 @@ export default function () {
       <div className="toolbar">
         <ul>
           <li
+            data-testid="profileTab"
             className={activeTab === "profile" ? "active" : ""}
             onClick={() => setActiveTab("profile")}
           >
             Votre profil
           </li>
           <li
+            data-testid="spaceTab"
             className={activeTab === "space" ? "active" : ""}
             onClick={() => setActiveTab("space")}
           >

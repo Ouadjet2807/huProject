@@ -11,7 +11,13 @@ import {
 
 Reflect.set(globalThis, 'BroadcastChannel', BroadcastChannel)
 
+const localStorageMock = {
+  getItem: jest.fn(),
+  setItem: jest.fn(),
+  clear: jest.fn()
+};
 
+global.localStorage = localStorageMock;
 
 if (!global.TextEncoder) {
   global.TextEncoder = TextEncoder

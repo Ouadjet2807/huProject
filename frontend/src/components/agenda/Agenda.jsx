@@ -1,4 +1,4 @@
-import React, { use, useEffect, useState } from "react";
+import React, { use, useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
@@ -22,19 +22,18 @@ import Form from "react-bootstrap/Form";
 import { PiTagDuotone } from "react-icons/pi";
 import { useNavigate, useParams } from "react-router";
 
-export default function Agenda() {
-  const [agenda, setAgenda] = useState({});
+export default function Agenda({loading, setLoading, agenda}) {
   const [events, setEvents] = useState([]);
   const [todayAgendaItems, setTodayAgendaItems] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState({});
   const [showEventForm, setShowEventForm] = useState(false);
-  const space = useSelector((state) => state.space);
-  const [isLoading, setIsLoading] = useState(true);
   const [hiddenCategories, setHiddenCategories] = useState([]);
 
   const today = new Date();
 
   const { id } = useParams();
+
+  const calendarRef = useRef()
 
   const navigate = useNavigate();
 
@@ -63,9 +62,10 @@ export default function Agenda() {
   };
 
   const resetSelectedEvent = () => {
-    navigate("/calendar");
     setSelectedEvent({});
-    setIsLoading(true);
+    if(process.env.NODE_ENV === "test") return
+    navigate("/calendar");
+    setLoading(true);
   };
 
   const filterCategory = (e, category) => {
@@ -95,11 +95,6 @@ export default function Agenda() {
     return str;
   };
 
-  useEffect(() => {
-    if (space && Object.keys(space).length > 0) {
-      setAgenda(space.agenda);
-    }
-  }, [space]);
 
   useEffect(() => {
     if (!agenda) return;
@@ -116,7 +111,7 @@ export default function Agenda() {
         item.category = find_category ? find_category : item.category;
         item.start_date = new Date(item.start_date);
         item.end_date = new Date(item.end_date);
-        item.agenda_id = item.agenda.id;
+
 
         item.reminder =
           typeof item.reminder == "str" ? JSON.parse(item.reminder) : {};
@@ -136,12 +131,15 @@ export default function Agenda() {
         ),
       );
       setTodayAgendaItems(searchTodaysEvent);
-      setIsLoading(false);
+      if(process.env.NODE_ENV == "test") {
+        return
+      }
+      setLoading(false);
     }
-  }, [agenda, isLoading, hiddenCategories]);
+  }, [agenda, loading, hiddenCategories]);
 
   useEffect(() => {
-    if (isLoading) return;
+    if (loading) return;
 
     if (!id || events.length <= 0) {
       setSelectedEvent({});
@@ -150,15 +148,35 @@ export default function Agenda() {
     }
   }, [id, events]);
 
-  console.log(agenda);
+  useEffect(() => {
+    if(calendarRef.current) {
+      calendarRef.current._reactInternals.child.stateNode.setAttribute("data-testid", 'calendar')
+    }
+    const rbcEvents = document.querySelectorAll('.rbc-event')
+    Array.from(rbcEvents).forEach(div => {
+      div.setAttribute("data-testid", "rbcEvent")
+    })
 
+  }, [calendarRef.current, events])
+
+  useEffect(() => {
+    if(todayAgendaItems.length == 0) return
+    if(Object.keys(todayAgendaItems[0]).includes('start_date')) {
+
+      console.log(todayAgendaItems[0].start_date);
+    }
+  }, [todayAgendaItems])
+
+  console.log(agenda);
+  console.log(events);
+
+  console.log(selectedEvent);
+  
 
   return (
     <div id="agenda">
       <AddEvent
         agenda={agenda}
-        setAgenda={setAgenda}
-        space={space}
         setShow={setShowEventForm}
         show={showEventForm}
         preloadedEvent={selectedEvent}
@@ -166,8 +184,9 @@ export default function Agenda() {
       />
       <div className="left-tab">
         {Object.keys(selectedEvent).length > 0 ? (
-          <div className="selected-event">
+          <div className="selected-event" data-testid="selectedEvent">
             <Button
+              data-testid="backButton"
               variant="aqua"
               size="sm"
               onClick={() => resetSelectedEvent()}
@@ -178,7 +197,7 @@ export default function Agenda() {
             <div className="header">
               <h3>{selectedEvent.title}</h3>
               {selectedEvent.private && (
-                <span className="private-tag">
+                <span data-testid="selectedEventPrivate" className="private-tag">
                   <Badge bg="secondary">
                     <IoLockClosedOutline /> privé
                   </Badge>
@@ -190,27 +209,27 @@ export default function Agenda() {
               {displayDate(selectedEvent.start_date, selectedEvent.end_date)}
             </small>
             {selectedEvent.description && selectedEvent.description !== "" ? (
-              <div className="description">{selectedEvent.description}</div>
+              <div data-testid="selectedEventDescription" className="description">{selectedEvent.description}</div>
             ) : (
-              <small>
+              <small data-testid="selectedEventDescription">
                 <HiOutlineBars3BottomLeft /> Aucune description
               </small>
             )}
             {selectedEvent.caregivers.length > 0 ||
             selectedEvent.recipients.length > 0 ? (
-              <ListGroup className="participants">
+              <ListGroup data-testid="selectedEventParticipants" className="participants">
                 {selectedEvent.caregivers
                   .concat(selectedEvent.recipients)
                   .map((item) => {
                     return (
-                      <ListGroup.Item>
+                      <ListGroup.Item data-testid="selectedEventParticipantsItem">
                         {item.first_name} {item.last_name}
                       </ListGroup.Item>
                     );
                   })}
               </ListGroup>
             ) : (
-              <small>
+              <small data-testid="selectedEventParticipants">
                 <LuUsersRound /> Aucun participant
               </small>
             )}
@@ -224,13 +243,13 @@ export default function Agenda() {
               </div>
             </div>
             <div className="todays-events">
-              {isLoading ? (
+              {loading ? (
                 <Loader />
               ) : todayAgendaItems.length > 0 ? (
                 <ul>
                   {todayAgendaItems.map((event) => {
                     return (
-                      <li onClick={() => setSelectedEvent(event)}>
+                      <li data-testid="todaysEventItem" onClick={() => setSelectedEvent(event)}>
                         <div
                           className="icon"
                           style={{
@@ -241,23 +260,25 @@ export default function Agenda() {
                           <MdOutlinePermContactCalendar />
                         </div>
                         <div className="event-info">
-                          <div className="time">
+                          <div data-testid="todaysEventTime" className="time">
                             {event.start_date &&
                               typeof event.start_date !== "string" &&
                               event.start_date.toTimeString().slice(0, 5)}
+                            {" "}
                             -
+                            {" "}
                             {event.end_date &&
                               typeof event.end_date !== "string" &&
                               event.end_date.toTimeString().slice(0, 5)}
                           </div>
-                          <span>{event.title}</span>
+                          <span data-testid="todaysEventTitle">{event.title}</span>
                         </div>
                       </li>
                     );
                   })}
                 </ul>
               ) : (
-                <p className="no-events">
+                <p data-testid="noEvents" className="no-events">
                   <LuCalendarCheck2 /> Aucun événement aujourd'hui
                 </p>
               )}
@@ -265,7 +286,8 @@ export default function Agenda() {
           </>
         )}
         <Button
-          disabled={isLoading}
+          disabled={loading}
+          data-testid="addEventButton"
           variant="aqua"
           className="add-event-btn"
           style={{ margin: "0 auto" }}
@@ -277,7 +299,7 @@ export default function Agenda() {
         </Button>
       </div>
       <div className="right-tab">
-        {isLoading && <Loader overlay={true} />}
+        {loading && <Loader overlay={true} />}
         <Dropdown autoClose={false}>
           <Dropdown.Toggle variant="" id="dropdown-basic" className="filter">
             <BsFilter />
@@ -285,7 +307,7 @@ export default function Agenda() {
 
           <Dropdown.Menu>
             <Dropdown.Header>Filtrer</Dropdown.Header>
-            {agenda.categories &&
+            {agenda && Object.keys(agenda).includes('categories') &&
               agenda.categories.length > 0 &&
               agenda.categories.map((category) => {
                 return (
@@ -307,6 +329,7 @@ export default function Agenda() {
 
         <Calendar
           localizer={localizer}
+          ref={calendarRef}
           events={events}
           eventPropGetter={(event, start, end, isSelected) => {
             let newStyle = {

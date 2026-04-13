@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialState = {
+let initialState = {
   agenda: {},
   caregivers: [],
   created_at: "",

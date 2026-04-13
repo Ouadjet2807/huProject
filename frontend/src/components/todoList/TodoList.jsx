@@ -21,8 +21,7 @@ gsap.registerPlugin(useGSAP);
 export default function TodoList({ user }) {
   moment.locale("fr");
 
-  const space = useSelector((state) => state.space)
-
+  const space = useSelector((state) => state.space);
   const todoCategory = [
     {
       name: "Toutes",
@@ -93,7 +92,7 @@ export default function TodoList({ user }) {
     todo.completed_by_id = user.id;
     todo.updated_at = moment(new Date()).format();
 
-    let initial_index = todoList.indexOf(todo)
+    let initial_index = todoList.indexOf(todo);
 
     let filter = todoList.toSpliced(initial_index, 1, todo);
 
@@ -110,14 +109,19 @@ export default function TodoList({ user }) {
   };
 
   const deleteTodo = async (todo) => {
-    let initial_index = todoList.indexOf(todo)
+    console.log(todo);
+    
+    let initial_index = todoList.indexOf(todo);
     let filter = todoList.toSpliced(initial_index, 1);
-
+    
     try {
-      await api.delete(
-        `http://127.0.0.1:8000/api/todo_list_items/${todo.id}/`,
-        todo,
-      );
+      if(process.env.NODE_ENV !== "test") {
+
+        await api.delete(
+          `http://127.0.0.1:8000/api/todo_list_items/${todo.id}/`,
+          todo,
+        );
+      }
       setTodoList(filter);
     } catch (error) {
       console.log(error);
@@ -127,9 +131,12 @@ export default function TodoList({ user }) {
   useEffect(() => {
     if (!user || !Object.keys(space).length > 0 || !space.todos.items) return;
 
-    let json_todos = JSON.stringify(space.todos.items)
+    let json_todos = JSON.stringify(space.todos.items);
+    console.log(json_todos);
+
     setTodoList(JSON.parse(json_todos));
 
+    if (process.env.NODE_ENV === "test") return;
     setNewTask({
       todo_list: space.todos.id,
       frequency: "punctual",
@@ -156,36 +163,54 @@ export default function TodoList({ user }) {
     filterCategories();
   }, [activeCategory, todoList]);
 
+  console.log(todoList);
+
   return (
     <div id="todoList">
       <ButtonGroup className="todo-category">
-        {todoCategory.length > 0 && todoCategory.map((category, index) => {
-          return (
-            <Button key={`category_${index+1}`}
-              className={`${
-                activeCategory === category.value ? "activeCategory" : ""
-              } `}
-              onClick={() => setActiveCategory(category.value)}
-            >
-              {category.name}
-            </Button>
-          );
-        })}
+        {todoCategory.length > 0 &&
+          todoCategory.map((category, index) => {
+            return (
+              <Button
+              data-testid={`${category.value}TodoButton`}
+                key={`category_${index + 1}`}
+                className={`${
+                  activeCategory === category.value ? "activeCategory" : ""
+                } `}
+                onClick={() => setActiveCategory(category.value)}
+              >
+                {category.name}
+              </Button>
+            );
+          })}
       </ButtonGroup>
       <div className="todo-list-items">
-        {filteredTodoList && filteredTodoList.length > 0 &&
+        {filteredTodoList &&
+          filteredTodoList.length > 0 &&
           filteredTodoList.map((todo, index) => {
             return (
-              <div key={`todo_${todo.id}`} className={`todo-item ${todo.completed ? "completed" : ""}`}>
-                <Form.Check
-                  type="checkbox"
-                  label={todo.title}
-                  id=""
-                  checked={todo.completed}
-                  onClick={() => updateTodo(todo)}
-                />
-
-                <div className="delete" onClick={() => deleteTodo(todo)}>
+              <div
+              data-testid={`${todo.frequency}Todo_${index}`}
+                key={`todo_${todo.id}`}
+                className={`todo-item ${todo.completed ? "completed" : ""}`}
+              >
+                <div className="field">
+                  <Form.Check
+                    data-testid="todoItemInput"
+                    type="checkbox"
+                    id=""
+                    checked={todo.completed}
+                    onClick={() => updateTodo(todo)}
+                  />
+                  <Form.Check.Label data-testid="todoItemLabel">
+                    {todo.title}
+                  </Form.Check.Label>
+                </div>
+                <div
+                  data-testid="deleteTodoButton"
+                  className="delete"
+                  onClick={() => deleteTodo(todo)}
+                >
                   <LuTrash2 />
                 </div>
               </div>
@@ -219,23 +244,24 @@ export default function TodoList({ user }) {
             id="input-group-dropdown-2"
             align="end"
           >
-            {todoCategory.length > 0 && todoCategory
-              .filter((item) => item.value !== "all")
-              .map((category, index) => {
-                return (
-                  <Dropdown.Item
-                    key={`category_${index+1}`}
-                    onClick={() =>
-                      setNewTask((prev) => ({
-                        ...prev,
-                        frequency: category.value,
-                      }))
-                    }
-                  >
-                    {category.name}
-                  </Dropdown.Item>
-                );
-              })}
+            {todoCategory.length > 0 &&
+              todoCategory
+                .filter((item) => item.value !== "all")
+                .map((category, index) => {
+                  return (
+                    <Dropdown.Item
+                      key={`category_${index + 1}`}
+                      onClick={() =>
+                        setNewTask((prev) => ({
+                          ...prev,
+                          frequency: category.value,
+                        }))
+                      }
+                    >
+                      {category.name}
+                    </Dropdown.Item>
+                  );
+                })}
           </DropdownButton>
         </InputGroup>
         <div className="add-button" onClick={(e) => handleSubmit(e)}>

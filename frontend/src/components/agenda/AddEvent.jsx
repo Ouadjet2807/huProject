@@ -325,9 +325,6 @@ export default function AddEvent({
     }
   }, [searchParticipants]);
 
-  console.log(formData);
-  
-
   return (
     <>
       <CreateCategory

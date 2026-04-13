@@ -39,6 +39,7 @@ describe("Sign", () => {
     await userEvent.click(registerTab)
 
     expect(screen.getByTestId('registerComponent')).toBeInTheDocument()
+
   })
   it("Should display login component when user click on login tab", async () => {
     render(<Sign />, {wrapper: ProviderWrapper})
@@ -48,7 +49,5 @@ describe("Sign", () => {
     await userEvent.click(loginTab)
 
     expect(screen.getByTestId('loginComponent')).toBeInTheDocument()
-
-    const loginHeading = screen.getByPlaceholderText(/mot de passe/i)
   })
 })

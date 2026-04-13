@@ -159,19 +159,6 @@ export default function Agenda({loading, setLoading, agenda}) {
 
   }, [calendarRef.current, events])
 
-  useEffect(() => {
-    if(todayAgendaItems.length == 0) return
-    if(Object.keys(todayAgendaItems[0]).includes('start_date')) {
-
-      console.log(todayAgendaItems[0].start_date);
-    }
-  }, [todayAgendaItems])
-
-  console.log(agenda);
-  console.log(events);
-
-  console.log(selectedEvent);
-  
 
   return (
     <div id="agenda">
@@ -220,9 +207,9 @@ export default function Agenda({loading, setLoading, agenda}) {
               <ListGroup data-testid="selectedEventParticipants" className="participants">
                 {selectedEvent.caregivers
                   .concat(selectedEvent.recipients)
-                  .map((item) => {
+                  .map((item, index) => {
                     return (
-                      <ListGroup.Item data-testid="selectedEventParticipantsItem">
+                      <ListGroup.Item data-testid="selectedEventParticipantsItem" key={`participant_${index}`}>
                         {item.first_name} {item.last_name}
                       </ListGroup.Item>
                     );
@@ -247,9 +234,9 @@ export default function Agenda({loading, setLoading, agenda}) {
                 <Loader />
               ) : todayAgendaItems.length > 0 ? (
                 <ul>
-                  {todayAgendaItems.map((event) => {
+                  {todayAgendaItems.map((event, index) => {
                     return (
-                      <li data-testid="todaysEventItem" onClick={() => setSelectedEvent(event)}>
+                      <li data-testid="todaysEventItem" onClick={() => setSelectedEvent(event)} key={`todaysevent_${index}`}>
                         <div
                           className="icon"
                           style={{
@@ -309,9 +296,9 @@ export default function Agenda({loading, setLoading, agenda}) {
             <Dropdown.Header>Filtrer</Dropdown.Header>
             {agenda && Object.keys(agenda).includes('categories') &&
               agenda.categories.length > 0 &&
-              agenda.categories.map((category) => {
+              agenda.categories.map((category, index) => {
                 return (
-                  <Dropdown.Item>
+                  <Dropdown.Item key={`category_${index}`}>
                     <Form.Check
                       type="checkbox"
                       checked={!hiddenCategories.includes(category.id)}

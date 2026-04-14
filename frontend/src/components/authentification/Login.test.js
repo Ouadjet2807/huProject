@@ -29,8 +29,14 @@ describe("Login", () => {
   it("Should render without crash", async () => {
     render(<Login loading={false} message={{status: "", message: ""}}/>, { wrapper: ProviderWrapper });
 
+    const heading = screen.getByRole('heading', {level: 2})
     const inputs = screen.getAllByPlaceholderText(/mot de passe/i);
+    const button = screen.getByRole('button')
 
+    expect(heading).toBeInTheDocument()
+    expect(heading).toHaveTextContent(/connect/i)
+    expect(button).toBeInTheDocument()
+    expect(button).toHaveTextContent(/connexion/i)
     inputs.forEach((input) => {
       expect(input.type).toBe("password");
     });

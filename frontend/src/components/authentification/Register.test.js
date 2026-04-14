@@ -30,7 +30,14 @@ describe("Register", () => {
   it("Should render without crash", async () => {
     render(<Register loading={false} message={{status: "", message: ""}}/>, { wrapper: ProviderWrapper });
 
+    const heading = screen.getByRole('heading', {level: 2})
     const inputs = screen.getAllByPlaceholderText(/mot de passe/i);
+    const button = screen.getByRole('button')
+
+    expect(heading).toBeInTheDocument()
+    expect(heading).toHaveTextContent(/inscri/i)
+    expect(button).toBeInTheDocument()
+    expect(button).toHaveTextContent(/inscription/i)
 
      inputs.forEach(input => {
       expect(input.type).toBe("password");

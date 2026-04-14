@@ -102,7 +102,7 @@ export default function Login({ setActiveTab, login, loading, message }) {
         </div>
         <p className="account-question">
           Pas encore de compte ?{" "}
-          <span onClick={() => setActiveTab("register")}>S'inscrire</span>
+          <span data-testid="tabSwitcher" onClick={() => setActiveTab("register")}>S'inscrire</span>
         </p>
       </form>
     </div>

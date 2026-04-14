@@ -93,7 +93,7 @@ export default function Register({ data, token, setActiveTab, register, loading,
 
   return (
     <div id="register" data-testid="registerComponent">
-      <h2>Register</h2>
+      <h2>S'inscrire</h2>
       <form onKeyDown={(e) => e.key === "Enter" && handleSubmit(e)}>
         <input
           type="email"
@@ -172,12 +172,12 @@ export default function Register({ data, token, setActiveTab, register, loading,
             variant="aqua"
           >
             {" "}
-            S'enregistrer
+            Inscription
           </Button>
         </div>
         <p className="account-question">
           Déjà un compte ?{" "}
-          <span onClick={() => setActiveTab("login")}>Se connecter</span>
+          <span data-testid="tabSwitcher" onClick={() => setActiveTab("login")}>Se connecter</span>
         </p>
       </form>
     </div>

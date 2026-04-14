@@ -13,8 +13,6 @@ export default function Sign() {
         return <Login setActiveTab={setActiveTab} login={login} loading={loading} message={message}/>;
       case "register":
         return <Register setActiveTab={setActiveTab} register={register} loading={loading} message={message}/>;
-      default:
-        return <Login setActiveTab={setActiveTab} login={login} loading={loading} message={message}/>;
     }
   };
 

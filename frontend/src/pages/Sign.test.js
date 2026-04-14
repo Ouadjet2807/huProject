@@ -50,4 +50,36 @@ describe("Sign", () => {
 
     expect(screen.getByTestId('loginComponent')).toBeInTheDocument()
   })
+  it("Should display register tab when user click on the 'I don't have an account' link on login tab", async () => {
+        render(<Sign />, {wrapper: ProviderWrapper})
+
+        const link = screen.getByTestId('tabSwitcher')
+
+        expect(link).toBeInTheDocument()
+        expect(link).toHaveTextContent(/inscrire/i)
+
+        await userEvent.click(link)
+
+        const registerTab = screen.getByTestId("registerTab")
+
+        expect(registerTab).toBeInTheDocument()
+  })
+  it("Should display login tab when user click on the 'I already have an account' link on register tab", async () => {
+        render(<Sign />, {wrapper: ProviderWrapper})
+
+        const registerTab = screen.getByTestId('registerTab')
+
+        await userEvent.click(registerTab)
+
+        const link = screen.getByTestId('tabSwitcher')
+
+        expect(link).toBeInTheDocument()
+        expect(link).toHaveTextContent(/connecter/i)
+
+        await userEvent.click(link)
+
+        const loginComponent = screen.getByTestId("loginComponent")
+
+        expect(loginComponent).toBeInTheDocument()
+  })
 })

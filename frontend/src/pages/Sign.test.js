@@ -6,8 +6,6 @@ import { ConfirmProvider } from "../context/ConfirmContext";
 import { store } from "../redux/store";
 import { BrowserRouter } from "react-router";
 import userEvent from "@testing-library/user-event";
-import Profile from "../components/account/Profile";
-import Space from "../components/account/Space";
 import Sign from "./Sign";
 
 const ProviderWrapper = ({ children }) => (

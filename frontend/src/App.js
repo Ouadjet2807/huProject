@@ -19,9 +19,9 @@ import TreatmentPage from "./components/treatments/TreatmentPage";
 import { useSelector } from "react-redux";
 
 function App() {
-  const { user, logout, loading, setLoading, setRefreshSpace } =
+  const { user, logout, loading, setLoading, setRefreshSpace, message} =
     useContext(AuthContext);
-  const { showToast, setShowToast, message, color } = useContext(ToastContext);
+  const { showToast, setShowToast, toastMessage, color } = useContext(ToastContext);
   const {
     showConfirm,
     setShowConfirm,
@@ -56,13 +56,15 @@ function App() {
   // console.log("user ", user);
 
   console.log(space);
+  console.log(message);
+  
   
   return (
     <div className="App">
       <Toast
         show={showToast}
         setShow={setShowToast}
-        message={message}
+        message={toastMessage}
         color={color}
       />
       <Confirm
@@ -73,7 +75,7 @@ function App() {
         setReturnValue={setReturnValue}
       />
       <BrowserRouter>
-        <Navbar notifications={notifications} />
+        <Navbar notifications={notifications} user={user} logout={logout} message={message}/>
         <Routes>
           <Route path="login" element={<Sign />} />
           <Route path="account" element={<Account />} />

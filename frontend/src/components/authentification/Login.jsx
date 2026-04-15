@@ -16,7 +16,7 @@ export default function Login({ setActiveTab, login, loading, message }) {
 
   const navigate = useNavigate();
 
-  const { setShowToast, setMessage, setColor } = useContext(ToastContext);
+  const { setShowToast, setToastMessage, setColor } = useContext(ToastContext);
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -39,7 +39,7 @@ export default function Login({ setActiveTab, login, loading, message }) {
 
   useEffect(() => {
     if (message.message === "") return;
-    setMessage(message.message);
+    setToastMessage(message.message);
     if (message.status === "success") {
       setShowToast(true);
       setColor("success");

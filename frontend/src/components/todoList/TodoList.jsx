@@ -109,8 +109,7 @@ export default function TodoList({ user }) {
   };
 
   const deleteTodo = async (todo) => {
-    console.log(todo);
-    
+
     let initial_index = todoList.indexOf(todo);
     let filter = todoList.toSpliced(initial_index, 1);
     
@@ -162,8 +161,6 @@ export default function TodoList({ user }) {
     };
     filterCategories();
   }, [activeCategory, todoList]);
-
-  console.log(todoList);
 
   return (
     <div id="todoList">

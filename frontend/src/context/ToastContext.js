@@ -5,14 +5,14 @@ export const ToastContext = createContext();
 
 export const ToastProvider = ({ children }) => {
     const [showToast, setShowToast] = useState(false)
-    const [message, setMessage] = useState('')
+    const [toastMessage, setToastMessage] = useState('')
     const [color, setColor] = useState('')
 
-    const value = {showToast, setShowToast, message, setMessage, color, setColor}
+    const value = {showToast, setShowToast, toastMessage, setToastMessage, color, setColor}
 
-     useEffect(() => {
+    useEffect(() => {
     if(!showToast) {
-      setMessage('')
+      setToastMessage('')
     }
   }, [showToast])
   

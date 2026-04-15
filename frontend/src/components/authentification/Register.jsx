@@ -27,7 +27,7 @@ export default function Register({ data, token, setActiveTab, register, loading,
 
   const navigate = useNavigate();
 
-  const { setShowToast, setMessage, setColor } = useContext(ToastContext);
+  const { setShowToast, setToastMessage, setColor } = useContext(ToastContext);
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -50,7 +50,7 @@ export default function Register({ data, token, setActiveTab, register, loading,
 
   useEffect(() => {
     if (message.message === "") return;
-    setMessage(message.message);
+    setToastMessage(message.message);
     if (message.status === "success") {
       setShowToast(true);
       setColor("success");

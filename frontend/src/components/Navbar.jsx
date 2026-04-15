@@ -1,10 +1,4 @@
-import React, {
-  useContext,
-  useEffect,
-  useState,
-  useRef,
-  useEffectEvent,
-} from "react";
+import React, { useContext, useEffect, useState, useRef } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { useLocation, useNavigate, useParams } from "react-router";
 import gsap from "gsap";
@@ -20,15 +14,14 @@ import { LuBell } from "react-icons/lu";
 import Badge from "react-bootstrap/Badge";
 import Notifications from "./Notifications";
 
-
 gsap.registerPlugin(useGSAP);
 
-export default function Navbar({ notifications }) {
-  const { user, logout, message } = useContext(AuthContext);
-  const { setMessage, setShowToast, setColor } = useContext(ToastContext);
+export default function Navbar({ notifications, user, logout, message }) {
+  const { setToastMessage, setShowToast, setColor } = useContext(ToastContext);
 
   const navigate = useNavigate();
 
+  console.log(notifications);
   const location = useLocation();
   const [notificationsNotRead, setNotificationsNotRead] = useState(0);
   const [activeNav, setActiveNav] = useState(false);
@@ -37,7 +30,7 @@ export default function Navbar({ notifications }) {
 
   const navbar = useRef();
 
-  const sleep = ms => new Promise(r => setTimeout(r, ms))
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
   const auth_routes = [
     {
@@ -59,8 +52,8 @@ export default function Navbar({ notifications }) {
 
   const handleNavAnimation = async (e) => {
     if (pinNav) return;
-    e.stopPropagation()
-    await sleep(500)
+    e.stopPropagation();
+    await sleep(500);
     setActiveNav(!activeNav);
   };
 
@@ -75,7 +68,6 @@ export default function Navbar({ notifications }) {
       navigate("/login");
     }
   };
-
 
   useGSAP(() => {
     if (!user) return;
@@ -173,12 +165,13 @@ export default function Navbar({ notifications }) {
 
   useEffect(() => {
     if (
+      !message ||
       message.message === "" ||
       message.message === "Connexion réussie, bienvenue !"
     )
       return;
 
-    setMessage(message.message);
+    setToastMessage(message.message);
     setShowToast(true);
     setColor("neutral");
   }, [message]);
@@ -187,13 +180,15 @@ export default function Navbar({ notifications }) {
     if (!notifications || notifications.length <= 0) return;
 
     let findNotReadNotifications = notifications.filter((n) => !n.is_read);
+    console.log(findNotReadNotifications);
+
     setNotificationsNotRead(findNotReadNotifications.length);
   }, [notifications]);
-
 
   return (
     <div className="navbar-container">
       <nav
+        data-testid="navigation"
         className={`navigation ${user ? "left-tab-nav" : ""}`}
         onMouseEnter={(e) => handleNavAnimation(e)}
         onMouseLeave={(e) => handleNavAnimation(e)}
@@ -202,6 +197,7 @@ export default function Navbar({ notifications }) {
         {user && (
           <>
             <div
+              data-testid="navPin"
               className={`pin ${pinNav ? "active" : ""}`}
               onClick={() => setPinNav(!pinNav)}
             >
@@ -218,7 +214,8 @@ export default function Navbar({ notifications }) {
                     <a href={item.path}>
                       {activeNav ? (
                         <>
-                          {item.icon} {item.name}
+                          {item.icon}{" "}
+                          <span data-testid="navItemText">{item.name}</span>
                         </>
                       ) : (
                         item.icon
@@ -228,18 +225,20 @@ export default function Navbar({ notifications }) {
                 );
               })}
               <li
+                data-testid="showNotificationsButton"
                 className="nav-item"
                 onClick={() => setShowNotifications(!showNotifications)}
               >
                 <span>
                   {notificationsNotRead > 0 && (
-                    <h6>
+                    <h6 data-testid="notificationsPill">
                       <Badge bg="danger">{notificationsNotRead}</Badge>
                     </h6>
                   )}
                   {activeNav ? (
                     <>
-                      <LuBell /> Notifications
+                      <LuBell />{" "}
+                      <span data-testid="navItemText">Notifications</span>
                     </>
                   ) : (
                     <LuBell />
@@ -250,7 +249,8 @@ export default function Navbar({ notifications }) {
                 <span>
                   {activeNav ? (
                     <>
-                      <LuLogOut /> Déconnexion
+                      <LuLogOut />{" "}
+                      <span data-testid="navItemText">Déconnexion</span>
                     </>
                   ) : (
                     <LuLogOut />
@@ -261,7 +261,14 @@ export default function Navbar({ notifications }) {
           </>
         )}
       </nav>
-      <Notifications notifications={notifications} notificationsNotRead={notificationsNotRead} setShow={setShowNotifications}/>
+      {showNotifications && (
+        <Notifications
+          notifications={notifications}
+          notificationsNotRead={notificationsNotRead}
+          setNotificationsNotRead={setNotificationsNotRead}
+          setShow={setShowNotifications}
+        />
+      )}
     </div>
   );
 }

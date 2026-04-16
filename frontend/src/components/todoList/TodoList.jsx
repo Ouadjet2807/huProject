@@ -63,22 +63,25 @@ export default function TodoList({ user }) {
     e.preventDefault();
 
     try {
-      let response = await api.post(
-        "http://127.0.0.1:8000/api/todo_list_items/",
-        newTask,
-      );
+      if(process.env.NODE_ENV !== "test") {
 
-      newTask.id = response.data.id;
-      setTodoList((prev) => [...prev, newTask]);
-      setNewTask({
-        todo_list: Object.keys(space).length > 0 && space.todos.id,
-        frequency: "punctual",
-        completed: false,
-        completed_by: null,
-        title: "",
-        description: "",
-        created_by: user && user.id,
-      });
+        let response = await api.post(
+          "http://127.0.0.1:8000/api/todo_list_items/",
+          newTask,
+        );
+        newTask.id = response.data.id;
+        setTodoList((prev) => [...prev, newTask]);
+        setNewTask({
+          todo_list: Object.keys(space).length > 0 && space.todos.id,
+          frequency: "punctual",
+          completed: false,
+          completed_by: null,
+          title: "",
+          description: "",
+          created_by: user && user.id,
+        });
+      }
+
 
       selectInputRef.current.selectedIndex = 0;
     } catch (error) {
@@ -99,23 +102,24 @@ export default function TodoList({ user }) {
     setTodoList(filter);
 
     try {
-      await api.put(
-        `http://127.0.0.1:8000/api/todo_list_items/${todo.id}/`,
-        todo,
-      );
+      if(process.env.NODE_ENV !== "test") {
+
+        await api.put(
+          `http://127.0.0.1:8000/api/todo_list_items/${todo.id}/`,
+          todo,
+        );
+      }
     } catch (error) {
       console.log(error);
     }
   };
 
   const deleteTodo = async (todo) => {
-
     let initial_index = todoList.indexOf(todo);
     let filter = todoList.toSpliced(initial_index, 1);
-    
-    try {
-      if(process.env.NODE_ENV !== "test") {
 
+    try {
+      if (process.env.NODE_ENV !== "test") {
         await api.delete(
           `http://127.0.0.1:8000/api/todo_list_items/${todo.id}/`,
           todo,
@@ -131,7 +135,6 @@ export default function TodoList({ user }) {
     if (!user || !Object.keys(space).length > 0 || !space.todos.items) return;
 
     let json_todos = JSON.stringify(space.todos.items);
-    console.log(json_todos);
 
     setTodoList(JSON.parse(json_todos));
 
@@ -169,7 +172,7 @@ export default function TodoList({ user }) {
           todoCategory.map((category, index) => {
             return (
               <Button
-              data-testid={`${category.value}TodoButton`}
+                data-testid={`${category.value}TodoButton`}
                 key={`category_${index + 1}`}
                 className={`${
                   activeCategory === category.value ? "activeCategory" : ""
@@ -187,7 +190,7 @@ export default function TodoList({ user }) {
           filteredTodoList.map((todo, index) => {
             return (
               <div
-              data-testid={`${todo.frequency}Todo_${index}`}
+                data-testid={`${todo.frequency}Todo_${index}`}
                 key={`todo_${todo.id}`}
                 className={`todo-item ${todo.completed ? "completed" : ""}`}
               >
@@ -197,7 +200,7 @@ export default function TodoList({ user }) {
                     type="checkbox"
                     id=""
                     checked={todo.completed}
-                    onClick={() => updateTodo(todo)}
+                    onChange={() => updateTodo(todo)}
                   />
                   <Form.Check.Label data-testid="todoItemLabel">
                     {todo.title}

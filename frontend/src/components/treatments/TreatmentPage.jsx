@@ -28,7 +28,6 @@ export default function TreatmentPage() {
     useContext(ConfirmContext);
   const space = useSelector((state) => state.space)
   const navigate = useNavigate();
-  let pathname = "";
   const today = moment(new Date());
   const tabletRef = useRef();
 
@@ -47,6 +46,7 @@ export default function TreatmentPage() {
     width: 0,
     height: 0,
   })
+  const [pathname, setPathname] = useState([])
 
   moment.locale("fr");
 
@@ -220,8 +220,10 @@ export default function TreatmentPage() {
 
   useEffect(() => {
 
+    console.log(window.location.pathname);
     if(window.location.pathname) {
-      pathname = window.location.pathname.split("/")
+      
+      setPathname(window.location.pathname.split("/"))
     }
     const getTreatments = async () => {
       if (pathname.length == 0 || !pathname[2].match("^/0-9/$")) return;
@@ -247,6 +249,7 @@ export default function TreatmentPage() {
     getTreatments();
   }, []);
 
+console.log(treatmentData);
 
   return (
     <div className="treatment-container">
@@ -355,13 +358,13 @@ export default function TreatmentPage() {
                     enregistré par
                     {Object.keys(space).length > 1 && (
                       <span className="pill-radius">
-                        {space.caregivers.find(
+                        {/* {space.caregivers.find(
                           (c) => c.user === treatmentData.registered_by,
                         ).first_name +
                           " " +
                           space.caregivers.find(
                             (c) => c.user === treatmentData.registered_by,
-                          ).last_name}
+                          ).last_name} */}
                       </span>
                     )}
                   </div>

@@ -425,9 +425,11 @@ export default function RecipientTreatments({ recipient }) {
     window.localStorage.setItem('treatments-layout', treatmentLayout)
   }, [treatmentLayout])
 
-
+  console.log('treatment');
+  
   return (
     <div
+    data-testid="treatmentsComponent"
       id="recipientTreatments"
       style={{
         alignItems: !loading ? "flex-end" : "center",

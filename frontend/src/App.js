@@ -56,7 +56,6 @@ function App() {
   // console.log("user ", user);
 
   console.log(space);
-  console.log(message);
   
   
   return (
@@ -110,21 +109,21 @@ function App() {
           <Route path="accept-invite/:token" element={<AcceptInvite />} />
           <Route
             path="recipient/:id"
-            element={<Recipient spaceId={space && space.id} />}
+            element={<Recipient />}
           />
           <Route
             path="recipient/:id/treatments/"
-            element={<Recipient spaceId={space && space.id} tab="treatments" />}
+            element={<Recipient tab="treatments" />}
           />
           <Route
             path="recipient/:id/specialists/"
             element={
-              <Recipient spaceId={space && space.id} tab="specialists" />
+              <Recipient tab="specialists" />
             }
           />
           <Route
             path="recipient/:id/treatments/:id"
-            element={<TreatmentPage spaceId={space && space.id} />}
+            element={<TreatmentPage />}
           />
           <Route path="invite/:token" element={<AcceptInvite />} />
         </Routes>

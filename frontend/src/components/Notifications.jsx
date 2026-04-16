@@ -32,9 +32,7 @@ export default function Notifications({
       }
     }
       notifications[id].is_read = true
-      console.log("reach");
       setNotificationsNotRead(prev => prev-1)
-      console.log(notificationsNotRead);
 
   };
 

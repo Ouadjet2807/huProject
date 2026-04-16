@@ -6,9 +6,8 @@ import axios from 'axios';
 import Register from './authentification/Register';
 
 export default function AcceptInvite() {
-  const { token } = useParams(); // route: /accept-invite/:token
+  const { token } = useParams();
   const { register, loading, setLoading, message } = useContext(AuthContext)
-  const navigate = useNavigate();
   const [invitation, setInvitation] = useState({});
   const [errorMessage, setErrorMessage] = useState('')
 
@@ -29,7 +28,7 @@ export default function AcceptInvite() {
 
     setLoading(false)
   }
-  
+
   useEffect(() => {
     getInvitation()
   }, [])

@@ -21,7 +21,6 @@ export default function Navbar({ notifications, user, logout, message }) {
 
   const navigate = useNavigate();
 
-  console.log(notifications);
   const location = useLocation();
   const [notificationsNotRead, setNotificationsNotRead] = useState(0);
   const [activeNav, setActiveNav] = useState(false);
@@ -70,7 +69,7 @@ export default function Navbar({ notifications, user, logout, message }) {
   };
 
   useGSAP(() => {
-    if (!user) return;
+    if (!user || process.env.NODE_ENV === "test") return;
 
     if (activeNav) {
       gsap.to(".App", {
@@ -180,7 +179,6 @@ export default function Navbar({ notifications, user, logout, message }) {
     if (!notifications || notifications.length <= 0) return;
 
     let findNotReadNotifications = notifications.filter((n) => !n.is_read);
-    console.log(findNotReadNotifications);
 
     setNotificationsNotRead(findNotReadNotifications.length);
   }, [notifications]);
@@ -204,9 +202,10 @@ export default function Navbar({ notifications, user, logout, message }) {
               {pinNav ? <BsPinFill /> : <BsPin />}
             </div>
             <ul className="nav-list">
-              {auth_routes.map((item) => {
+              {auth_routes.map((item, index) => {
                 return (
                   <li
+                  key={`nav_item_${index}`}
                     className={`nav-item ${
                       item.path === location.pathname ? "active" : ""
                     }`}
@@ -261,14 +260,14 @@ export default function Navbar({ notifications, user, logout, message }) {
           </>
         )}
       </nav>
-      {showNotifications && (
+      {/* {showNotifications && ( */}
         <Notifications
           notifications={notifications}
           notificationsNotRead={notificationsNotRead}
           setNotificationsNotRead={setNotificationsNotRead}
           setShow={setShowNotifications}
         />
-      )}
+      {/* )} */}
     </div>
   );
 }

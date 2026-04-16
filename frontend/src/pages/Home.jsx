@@ -30,9 +30,10 @@ export default function Home({ user, loading, caregivers, recipients }) {
 
             {recipients && recipients.length > 0 ? (
               <ul>
-                {recipients.map((item) => {
+                {recipients.map((item, index) => {
                   return (
                     <li
+                    key={`recipient_${index}`}
                       role="recipientListItem"
                       data-testid={`${item.first_name}_${item.last_name}`}
                       className="recipient"
@@ -65,9 +66,10 @@ export default function Home({ user, loading, caregivers, recipients }) {
               <ul>
                 {caregivers
                   .filter((caregiver) => caregiver.user !== user.id)
-                  .map((item) => {
+                  .map((item, index) => {
                     return (
                       <li
+                            key={`caregiver_${index}`}
                         role="caregiverListItem"
                         data-testid={`${item.first_name}_${item.last_name}`}
                         className="caregiver"

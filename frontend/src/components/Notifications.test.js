@@ -21,7 +21,6 @@ const ProviderWrapper = ({ children }) => (
   </Provider>
 );
 
-
 describe("Notifications", () => {
   delete window.location;
   window.location = {
@@ -36,46 +35,94 @@ describe("Notifications", () => {
     expect(heading).toHaveTextContent(/notifications/i);
   });
   it("Should display unread notifications number when notifications array and unread notifications number are provided", async () => {
-    render(<Notifications notifications={[{id:1, title: 'Notification 1', is_read: false}, {id:2, title: 'Notification 2', is_read: true}, {id:3, title: 'Notification 3', is_read: false}]} notificationsNotRead={2}/>, { wrapper: ProviderWrapper });
+    render(
+      <Notifications
+        notifications={[
+          { id: 1, title: "Notification 1", is_read: false },
+          { id: 2, title: "Notification 2", is_read: true },
+          { id: 3, title: "Notification 3", is_read: false },
+        ]}
+        notificationsNotRead={2}
+      />,
+      { wrapper: ProviderWrapper },
+    );
 
     const heading = screen.getByRole("heading", { level: 4 });
     expect(heading).toBeInTheDocument();
     expect(heading).toHaveTextContent(/(2)/i);
   });
   it("Should display notifications timestamp", async () => {
-    render(<Notifications notifications={[{id:1, title: 'Notification 1', is_read: false, timestamp: "2026-03-18T21:09:01.351653Z"}]} notificationsNotRead={2}/>, { wrapper: ProviderWrapper });
+    render(
+      <Notifications
+        notifications={[
+          {
+            id: 1,
+            title: "Notification 1",
+            is_read: false,
+            timestamp: "2026-03-18T21:09:01.351653Z",
+          },
+        ]}
+        notificationsNotRead={2}
+      />,
+      { wrapper: ProviderWrapper },
+    );
 
     const time = screen.getByTestId("time");
     expect(time).toBeInTheDocument();
-    expect(time).toHaveTextContent(new Date("2026-03-18T21:09:01.351653Z").toLocaleDateString());
+    expect(time).toHaveTextContent(
+      new Date("2026-03-18T21:09:01.351653Z").toLocaleDateString(),
+    );
   });
   it("Should truncate notifications title if it's longer than 25v char", async () => {
+    const limit = 25;
+    const title = "a".repeat(30);
 
-    const limit = 25
-    const title = 'a'.repeat(30)
+    render(
+      <Notifications
+        notifications={[
+          {
+            id: 1,
+            title: title,
+            is_read: false,
+            timestamp: "2026-03-18T21:09:01.351653Z",
+          },
+        ]}
+      />,
+      { wrapper: ProviderWrapper },
+    );
 
-    render(<Notifications notifications={[{id:1, title: title, is_read: false, timestamp: "2026-03-18T21:09:01.351653Z"}]}/>, { wrapper: ProviderWrapper });
-
-    const truncatedTitle = title.substring(0,limit) + '...';
-    expect(screen.getByText(truncatedTitle)).toBeInTheDocument()
-
+    const truncatedTitle = title.substring(0, limit) + "...";
+    expect(screen.getByText(truncatedTitle)).toBeInTheDocument();
   });
   it("Should render correct icon", async () => {
+    const notifications = [
+      {
+        id: 1,
+        title: "Notification 1",
+        is_read: false,
+        message: "Un traitement a expiré",
+      },
+      {
+        id: 2,
+        title: "Notification 2",
+        is_read: false,
+        message: "Rappel de votre événement dans 15 minute(s)",
+      },
+    ];
 
-    const notifications = [{id:1, title: "Notification 1", is_read: false, message: "Un traitement a expiré"}, {id:2, title: "Notification 2", is_read: false, message: "Rappel de votre événement dans 15 minute(s)"}]
-
-    render(<Notifications notifications={notifications}/>, { wrapper: ProviderWrapper });
-
+    render(<Notifications notifications={notifications} />, {
+      wrapper: ProviderWrapper,
+    });
 
     const pillIcon = screen.getByTestId("pillIcon");
     const calendarIcon = screen.getByTestId("calendarIcon");
- 
+
     notifications.forEach((notification, index) => {
-      if(/s*(traitement)/g.test(notification.message)) {
-        expect(pillIcon).toBeInTheDocument()
-      } else if(/s*(événement)/g.test(notification.message)) {
-        expect(calendarIcon).toBeInTheDocument()
+      if (/s*(traitement)/g.test(notification.message)) {
+        expect(pillIcon).toBeInTheDocument();
+      } else if (/s*(événement)/g.test(notification.message)) {
+        expect(calendarIcon).toBeInTheDocument();
       }
-    })
+    });
   });
 });

@@ -89,7 +89,7 @@ export default function Specialists({ recipient }) {
   }, [recipient]);
 
   return (
-    <div id="recipientSpecialists">
+    <div id="recipientSpecialists" data-testid="specialistsComponent">
       <CreateSpecialist
         show={showAddSpecialist}
         setShow={setShowAddSpecialist}

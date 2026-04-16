@@ -358,8 +358,12 @@ export default function MedicationDetailsModal({
         start_date: formattedStartDate,
         end_date: formattedEndDate,
         registered_by: user.id,
-        prescribed_to: [recipient.id]
+        prescribed_to: recipient.id,
+      
       };
+
+      console.log(data);
+      
 
       if (Object.keys(treatment).length > 1) {
 
@@ -367,7 +371,8 @@ export default function MedicationDetailsModal({
         `http://127.0.0.1:8000/api/treatments/${treatment.id}/`,
         data
       );
-
+      console.log(response);
+      
       let index = treatmentsData.treatments.content.findIndex((elem) => JSON.stringify(sortObjectKeys(elem)) === JSON.stringify(sortObjectKeys(treatment)))
       let splicedArray = treatmentsData.treatments.content.toSpliced(index, 1, response.data);
 
@@ -391,7 +396,7 @@ export default function MedicationDetailsModal({
 
       handleClose();
     } catch (error) {
-      console.log(error);
+      console.log(error.response);
     }
   };
 
@@ -482,7 +487,10 @@ export default function MedicationDetailsModal({
     }
 
   }, [treatment, show])
-
+  
+  console.log(medication);
+  console.log(space);
+  
   return (
     medication && (
       <Modal

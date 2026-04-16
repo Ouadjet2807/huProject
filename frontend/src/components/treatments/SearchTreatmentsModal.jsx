@@ -85,12 +85,13 @@ export default function SearchTreatmentsModal({
     setShow(false);
   };
 
-
+  console.log("searchmed");
+  
 
   return (
     <Modal size="lg" show={show} onHide={handleClose} id="searchTreatmentModal">
       <Modal.Header closeButton>
-        <Modal.Title>Ajouter un traitement</Modal.Title>
+        <Modal.Title data-testid="heading">Ajouter un traitement</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <div className="search-container">

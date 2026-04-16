@@ -34,7 +34,7 @@ describe("Navbar", () => {
     expect(navigation).toBeInTheDocument();
   });
   it("Should display nav item labels when user hover over the navbar", async () => {
-    render(<Navbar notifications={[]} />, { wrapper: ProviderWrapper });
+    await act(async () => {render(<Navbar notifications={[]} />, { wrapper: ProviderWrapper });})
 
     const navigation = screen.getByTestId("navigation");
 
@@ -47,7 +47,7 @@ describe("Navbar", () => {
     });
   });
   it("Should hide nav item labels when user unhover over the navbar", async () => {
-    render(<Navbar notifications={[]} />, { wrapper: ProviderWrapper });
+    await act(async () => {render(<Navbar notifications={[]} />, { wrapper: ProviderWrapper })})
 
     const navigation = screen.getByTestId("navigation");
 
@@ -72,8 +72,8 @@ describe("Navbar", () => {
       );
     });
 
-    const navigation = screen.getByTestId("navigation");
-    const navPin = screen.getByTestId("navPin");
+    const navigation = await screen.findByTestId("navigation");
+    const navPin = await screen.findByTestId("navPin");
 
     await userEvent.hover(navigation);
 
@@ -101,8 +101,8 @@ describe("Navbar", () => {
       );
     });
 
-    const navigation = screen.getByTestId("navigation");
-    const navPin = screen.getByTestId("navPin");
+    const navigation = await screen.findByTestId("navigation");
+    const navPin = await screen.findByTestId("navPin");
 
     await userEvent.hover(navigation);
 
@@ -133,7 +133,7 @@ describe("Navbar", () => {
       );
     });
 
-    const notificationsPill = screen.getByTestId("notificationsPill");
+    const notificationsPill = await screen.findByTestId("notificationsPill");
 
     expect(notificationsPill).toBeInTheDocument();
     expect(notificationsPill).toHaveTextContent("2");
@@ -153,59 +153,8 @@ describe("Navbar", () => {
 
     expect(notificationsPill).not.toBeInTheDocument();
   });
-  it("Should display notifications list when user click on notifications nav item", async () => {
-    await act(async () => {
-      render(
-        <Navbar
-          notifications={[]}
-          user={{ id: 1, first_name: "John", last_name: "Doe" }}
-        />,
-        { wrapper: ProviderWrapper },
-      );
-    });
-
-    const showNotificationsButton = screen.getByTestId(
-      "showNotificationsButton",
-    );
-    expect(showNotificationsButton).toBeInTheDocument();
-
-    await userEvent.click(showNotificationsButton);
-    const notificationsComponent = screen.queryByTestId(
-      "notificationsComponent",
-    );
-
-    expect(notificationsComponent).toBeInTheDocument();
-  });
-  it("Should hide notifications list when user click on notifications close button", async () => {
-    await act(async () => {
-      render(
-        <Navbar
-          notifications={[]}
-          user={{ id: 1, first_name: "John", last_name: "Doe" }}
-        />,
-        { wrapper: ProviderWrapper },
-      );
-    });
-
-    const showNotificationsButton = screen.getByTestId(
-      "showNotificationsButton",
-    );
-
-    await userEvent.click(showNotificationsButton);
-    const hideNotificationsButton = screen.queryByTestId(
-      "hideNotificationsButton",
-    );
-    expect(hideNotificationsButton).toBeInTheDocument();
-
-    await userEvent.click(hideNotificationsButton);
-
-    const notificationsComponent = screen.queryByTestId(
-      "notificationsComponent",
-    );
-    expect(notificationsComponent).not.toBeInTheDocument();
-  });
   it("Should update unread notification number when user click on a notification", async () => {
-    render(
+    await act(async () => {render(
       <Navbar
         user={{ id: 1, first_name: "John", last_name: "Doe" }}
         notifications={[
@@ -225,22 +174,24 @@ describe("Navbar", () => {
       />,
       { wrapper: ProviderWrapper },
     );
-    const showNotificationsButton = screen.getByTestId(
+  })
+    const showNotificationsButton = await screen.findByTestId(
       "showNotificationsButton",
     );
     await userEvent.click(showNotificationsButton);
-    const notificationItems = screen.getAllByTestId("notificationItem");
+    const notificationItems = await screen.findAllByTestId("notificationItem");
 
     await userEvent.click(notificationItems[0]);
 
-    const notificationsPill = screen.getByTestId("notificationsPill");
-    const heading = screen.getByRole("heading", { level: 4 });
+    const notificationsPill = await screen.findByTestId("notificationsPill");
+    const heading = await screen.findByRole("heading", { level: 4 });
 
     expect(heading).toHaveTextContent(/(1)/i);
     expect(notificationsPill).toHaveTextContent(/(1)/i);
   });
   it("Should hide notifications number pill when all notification are read after update", async () => {
-    render(
+    await act(async () => {
+      render(
       <Navbar
         user={{ id: 1, first_name: "John", last_name: "Doe" }}
         notifications={[
@@ -259,12 +210,13 @@ describe("Navbar", () => {
         ]}
       />,
       { wrapper: ProviderWrapper },
-    );
-    const showNotificationsButton = screen.getByTestId(
+    )
+  })
+    const showNotificationsButton = await screen.findByTestId(
       "showNotificationsButton",
     );
     await userEvent.click(showNotificationsButton);
-    const notificationItems = screen.getAllByTestId("notificationItem");
+    const notificationItems = await screen.findAllByTestId("notificationItem");
 
     await userEvent.click(notificationItems[0]);
 

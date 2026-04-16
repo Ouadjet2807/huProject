@@ -74,7 +74,7 @@ export default function RecipientEditForm({
   }, [data])
 
   return (
-    <div id="generalSection">
+    <div id="generalSection" data-testid="generalSectionComponent">
       <h3>Informations générales</h3>
       {!loading ?
       <form action="">

@@ -7,9 +7,6 @@ const api = axios.create({
   },
 });
 
-
-
-// small helper to read tokens
 export const tokenStore = {
   getAccess: () => localStorage.getItem('accessToken'),
   getRefresh: () => localStorage.getItem('refreshToken'),
@@ -38,7 +35,7 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// simple mutex for refresh to avoid parallel refresh calls
+
 let isRefreshing = false;
 let refreshSubscribers = [];
 

@@ -427,27 +427,26 @@ class TreatmentViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         caregiver = user.caregiver
+        print(self.request)
 
         if self.request.GET:
-
             archives = self.request.GET.get('archives')
             recipient = self.request.GET.get("recipient")
 
             if not user or not hasattr(user, 'caregiver'):
                 return Treatment.objects.none()
 
-            archive_delay = date.today() - timedelta(weeks=2)
-
             if archives and eval(archives):
                 return Treatment.archived_objects.filter(space__in=caregiver.caregivers_in.all(), prescribed_to=recipient).select_related('space')
 
             return Treatment.objects.filter(space__in=caregiver.caregivers_in.all(), prescribed_to=recipient).select_related('space')
 
+        elif self.request.POST:
+            print('blabla')
         return Treatment.objects.filter(space__in=caregiver.caregivers_in.all()).select_related('space')
 
     def perform_create(self, serializer):
         serializer.save()
-
 
 class TreatmentSoftDeleteAPIView(GenericAPIView):
     permission_classes= (IsAuthenticated,)

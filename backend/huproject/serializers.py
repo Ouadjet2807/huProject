@@ -110,22 +110,20 @@ class TreatmentSerializer(serializers.ModelSerializer):
         queryset=CustomUser.objects.all(),
         required=True
     )
+    prescribed_to = serializers.PrimaryKeyRelatedField(
+        queryset=Recipient.objects.all(),
+        required=True
+    )
     is_expired = serializers.BooleanField(read_only=True)
 
     class Meta:
         model = Treatment
-        fields = ('id','name','dosage', 'cis_code', 'medication_format', 'quantity', 'frequency','start_date','end_date','prescribed_by','prescribed_by_id', 'prescribed_to', 'registered_by', 'notes', 'space', 'created_at', 'is_expired', 'is_deleted')
+        fields = ('id','name','dosage', 'cis_code', 'medication_format', 'quantity', 'frequency','start_date','end_date','prescribed_by','prescribed_by_id', 'prescribed_to', 'prescribed_to_id', 'registered_by', 'notes', 'space', 'created_at', 'is_expired', 'is_deleted')
         read_only_fields = ['id', 'created_at', 'is_expired']
 
     def create(self, validated_data):
-        prescribed_to = validated_data.pop('prescribed_to')
 
-        treatement = Treatment.objects.create(**validated_data)
-
-        for recipient in prescribed_to:
-            treatement.prescribed_to.add(recipient)
-
-        return treatement
+        return Treatment.objects.create(**validated_data)
 
 
 class RecipientSerializer(serializers.ModelSerializer):

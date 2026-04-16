@@ -10,11 +10,12 @@ import { locale } from "moment";
 import { IoInformationCircleOutline } from "react-icons/io5";
 import { FaMedkit } from "react-icons/fa";
 import { FaUserMd } from "react-icons/fa";
+import { useSelector } from "react-redux";
 
-export default function Recipient({ spaceId, tab}) {
+export default function Recipient({ tab, match }) {
   moment.locale("fr");
   const [recipient, setRecipient] = useState({});
-
+  const space = useSelector((state) => state.space);
   const [activeTab, setActiveTab] = useState("general");
 
   const [medicalInfo, setMedicalInfo] = useState({
@@ -34,15 +35,15 @@ export default function Recipient({ spaceId, tab}) {
 
   const params = useParams();
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const recipient_id = params.id;
 
   const handleTab = (e) => {
-    if (e.target.id && e.target.id !== 'general') {
+    if (e.target.id && e.target.id !== "general") {
       navigate(`/recipient/${recipient.id}/${e.target.id}`);
     } else {
-      navigate(`/recipient/${recipient.id}`)
+      navigate(`/recipient/${recipient.id}`);
     }
   };
 
@@ -91,11 +92,17 @@ export default function Recipient({ spaceId, tab}) {
 
   useEffect(() => {
     const getRecipientData = async () => {
+      let findRecipient = space.recipients.find((r) => r.id == recipient_id);
+      if (findRecipient) {
+        setRecipient(space.recipients.find((r) => r.id == recipient_id));
+        return;
+      }
+
       const token = localStorage.getItem("accessToken");
       if (token) {
         try {
           const response = await api.get(
-            `http://127.0.0.1:8000/api/recipients/${recipient_id}`
+            `http://127.0.0.1:8000/api/recipients/${recipient_id}`,
           );
           setRecipient(response.data);
           setFormData({
@@ -105,7 +112,7 @@ export default function Recipient({ spaceId, tab}) {
             treatments: response.data.treatments,
             gender: response.data.gender,
             medical_info: response.data.medical_info,
-            space_id: spaceId,
+            space_id: space.id,
           });
         } catch (error) {
           console.log(error);
@@ -123,17 +130,12 @@ export default function Recipient({ spaceId, tab}) {
   }, [medicalInfo]);
 
   useEffect(() => {
-    if (!Object.keys(recipient).includes("space_id") || !recipient.spaceId) {
-      recipient.space_id = spaceId;
-    }
-  }, [recipient, spaceId]);
+    if (tab) setActiveTab(tab);
+    else setActiveTab("general");
+  }, [tab]);
 
-  useEffect(() => {
-    if(tab) setActiveTab(tab)
-
-      else setActiveTab('general')
-  }, [tab])
-
+  console.log(window.location.pathname);
+  console.log(space);
 
   return (
     <div id="recipient">
@@ -144,10 +146,11 @@ export default function Recipient({ spaceId, tab}) {
               <h2>
                 {recipient.first_name} {recipient.last_name} -{" "}
               </h2>
-              <span>{getAge()} ans</span>
+              <span data-testid="recipientAge">{getAge()} ans</span>
             </div>
             <ul>
               <li
+                data-testid="generalTab"
                 id="general"
                 className={activeTab === "general" ? "active" : ""}
                 onClick={(e) => handleTab(e)}
@@ -155,13 +158,15 @@ export default function Recipient({ spaceId, tab}) {
                 <IoInformationCircleOutline /> Information génerales
               </li>
               <li
+                data-testid="treatmentsTab"
                 id="treatments"
                 className={activeTab === "treatments" ? "active" : ""}
                 onClick={(e) => handleTab(e)}
               >
-               <FaMedkit /> Traitements
+                <FaMedkit /> Traitements
               </li>
               <li
+                data-testid="specialistsTab"
                 id="specialists"
                 className={activeTab === "specialists" ? "active" : ""}
                 onClick={(e) => handleTab(e)}

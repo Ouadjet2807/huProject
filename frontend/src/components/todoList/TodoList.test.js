@@ -7,7 +7,7 @@ import { BrowserRouter } from "react-router";
 import { ToastProvider } from "../../context/ToastContext";
 import { ConfirmProvider } from "../../context/ConfirmContext";
 import { act } from "react";
-import reducer, { setValues } from "../../redux/spaceSlice";
+import { setValues } from "../../redux/spaceSlice";
 import userEvent from "@testing-library/user-event";
 
 const ProviderWrapper = ({ children }) => (

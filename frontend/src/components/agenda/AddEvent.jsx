@@ -15,7 +15,7 @@ import { MdOutlineTitle } from "react-icons/md";
 import CreateCategory from "./CreateCategory.jsx";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { ToastContext } from "../../context/ToastContext";
-import { ConfirmContext } from "../../context/ConfirmContext.js";
+import { ConfirmContext } from "../../context/ConfirmContext.jsx";
 import { LuCalendarPlus } from "react-icons/lu";
 import ListGroup from "react-bootstrap/ListGroup";
 import FloatingLabel from "react-bootstrap/FloatingLabel";

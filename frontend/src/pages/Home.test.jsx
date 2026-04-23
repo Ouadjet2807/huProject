@@ -8,7 +8,7 @@ import { store } from "../redux/store";
 import { BrowserRouter } from "react-router";
 import { act } from "react";
 
-const mockWinAssign = jest.fn();
+const mockWinAssign = vi.fn();
 
 const oldWindowLocation = window.location;
 

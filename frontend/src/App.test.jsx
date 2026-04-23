@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import App from "./App";
+import App from "./App.jsx";
 import { Provider } from "react-redux";
 import { ToastProvider } from "./context/ToastContext";
 import { AuthProvider } from "./context/AuthContext";
@@ -8,8 +8,6 @@ import { ConfirmProvider } from "./context/ConfirmContext";
 import { act } from "react";
 
 describe("App", () => {
-
-
   it("Should render App", async () => {
     await act(async () => {
       render(

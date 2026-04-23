@@ -24,7 +24,7 @@ const ProviderWrapper = ({ children }) => (
 describe("TreatmentPage", () => {
   delete window.location;
   window.location = {
-    reload: jest.fn(),
+    reload: vi.fn(),
     href: "http://dummy.com?page=1&name=testing",
   };
 

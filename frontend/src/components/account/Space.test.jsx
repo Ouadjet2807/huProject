@@ -43,7 +43,7 @@ test("Check if user can edit", () => {
 
 describe("Space", () => {
   delete window.location;
-  window.location = { reload: jest.fn(), href: 'http://dummy.com?page=1&name=testing',};
+  window.location = { reload: vi.fn(), href: 'http://dummy.com?page=1&name=testing',};
   test("Should render without crash", async () => {
     render(
       <Provider store={store}>

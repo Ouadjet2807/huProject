@@ -30,8 +30,8 @@ const ProviderWrapper = ({ children }) => (
 describe("Recipient", () => {
   delete window.location;
   window.location = {
-    reload: jest.fn(),
-    assign: jest.fn(),
+    reload: vi.fn(),
+    assign: vi.fn(),
     pathname: "http://test.com/recipient/5",
   };
   it("Should render without crash", async () => {

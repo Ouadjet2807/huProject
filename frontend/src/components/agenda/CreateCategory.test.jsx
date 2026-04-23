@@ -40,7 +40,7 @@ const agenda = {
 describe("CreateCategory", () => {
     delete window.location;
     window.location = {
-      reload: jest.fn(),
+      reload: vi.fn(),
       href: "http://dummy.com?page=1&name=testing",
     };
   test("Should render without crash", async () => {

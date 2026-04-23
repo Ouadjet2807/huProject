@@ -71,18 +71,18 @@ export default function InviteUserModal({ show, setShow }) {
         token: uuidv4(),
     }))
     }, [space, user])
-
+    
 
   return (
     <Modal show={show} onHide={handleClose} id="inviteUserModal">
       <Modal.Header closeButton>
-        <Modal.Title>Inviter une personne</Modal.Title>
+        <Modal.Title data-testid="title">Inviter une personne</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <p>Saisissez l'adresse email de la personne que vous souhaitez inviter ainsi que son niveau d'accès</p>
        <form action="">
         <Form.Control type="email" size="sm" name="email" id="" aria-describedby="basic-addon" onChange={(e) => handleChange(e)} placeholder="Email"/>
-        <Form.Select name="access_level" id="" onChange={(e) => handleChange(e)}>
+        <Form.Select data-testid="accessLevelInput" name="access_level" id="" onChange={(e) => handleChange(e)}>
             <option disabled>Choisissez un rôle</option>
             {roles.map(item => {
                 return <option value={Object.values(item)[0]}>{Object.keys(item)[0]}</option>

@@ -12,7 +12,8 @@ import { FaMedkit } from "react-icons/fa";
 import { FaUserMd } from "react-icons/fa";
 import { useSelector } from "react-redux";
 
-export default function Recipient({ tab, match }) {
+
+export default function Recipient({ tab, match}) {
   moment.locale("fr");
   const [recipient, setRecipient] = useState({});
   const space = useSelector((state) => state.space);
@@ -35,15 +36,15 @@ export default function Recipient({ tab, match }) {
 
   const params = useParams();
 
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   const recipient_id = params.id;
 
   const handleTab = (e) => {
-    if (e.target.id && e.target.id !== "general") {
+    if (e.target.id && e.target.id !== 'general') {
       navigate(`/recipient/${recipient.id}/${e.target.id}`);
     } else {
-      navigate(`/recipient/${recipient.id}`);
+      navigate(`/recipient/${recipient.id}`)
     }
   };
 
@@ -92,28 +93,20 @@ export default function Recipient({ tab, match }) {
 
   useEffect(() => {
     const getRecipientData = async () => {
-      let findRecipient = space.recipients.find((r) => r.id == recipient_id);
-      if (findRecipient) {
-        setRecipient(space.recipients.find((r) => r.id == recipient_id));
-        return;
+
+      let findRecipient = space.recipients.find(r => r.id == recipient_id)
+      if(findRecipient) {
+        setRecipient(space.recipients.find(r => r.id == recipient_id))
+        return
       }
 
       const token = localStorage.getItem("accessToken");
       if (token) {
         try {
           const response = await api.get(
-            `http://127.0.0.1:8000/api/recipients/${recipient_id}`,
+            `http://127.0.0.1:8000/api/recipients/${recipient_id}`
           );
           setRecipient(response.data);
-          setFormData({
-            first_name: response.data.first_name,
-            last_name: response.data.last_name,
-            birth_date: response.data.birth_date,
-            treatments: response.data.treatments,
-            gender: response.data.gender,
-            medical_info: response.data.medical_info,
-            space_id: space.id,
-          });
         } catch (error) {
           console.log(error);
         }
@@ -129,13 +122,30 @@ export default function Recipient({ tab, match }) {
     }));
   }, [medicalInfo]);
 
+useEffect(() => {
+  if(recipient && Object.keys(recipient).length > 0) {
+     setFormData({
+            first_name: recipient.first_name,
+            last_name: recipient.last_name,
+            birth_date: recipient.birth_date,
+            treatments: recipient.treatments,
+            gender: recipient.gender,
+            medical_info: recipient.medical_info,
+            space: recipient.space,
+          });
+  }
+}, [recipient])
   useEffect(() => {
-    if (tab) setActiveTab(tab);
-    else setActiveTab("general");
-  }, [tab]);
+    if(tab) setActiveTab(tab)
+
+      else setActiveTab('general')
+  }, [tab])
 
   console.log(window.location.pathname);
   console.log(space);
+  console.log(formData);
+  console.log("recip");
+  
 
   return (
     <div id="recipient">
@@ -150,7 +160,7 @@ export default function Recipient({ tab, match }) {
             </div>
             <ul>
               <li
-                data-testid="generalTab"
+                  data-testid="generalTab"
                 id="general"
                 className={activeTab === "general" ? "active" : ""}
                 onClick={(e) => handleTab(e)}
@@ -163,10 +173,10 @@ export default function Recipient({ tab, match }) {
                 className={activeTab === "treatments" ? "active" : ""}
                 onClick={(e) => handleTab(e)}
               >
-                <FaMedkit /> Traitements
+               <FaMedkit /> Traitements
               </li>
               <li
-                data-testid="specialistsTab"
+                  data-testid="specialistsTab"
                 id="specialists"
                 className={activeTab === "specialists" ? "active" : ""}
                 onClick={(e) => handleTab(e)}

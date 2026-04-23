@@ -37,7 +37,6 @@ function App() {
   const getNotifications = async () => {
     try {
       let response = await api.get("http://127.0.0.1:8000/api/notifications/");
-
       setNotifications(response.data);
     } catch (error) {
       console.log(error);

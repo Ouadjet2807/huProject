@@ -12,6 +12,7 @@ import { act } from "react";
 import moment from "moment";
 import { locale } from "moment";
 import { UseDimensionProvider } from "../context/UseDimensionsContext";
+import RecipientTreatments from "../components/treatments/RecipientTreatments";
 
 moment.locale("fr");
 
@@ -33,7 +34,6 @@ describe("Recipient", () => {
     assign: jest.fn(),
     pathname: "http://test.com/recipient/5",
   };
-
   it("Should render without crash", async () => {
     store.dispatch(
       setValues({
@@ -207,10 +207,14 @@ describe("Recipient", () => {
     );
     const route = "/recipient/5";
     await act(async () => {
-      render(
+    render(
         <MemoryRouter initialEntries={[route]}>
           <Routes>
             <Route path="/recipient/:id" element={<Recipient />} />
+            <Route
+              path="recipient/:id/treatments/"
+              element={<Recipient tab="treatments" />}
+            />
           </Routes>
         </MemoryRouter>,
 
@@ -219,15 +223,15 @@ describe("Recipient", () => {
     });
 
      const treatmentsTab = screen.getByTestId("treatmentsTab");
+     const generalTab = await screen.findByTestId("generalTab");
+
     await userEvent.click(treatmentsTab);
-    
-    const generalTab = await screen.findByTestId("generalTab");
     expect(generalTab).toBeInTheDocument()
 
     await userEvent.click(generalTab);
 
     const generalSectionComponent = await screen.findByTestId(
-      "generalSectionComponent",
+      "generalSectionComponent",    
     );
     expect(generalSectionComponent).toBeInTheDocument();
   });

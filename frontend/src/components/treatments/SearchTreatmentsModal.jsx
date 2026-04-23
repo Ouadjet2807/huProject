@@ -4,6 +4,20 @@ import Modal from "react-bootstrap/Modal";
 import axios from "axios";
 import { IoIosSearch } from "react-icons/io";
 
+  export const getMedsData = async (debouncedValue) => {
+      if (debouncedValue !== "") {
+        try {
+          const response = await axios.get(
+            `https://medicaments-api.giygas.dev/medicament/${debouncedValue}`
+          );
+
+          return response.data
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    };
+
 export default function SearchTreatmentsModal({
   show,
   setShow,
@@ -62,40 +76,35 @@ export default function SearchTreatmentsModal({
     );
   };
 
-  useEffect(() => {
-    const getMedsData = async () => {
-      if (debouncedValue !== "") {
-        try {
-          const response = await axios.get(
-            `https://medicaments-api.giygas.dev/medicament/${debouncedValue}`
-          );
-
-          setSearchResults(response.data);
-        } catch (error) {
-          console.log(error);
-        }
-      }
-    };
-    getMedsData();
-  }, [debouncedValue]);
-
-  const handleClose = () => {
+    const reset = () => {
     setDebouncedValue("");
     setSearchResults([]);
-    setShow(false);
   };
 
-  console.log("searchmed");
-  
+  useEffect(() => {
+    const fetchData = async () => {
+      const searchResults = await getMedsData(debouncedValue);
+      setSearchResults(searchResults)
+    }
+    fetchData()
+  }, [debouncedValue]);
+
+  useEffect(() => {
+    if(!show) {
+      reset()
+    }
+  }, [show])
+
+
 
   return (
-    <Modal size="lg" show={show} onHide={handleClose} id="searchTreatmentModal">
+    <Modal size="lg" show={show} onHide={() => setShow(false)} id="searchTreatmentModal">
       <Modal.Header closeButton>
         <Modal.Title data-testid="heading">Ajouter un traitement</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <div className="search-container">
-          <div className="search-bar">
+          <div className="search-bar" data-testid="searchBar">
             <input
               type="text"
               name="search_treatment"
@@ -108,7 +117,7 @@ export default function SearchTreatmentsModal({
               <IoIosSearch />
             </div>
           </div>
-          <ul className="search-results">
+          <ul className="search-results" data-testid="searchResults">
             {searchResults && searchResults.length > 0 ? (
               searchResults
                 .filter(
@@ -136,7 +145,7 @@ export default function SearchTreatmentsModal({
         </div>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={handleClose}>
+        <Button variant="secondary" onClick={() => setShow(false)}>
           Annuler
         </Button>
       </Modal.Footer>

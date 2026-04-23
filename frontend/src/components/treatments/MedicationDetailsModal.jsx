@@ -26,12 +26,12 @@ export default function MedicationDetailsModal({
   setMedication,
   showAddTreatmentModal,
   treatmentsData,
-  setTreatmentsData
+  setTreatmentsData,
 }) {
   moment.locale("fr");
 
   const { user } = useContext(AuthContext);
-  const space = useSelector((state) => state.space)
+  const space = useSelector((state) => state.space);
   const [presentation, setPresentation] = useState([]);
   const [freeTake, setFreeTake] = useState(false);
   const [formData, setFormData] = useState({
@@ -57,42 +57,56 @@ export default function MedicationDetailsModal({
     space: "",
   });
 
-
   const sortObjectKeys = (obj) => {
-    let keys = Object.keys(obj).sort((a,b) => {
-        if (a < b) return -1;
-        if (a > b) return 1;
-        return 0;
-    })
+    let keys = Object.keys(obj).sort((a, b) => {
+      if (a < b) return -1;
+      if (a > b) return 1;
+      return 0;
+    });
 
-    let temp = {}
+    let temp = {};
 
-    keys.forEach(key => {
-      temp[key] = obj[key]
-      delete obj[key]
-    })
+    keys.forEach((key) => {
+      temp[key] = obj[key];
+      delete obj[key];
+    });
 
-    keys.forEach(key => {
-      obj[key] = temp[key]
-    })
+    keys.forEach((key) => {
+      obj[key] = temp[key];
+    });
 
-    return obj
-  }
+    return obj;
+  };
 
+  const isDisabled = (key) => {
+    // console.log(key);
+    // console.log( freeTake ||
+    //   (formData.frequency.intake_time_range.length ==
+    //     formData.frequency.intake_number &&
+    //     !formData.frequency.intake_time_range.includes(key)));
+    // console.log(formData.frequency.intake_number);
+    // console.log(formData.frequency.intake_time_range);
+
+    return (
+      freeTake ||
+      (formData.frequency.intake_time_range.length ==
+        formData.frequency.intake_number &&
+        !formData.frequency.intake_time_range.includes(key))
+    );
+  };
 
   const fetchMedication = async (code) => {
-   if(!code) return
+    if (!code || process.env.NODE_ENV === "test") return;
 
     try {
       const response = await axios.get(
-            `https://medicaments-api.giygas.dev/medicament/id/${code}`
-          );
-      setMedication(response.data)
-
-    } catch(error) {
+        `https://medicaments-api.giygas.dev/medicament/id/${code}`,
+      );
+      setMedication(response.data);
+    } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   const handleClose = () => {
     setShow(false);
@@ -112,7 +126,7 @@ export default function MedicationDetailsModal({
       end_date: null,
       start_date: new Date().toISOString().split("T")[0],
       frequency: {
-        intake_time_range: [""],
+        intake_time_range: [],
         intake_frequency: "day",
         intake_number: 1,
       },
@@ -123,26 +137,27 @@ export default function MedicationDetailsModal({
   };
 
   const handleDayTime = (e) => {
-    let time_range = formData.frequency.intake_time_range
+    let time_range = formData.frequency.intake_time_range;
+    console.log(time_range);
 
     if (
-      time_range.length > (formData.frequency.intake_number - 1) &&
+      time_range.length > formData.frequency.intake_number - 1 &&
       !time_range.includes(e.target.value)
     ) {
-      return
+      return;
     } else if (time_range.includes(e.target.value)) {
       time_range = time_range.filter((range) => range !== e.target.value);
     } else {
-      time_range.push(e.target.value)
+      time_range.push(e.target.value);
     }
 
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       frequency: {
         ...prev.frequency,
-        intake_time_range: time_range
-      }
-    }))
+        intake_time_range: time_range,
+      },
+    }));
   };
 
   const addImplicitOneIfNeeded = (s) => {
@@ -208,7 +223,6 @@ export default function MedicationDetailsModal({
   };
 
   const normalizeForRegexes = (str) => {
-
     // Clean str for addImplicitOneIfNeeded function
     let s = str
       .toLowerCase()
@@ -241,25 +255,25 @@ export default function MedicationDetailsModal({
 
     // multiplicative
     for (const m of s.matchAll(
-      /([0-9]+(?:\.[0-9]+)?)\s*(?:x|\*)\s*([0-9]+(?:\.[0-9]+)?)/g
+      /([0-9]+(?:\.[0-9]+)?)\s*(?:x|\*)\s*([0-9]+(?:\.[0-9]+)?)/g,
     )) {
       push("mult", m, { a: parseFloat(m[1]), b: parseFloat(m[2]) }, m.index);
     }
     // packaging
     for (const m of s.matchAll(
-      /([0-9]+)\s*(fut|fût|fûts|futs|plaquette|flacon|flacon en verre de|flacons en verre de|tube|sachet|recipient|récipient|ra©cipient|ra©cipients|rÃ©cipient|rÃ©cipients|blister|boite|boîte|cartouche)/g
+      /([0-9]+)\s*(fut|fût|fûts|futs|plaquette|flacon|flacon en verre de|flacons en verre de|tube|sachet|recipient|récipient|ra©cipient|ra©cipients|rÃ©cipient|rÃ©cipients|blister|boite|boîte|cartouche)/g,
     )) {
       push("pack", m, { n: parseInt(m[1], 10), type: m[2] }, m.index);
     }
     // countable units
     for (const m of s.matchAll(
-      /([0-9]+(?:\.[0-9]+)?)\s*(comprime|comprima©|comprima©s|comprimÃ©|comprimÃ©s|comprimes|comprimés|comprimé|gélule|gélules|gelule|gelules|patch|patchs|pastille|pastilles|pansement|pansements|suppositoire|suppositoires|bande|bandes?|ml|l|g|mg|μg)/g
+      /([0-9]+(?:\.[0-9]+)?)\s*(comprime|comprima©|comprima©s|comprimÃ©|comprimÃ©s|comprimes|comprimés|comprimé|gélule|gélules|gelule|gelules|patch|patchs|pastille|pastilles|pansement|pansements|suppositoire|suppositoires|bande|bandes?|ml|l|g|mg|μg)/g,
     )) {
       push("countUnit", m, { n: parseFloat(m[1]), form: m[2] }, m.index);
     }
     // measures (ml, g, mg)
     for (const m of s.matchAll(
-      /(?:de|d'|en)\s*([0-9]+(?:\.[0-9]+)?)\s*(ml|g|mg|l|µg|ug)/g
+      /(?:de|d'|en)\s*([0-9]+(?:\.[0-9]+)?)\s*(ml|g|mg|l|µg|ug)/g,
     )) {
       push("measure", m, { n: parseFloat(m[1]), unit: m[2] }, m.index);
     }
@@ -289,7 +303,7 @@ export default function MedicationDetailsModal({
     numberOfBoxes,
     quantity,
     frequency,
-    startDateISO
+    startDateISO,
   ) => {
     if (
       freeTake ||
@@ -336,14 +350,14 @@ export default function MedicationDetailsModal({
       : null;
 
     formData.quantity_per_box.number_of_boxes = parseInt(
-      formData.number_of_boxes
+      formData.number_of_boxes,
     );
 
     const freeTakeData = {
-    intake_time_range: [""],
-    intake_frequency: "free",
-    intake_number: 0,
-   }
+      intake_time_range: [],
+      intake_frequency: "free",
+      intake_number: 0,
+    };
 
     try {
       let data = {
@@ -359,39 +373,46 @@ export default function MedicationDetailsModal({
         end_date: formattedEndDate,
         registered_by: user.id,
         prescribed_to: recipient.id,
-      
       };
 
       console.log(data);
-      
 
       if (Object.keys(treatment).length > 1) {
-
         const response = await api.put(
-        `http://127.0.0.1:8000/api/treatments/${treatment.id}/`,
-        data
-      );
-      console.log(response);
-      
-      let index = treatmentsData.treatments.content.findIndex((elem) => JSON.stringify(sortObjectKeys(elem)) === JSON.stringify(sortObjectKeys(treatment)))
-      let splicedArray = treatmentsData.treatments.content.toSpliced(index, 1, response.data);
+          `http://127.0.0.1:8000/api/treatments/${treatment.id}/`,
+          data,
+        );
+        console.log(response);
 
-      setTreatmentsData(prev => ({
-        ...prev,
-        treatments: {
-          content: splicedArray
-        }
-      }))
+        let index = treatmentsData.treatments.content.findIndex(
+          (elem) =>
+            JSON.stringify(sortObjectKeys(elem)) ===
+            JSON.stringify(sortObjectKeys(treatment)),
+        );
+        let splicedArray = treatmentsData.treatments.content.toSpliced(
+          index,
+          1,
+          response.data,
+        );
 
+        setTreatmentsData((prev) => ({
+          ...prev,
+          treatments: {
+            content: splicedArray,
+          },
+        }));
       } else {
         const response = await api.post(
-        "http://127.0.0.1:8000/api/treatments/",
-        data 
-      )
-      setTreatmentsData(prev => ({
-        ...prev,
-        treatments: {content: [...prev.treatments.content, response.data], status:response.status}
-      }))
+          "http://127.0.0.1:8000/api/treatments/",
+          data,
+        );
+        setTreatmentsData((prev) => ({
+          ...prev,
+          treatments: {
+            content: [...prev.treatments.content, response.data],
+            status: response.status,
+          },
+        }));
       }
 
       handleClose();
@@ -401,8 +422,10 @@ export default function MedicationDetailsModal({
   };
 
   useEffect(() => {
-
-    if (Object.keys(medication).length > 0 && Object.keys(medication).includes("presentation")) {
+    if (
+      Object.keys(medication).length > 0 &&
+      Object.keys(medication).includes("presentation")
+    ) {
       setFormData((prev) => ({
         ...prev,
         cis_code: medication.cis,
@@ -430,22 +453,22 @@ export default function MedicationDetailsModal({
         }
         if (
           !presentation.find(
-            (e) => JSON.stringify(sortObjectKeys(e)) === JSON.stringify(sortObjectKeys(current_presentation))
+            (e) =>
+              JSON.stringify(sortObjectKeys(e)) ===
+              JSON.stringify(sortObjectKeys(current_presentation)),
           )
         )
           setPresentation((prev) => [...prev, current_presentation]);
       });
     }
-
   }, [medication, space]);
-
 
   useEffect(() => {
     const end_date = getEstimatedEndDate(
       formData.number_of_boxes,
       formData.quantity_per_box,
       formData.frequency,
-      formData.start_date
+      formData.start_date,
     );
 
     setFormData((prev) => ({ ...prev, end_date: end_date }));
@@ -457,40 +480,47 @@ export default function MedicationDetailsModal({
   ]);
 
   useEffect(() => {
-    while (formData.frequency.intake_time_range.length > formData.frequency.intake_number) {
+    while (
+      formData.frequency.intake_time_range.length >
+      formData.frequency.intake_number
+    ) {
       formData.frequency.intake_time_range.pop();
     }
   }, [formData.frequency.intake_number]);
 
-
   useEffect(() => {
+    if (!treatment || !show) return;
 
-    if(!treatment || !show) return
+    fetchMedication(treatment.cis_code); 
 
-    fetchMedication(treatment.cis_code)
+    console.log("reach");
+    
 
-    let treatment_copy = JSON.stringify(treatment)
-    let parsed_treatment_copy = JSON.parse(treatment_copy)
-
+    let treatment_copy = JSON.stringify(treatment);
+    let parsed_treatment_copy = JSON.parse(treatment_copy);
+    console.log(parsed_treatment_copy);
+    
     if (Object.keys(parsed_treatment_copy).length > 0) {
-      let number_of_boxes = parsed_treatment_copy.quantity.number_of_boxes
-      delete parsed_treatment_copy.quantity.number_of_boxes
+      let number_of_boxes = parsed_treatment_copy.quantity.number_of_boxes;
+      delete parsed_treatment_copy.quantity.number_of_boxes;
 
       setFormData((prev) => ({
         ...prev,
         frequency: parsed_treatment_copy.frequency,
         quantity_per_box: parsed_treatment_copy.quantity,
-        number_of_boxes:  number_of_boxes,
+        number_of_boxes: number_of_boxes,
         notes: parsed_treatment_copy.notes,
-        start_date: parsed_treatment_copy.is_expired ? moment(new Date()).toISOString().split("T")[0] : moment(parsed_treatment_copy.start_date).add(1, 'days').toISOString().split("T")[0]
+        start_date: parsed_treatment_copy.is_expired
+          ? moment(new Date()).toISOString().split("T")[0]
+          : moment(parsed_treatment_copy.start_date)
+              .add(1, "days")
+              .toISOString()
+              .split("T")[0],
       }));
     }
+  }, [treatment, show]);
 
-  }, [treatment, show])
-  
-  console.log(medication);
-  console.log(space);
-  
+
   return (
     medication && (
       <Modal
@@ -500,7 +530,9 @@ export default function MedicationDetailsModal({
         id="medicationDetailsModal"
       >
         <Modal.Header closeButton>
-          <Modal.Title>{medication.elementPharmaceutique}</Modal.Title>
+          <Modal.Title data-testid="title">
+            {medication.elementPharmaceutique}
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <form action="">
@@ -509,6 +541,7 @@ export default function MedicationDetailsModal({
               <div className="wrapper" id="freeTake">
                 <div className="fields">
                   <input
+                    data-testid="intakeNumberInput"
                     type="number"
                     name="intake_number"
                     id=""
@@ -530,6 +563,7 @@ export default function MedicationDetailsModal({
                   <span>fois par</span>
                   <select
                     name="intake_frequency"
+                    data-testid="intakeFrequencyInput"
                     id=""
                     disabled={freeTake}
                     onChange={(e) =>
@@ -551,6 +585,7 @@ export default function MedicationDetailsModal({
                 <Form.Check
                   type="switch"
                   name="freeIntakeInput"
+                  data-testid="freeTakeInput"
                   id="custom-switch"
                   onChange={() => setFreeTake(!freeTake)}
                   label="Prise libre si douleur"
@@ -560,12 +595,11 @@ export default function MedicationDetailsModal({
               <div className="daytime-fields fields">
                 <div
                   className={`dayTime field ${
-                    formData.frequency.intake_time_range.includes("morning")
-                      ? "selected"
-                      : (freeTake || formData.frequency.intake_time_range.length === formData.frequency.intake_number) &&
-                        !formData.frequency.intake_time_range.includes("morning")
+                    isDisabled("morning")
                       ? "disabled"
-                      : ""
+                      : formData.frequency.intake_time_range.includes("morning")
+                        ? "selected"
+                        : ""
                   }`}
                   id="morning"
                 >
@@ -573,10 +607,8 @@ export default function MedicationDetailsModal({
                     type="checkbox"
                     name="day_time"
                     value="morning"
-                    disabled={
-                      (freeTake || formData.frequency.intake_time_range.length === formData.frequency.intake_number) &&
-                      !formData.frequency.intake_time_range.includes("morning")
-                    }
+                    data-testid="timeOfIntake_morning"
+                    disabled={isDisabled("morning")}
                     id=""
                     onChange={(e) => handleDayTime(e)}
                   />
@@ -584,12 +616,11 @@ export default function MedicationDetailsModal({
                 </div>
                 <div
                   className={`dayTime field ${
-                     formData.frequency.intake_time_range.includes("midday")
-                      ? "selected"
-                      : (freeTake || formData.frequency.intake_time_range.length === formData.frequency.intake_number) &&
-                        !formData.frequency.intake_time_range.includes("midday")
+                    isDisabled("midday")
                       ? "disabled"
-                      : ""
+                      : formData.frequency.intake_time_range.includes("midday")
+                        ? "selected"
+                        : ""
                   }`}
                   id="midday"
                 >
@@ -597,10 +628,8 @@ export default function MedicationDetailsModal({
                     type="checkbox"
                     name="day_time"
                     value="midday"
-                    disabled={
-                      (freeTake || formData.frequency.intake_time_range.length === formData.frequency.intake_number) &&
-                      !formData.frequency.intake_time_range.includes("midday")
-                    }
+                    data-testid="timeOfIntake_midday"
+                    disabled={isDisabled("midday")}
                     id=""
                     onChange={(e) => handleDayTime(e)}
                   />
@@ -608,12 +637,11 @@ export default function MedicationDetailsModal({
                 </div>
                 <div
                   className={`dayTime field ${
-                     formData.frequency.intake_time_range.includes("evening")
-                      ? "selected"
-                      : (freeTake || formData.frequency.intake_time_range.length === formData.frequency.intake_number) &&
-                        !formData.frequency.intake_time_range.includes("evening")
+                    isDisabled("evening")
                       ? "disabled"
-                      : ""
+                      : formData.frequency.intake_time_range.includes("evening")
+                        ? "selected"
+                        : ""
                   }`}
                   id="evening"
                 >
@@ -621,10 +649,8 @@ export default function MedicationDetailsModal({
                     type="checkbox"
                     name="day_time"
                     value="evening"
-                    disabled={
-                      (freeTake || formData.frequency.intake_time_range.length === formData.frequency.intake_number )&&
-                      !formData.frequency.intake_time_range.includes("evening")
-                    }
+                    data-testid="timeOfIntake_evening"
+                    disabled={isDisabled("evening")}
                     id=""
                     onChange={(e) => handleDayTime(e)}
                   />
@@ -643,8 +669,9 @@ export default function MedicationDetailsModal({
                     return (
                       <div
                         className={`${
-                          JSON.stringify(sortObjectKeys(formData.quantity_per_box)) ===
-                          JSON.stringify(sortObjectKeys(item))
+                          JSON.stringify(
+                            sortObjectKeys(formData.quantity_per_box),
+                          ) === JSON.stringify(sortObjectKeys(item))
                             ? "selected"
                             : ""
                         } size`}
@@ -687,6 +714,7 @@ export default function MedicationDetailsModal({
                 <Form.Range
                   type="range"
                   name="number_of_boxes"
+                  data-testid="numberOfBoxesInput"
                   id=""
                   min={1}
                   max={15}
@@ -704,35 +732,61 @@ export default function MedicationDetailsModal({
               </div>
             </div>
             <div className="additional-info">
-                <label htmlFor="start_date">Début du traitement</label>
-                <input
-                  type="date"
-                  name="start_date"
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      start_date: e.target.value,
-                    }))
-                  }
-                  id=""
-                  value={formData.start_date}
-                />
+              <label htmlFor="start_date">Début du traitement</label>
+              <input
+                type="date"
+                name="start_date"
+                data-testid="startDateInput"
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    start_date: e.target.value,
+                  }))
+                }
+                id=""
+                value={formData.start_date}
+              />
               <label htmlFor="prescribed_by">Prescrit par</label>
-              <Form.Select aria-label="Default select example" onChange={(e) => setFormData(prev => ({...prev, prescribed_by: e.target.value}))}>
-
-                  <option value="Non renseigné"> Non renseigné</option>
-                  {/* {recipient.healthcare_professionals.map((item) => {
-                    return <option value={item.name} selected={formData.prescribed_by === item.name}>{item.name}</option>;
-                  })} */}
-               </Form.Select>
+              <Form.Select
+                data-testid="prescribedByInput"
+                aria-label="Default select example"
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    prescribed_by: e.target.value,
+                  }))
+                }
+              >
+                <option value="Non renseigné"> Non renseigné</option>
+                {recipient &&
+                  Object.keys(recipient).includes("healthcare_professionals") &&
+                  recipient.healthcare_professionals.map((item) => {
+                    return (
+                      <option
+                        value={item.name}
+                        selected={formData.prescribed_by === item.name}
+                      >
+                        {item.name}
+                      </option>
+                    );
+                  })}
+              </Form.Select>
             </div>
           </form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="primary" onClick={handleSubmit}>
-            {treatment ? 'Enregistrer' : 'Ajouter'}
+          <Button
+            data-testid="saveButton"
+            variant="primary"
+            onClick={handleSubmit}
+          >
+            {treatment ? "Enregistrer" : "Ajouter"}
           </Button>
-          <Button variant="outline-secondary" onClick={handleClose}>
+          <Button
+            data-testid="cancelButton"
+            variant="outline-secondary"
+            onClick={handleClose}
+          >
             Retour
           </Button>
         </Modal.Footer>

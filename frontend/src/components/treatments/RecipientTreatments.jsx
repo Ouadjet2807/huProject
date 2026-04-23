@@ -34,7 +34,9 @@ import { TbLayoutGrid } from "react-icons/tb";
 import { TbLayoutGridFilled } from "react-icons/tb";
 import { useNavigate } from "react-router";
 
+
 export default function RecipientTreatments({ recipient }) {
+
   const [showAddTreatment, setShowAddTreatement] = useState(false);
   const [showMedicationDetails, setShowMedicationDetails] = useState(false);
   const [treatmentLayout, setTreatmentLayout] = useState("grid");
@@ -65,13 +67,11 @@ export default function RecipientTreatments({ recipient }) {
 
   const today = moment(new Date());
 
-  const getTreatments = async () => {
+    const getTreatments = async () => {
 
     if(!recipient || Object.keys(recipient).length == 0) return
     try {
-      const response = await api.get(
-        `http://127.0.0.1:8000/api/treatments/?archives=False&recipient=${recipient.id}`,
-      );
+      const response = await api.get(`http://127.0.0.1:8000/api/treatments/?archives=False&recipient=${recipient.id}`,);
 
       const data = {
         content: response.data,
@@ -90,9 +90,7 @@ export default function RecipientTreatments({ recipient }) {
   const getArchivedTreatments = async () => {
     if(!recipient || Object.keys(recipient).length == 0) return
     try {
-      const response = await api.get(
-        `http://127.0.0.1:8000/api/treatments/?archives=True&recipient=${recipient.id}`,
-      );
+      const response = await api.get(`http://127.0.0.1:8000/api/treatments/?archives=True&recipient=${recipient.id}`,)
       const data = {
         content: response.data,
         status: response.status,
@@ -296,12 +294,12 @@ export default function RecipientTreatments({ recipient }) {
                 <Card className="treatment">
                   {item.is_expired && (
                     <h5>
-                      <Badge bg="danger">expiré</Badge>
+                      <Badge bg="danger" data-testid="expiredBadge">expiré</Badge>
                     </h5>
                   )}
                   {item.is_deleted && (
                     <h5>
-                      <Badge bg="secondary">supprimé</Badge>
+                      <Badge bg="secondary" data-testid="deletedBadge">supprimé</Badge>
                     </h5>
                   )}
                   <Card.Header>
@@ -425,7 +423,7 @@ export default function RecipientTreatments({ recipient }) {
     window.localStorage.setItem('treatments-layout', treatmentLayout)
   }, [treatmentLayout])
 
-  console.log('treatment');
+  console.log(treatmentsData);
   
   return (
     <div
@@ -458,6 +456,7 @@ export default function RecipientTreatments({ recipient }) {
           {treatmentLayout === "grid" ? <TbLayoutGridFilled onClick={() => setTreatmentLayout("grid")} /> : <TbLayoutGrid onClick={() => setTreatmentLayout("grid")} />}
         </div>
         <Button
+          data-testid="archiveButton"
           variant="aqua"
           size="sm"
           onClick={() => setArchiveTab(!archiveTab)}
@@ -468,6 +467,7 @@ export default function RecipientTreatments({ recipient }) {
       <div className="treatments-tab-body">
         {!loading ? (
           <Container
+          data-testid="treatmentsList"
             className={`treatments-list ${treatmentLayout}`}
             style={{
               justifyContent:
@@ -484,6 +484,8 @@ export default function RecipientTreatments({ recipient }) {
       </div>
       <Button
         variant="aqua"
+        disabled={loading}
+        data-testid="addTreatmentButton"
         className="add-treatment-btn"
         onClick={() => setShowAddTreatement(true)}
       >

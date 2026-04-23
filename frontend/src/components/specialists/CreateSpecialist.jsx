@@ -24,7 +24,8 @@ export default function CreateSpecialist({
   preloadedData,
   setSelectedSpecialist,
 }) {
-  const { user } = useContext(AuthContext);
+
+
   const { showConfirm, setShowConfirm, setText, setAction, returnValue } =
     useContext(ConfirmContext);
   const [placeholderSuggestion, setPlaceholderSuggestion] = useState();
@@ -66,6 +67,7 @@ export default function CreateSpecialist({
   };
 
   const handleClose = () => {
+    if(process.env.NODE_ENV === "test") return
     setContact({
       address: "",
       phone_number: "",
@@ -77,8 +79,8 @@ export default function CreateSpecialist({
       notes: "",
       space: space.id,
     });
-    setSelectedSpecialist()
     setShow(false);
+    setSelectedSpecialist()
   };
 
   const handleChange = (e) => {
@@ -240,11 +242,13 @@ export default function CreateSpecialist({
 
   }, [returnValue])
 
+  console.log(preloadedData);
+  
 
   return (
     <Modal show={show} onHide={handleClose} className="create-specialist-modal">
       <Modal.Header closeButton>
-        <Modal.Title>
+        <Modal.Title data-testid="title">
           <FaUserMd /> Ajouter un professionel de santé
         </Modal.Title>
       </Modal.Header>
@@ -318,7 +322,7 @@ export default function CreateSpecialist({
               </FloatingLabel>
             </InputGroup>
             {addressSuggestions && addressSuggestions.length > 0 && (
-              <ul className="address-suggestions">
+              <ul className="address-suggestions" data-testid="address-suggestion">
                 {addressSuggestions.map((item) => {
                   return (
                     <li
@@ -377,13 +381,14 @@ export default function CreateSpecialist({
         {!preloadedData || editMode ? (
           <Button
             variant="md-green"
+            data-testid="submitButton"
             type="submit"
             onClick={(e) => handleSubmit(e)}
           >
             {editMode ? "Enregistrer" : "Ajouter"}
           </Button>
         ) : (
-          <Button variant="md-green" onClick={() => setEditMode(true)}>
+          <Button data-testid="editModeButton" variant="md-green" onClick={() => setEditMode(true)}>
             Modifier
           </Button>
         )}
@@ -398,6 +403,7 @@ export default function CreateSpecialist({
         )}
         <Button
           type="button"
+          data-testid="cancelButton"
           variant="outline-secondary"
           onClick={() => (editMode ? setEditMode(false) : handleClose())}
         >

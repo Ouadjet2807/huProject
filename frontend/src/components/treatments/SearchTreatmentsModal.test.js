@@ -27,13 +27,23 @@ describe("SearchTreatmentsModal", () => {
   };
   it("Should render without crash", async () => {
 
-  
     render(<SearchTreatmentsModal show={true}/>, {
       wrapper: ProviderWrapper,
     });
 
     const heading = screen.getByTestId("heading");
+    const searchBar = screen.getByTestId('searchBar')
+    const searchResults = screen.getByTestId('searchResults')
     expect(heading).toBeInTheDocument();
     expect(heading).toHaveTextContent(/ajouter un traitement/i)
+    expect(searchResults).toBeInTheDocument();
+    expect(searchBar).toBeInTheDocument();
+  });
+  it("Should render without crash", async () => {
+
+    render(<SearchTreatmentsModal show={true}/>, {
+      wrapper: ProviderWrapper,
+    });
+
   });
 });

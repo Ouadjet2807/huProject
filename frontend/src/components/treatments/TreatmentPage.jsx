@@ -187,7 +187,8 @@ export default function TreatmentPage() {
 
   useEffect(() => {
     const getTreatmentData = async () => {
-      if (!id) return;
+      if (!id) return
+
       try {
         let response = await api.get(
           `http://127.0.0.1:8000/api/treatments/${id}`,
@@ -220,9 +221,7 @@ export default function TreatmentPage() {
 
   useEffect(() => {
 
-    console.log(window.location.pathname);
     if(window.location.pathname) {
-      
       setPathname(window.location.pathname.split("/"))
     }
     const getTreatments = async () => {
@@ -249,7 +248,7 @@ export default function TreatmentPage() {
     getTreatments();
   }, []);
 
-console.log(treatmentData);
+
 
   return (
     <div className="treatment-container">

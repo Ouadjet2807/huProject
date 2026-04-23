@@ -24,7 +24,8 @@ export default function Specialists({ recipient }) {
   };
 
   const formatSpecialist = (data) => {
-    let formatted_data = data;
+    let jsonData = JSON.stringify(data)
+    let formatted_data = JSON.parse(jsonData);
 
     data.forEach((item, index) => {
       if (typeof item.contact == "string") {
@@ -54,7 +55,8 @@ export default function Specialists({ recipient }) {
               },
           phone_number: phone_number ? phone_number.join(" ") : "Non renseigné",
         };
-
+        console.log(formatted_data);
+        
         formatted_data[index].contact = new_contact;
       }
     });
@@ -88,6 +90,8 @@ export default function Specialists({ recipient }) {
     setLoading(false);
   }, [recipient]);
 
+  console.log("specialists");
+
   return (
     <div id="recipientSpecialists" data-testid="specialistsComponent">
       <CreateSpecialist
@@ -109,19 +113,20 @@ export default function Specialists({ recipient }) {
               return (
                 <div
                   className="specialist"
+                  data-testid="specialist"
                   onClick={() => selectSpecialist(item)}
                 >
                   <div className="icon">
                     <FaUserMd />
                   </div>
                   <div className="info">
-                    <h5>{item.name}</h5>
-                    <small>{item.specialty}</small>
-                    <span>
+                    <h5 data-testid="specialistName">{item.name}</h5>
+                    <small data-testid="specialistSpecialty">{item.specialty}</small>
+                    <span data-testid="specialistAddress">
                       <HiOutlineLocationMarker />{" "}
                       {item.contact.address && item.contact.address.city}
                     </span>
-                    <span>
+                    <span data-testid="specialistPhoneNumber">
                       <LuPhone /> {item.contact.phone_number}
                     </span>
                   </div>
@@ -130,6 +135,7 @@ export default function Specialists({ recipient }) {
             })
           ) : (
             <small
+            data-testid="noSpecialist"
               style={{
                 textAlign: "center",
                 width: "100%",
@@ -150,7 +156,9 @@ export default function Specialists({ recipient }) {
       )}
       <Button
         variant="aqua"
-        className="add-treatment-btn"
+        disabled={loading}
+        data-testid="addSpecialistButton"
+        className="add-specialist-btn"
         onClick={() => setShowAddSpecialist(true)}
       >
         <FaUserMd /> Ajouter un specialiste

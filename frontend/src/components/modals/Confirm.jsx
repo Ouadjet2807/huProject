@@ -45,16 +45,16 @@ export default function Confirm({ show, setShow, action, text, setReturnValue })
   return (
     <Modal show={show} onHide={handleClose} className="confirm-modal">
       <Modal.Header closeButton>
-        <Modal.Title>{text}</Modal.Title>
+        <Modal.Title data-testid="title">{text}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <p>Cette action est irréversible</p>
+        <p data-testid="message">Cette action est irréversible</p>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="outline-danger" onClick={process}>
+        <Button data-testid="confirmButton" variant="outline-danger" onClick={process}>
           Oui, supprimer
         </Button>
-        <Button variant="outline-secondary" onClick={() => setShow(false)}>
+        <Button data-testid="cancelButton" variant="outline-secondary" onClick={() => setShow(false)}>
           Annuler
         </Button>
       </Modal.Footer>

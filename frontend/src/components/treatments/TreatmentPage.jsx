@@ -26,7 +26,7 @@ export default function TreatmentPage() {
   const { id } = useParams();
   const { showConfirm, setShowConfirm, setText, setAction, returnValue } =
     useContext(ConfirmContext);
-  const space = useSelector((state) => state.space)
+  const space = useSelector((state) => state.space);
   const navigate = useNavigate();
   const today = moment(new Date());
   const tabletRef = useRef();
@@ -45,10 +45,20 @@ export default function TreatmentPage() {
   const [visualTrackerDimensions, setVisualTrackerDimensions] = useState({
     width: 0,
     height: 0,
-  })
-  const [pathname, setPathname] = useState([])
+  });
+  const [pathname, setPathname] = useState([]);
 
   moment.locale("fr");
+
+  const getTreatmentRegistrator = () => {
+    let user = space.caregivers.find(
+      (c) => c.user === treatmentData.registered_by,
+    );
+
+    if (!user) return;
+
+    return user.first_name + " " + user.last_name;
+  };
 
   const checkTodaysIntake = (intake_number, intake_time_range) => {
     let todaysIntakeCount = 0;
@@ -92,7 +102,7 @@ export default function TreatmentPage() {
       const response = await api.post(
         `http://127.0.0.1:8000/api/soft_delete_treatment/${treatmentData.id}/`,
       );
-      navigate(`/${pathname[1]}/${pathname[2]}/${pathname[3]}`)
+      navigate(`/${pathname[1]}/${pathname[2]}/${pathname[3]}`);
     });
     setShowConfirm(true);
   };
@@ -120,11 +130,10 @@ export default function TreatmentPage() {
     } else {
       totalUnits = item.quantity.units_per_unit * item.quantity.number_of_boxes;
     }
-    
+
     if (start_date > today) return totalUnits;
 
     let todaysIntakeCount = checkTodaysIntake(intake_number, intake_time_range);
-
 
     let frequency = item.frequency.intake_frequency;
 
@@ -187,7 +196,7 @@ export default function TreatmentPage() {
 
   useEffect(() => {
     const getTreatmentData = async () => {
-      if (!id) return
+      if (!id) return;
 
       try {
         let response = await api.get(
@@ -203,14 +212,13 @@ export default function TreatmentPage() {
   }, [id]);
 
   useEffect(() => {
-    if(!tabletRef.current) return
+    if (!tabletRef.current) return;
 
     setVisualTrackerDimensions({
-        height: tabletRef.current.offsetHeight,
-        width: tabletRef.current.offsetWidth,
-    })
-
-  }, [tabletRef.current, boxes, window.innerWidth, window.innerHeight])
+      height: tabletRef.current.offsetHeight,
+      width: tabletRef.current.offsetWidth,
+    });
+  }, [tabletRef.current, boxes, window.innerWidth, window.innerHeight]);
 
   useEffect(() => {
     let reg = /^[0-9]+$/g;
@@ -220,9 +228,8 @@ export default function TreatmentPage() {
   }, [space]);
 
   useEffect(() => {
-
-    if(window.location.pathname) {
-      setPathname(window.location.pathname.split("/"))
+    if (window.location.pathname) {
+      setPathname(window.location.pathname.split("/"));
     }
     const getTreatments = async () => {
       if (pathname.length == 0 || !pathname[2].match("^/0-9/$")) return;
@@ -248,7 +255,7 @@ export default function TreatmentPage() {
     getTreatments();
   }, []);
 
-
+  console.log(treatmentData);
 
   return (
     <div className="treatment-container">
@@ -274,17 +281,17 @@ export default function TreatmentPage() {
         <div className="treatment-info">
           <div className="container">
             <div className="left-tab">
-                {treatmentData.is_expired &&
-                   <h5>
-                      <Badge bg="danger">expiré</Badge>
-                    </h5>
-                }
+              {treatmentData.is_expired && (
+                <h5>
+                  <Badge bg="danger">expiré</Badge>
+                </h5>
+              )}
               <div
                 className={`medication-tracker ${medicationFocus ? "focus" : ""}`}
                 style={{
                   height: `${visualTrackerDimensions.height * Math.sqrt(nbBoxes)}px`,
                   width: `${visualTrackerDimensions.width}px`,
-                  filter: `${treatmentData.is_expired ? 'brightness(0.7)' : 'none'}`
+                  filter: `${treatmentData.is_expired ? "brightness(0.7)" : "none"}`,
                 }}
                 onMouseEnter={() => setMedicationFocus(true)}
                 onMouseLeave={() => setMedicationFocus(false)}
@@ -333,13 +340,25 @@ export default function TreatmentPage() {
             </div>
             <div className="right-tab">
               <h3>{treatmentData.name}</h3>
-              <span><CiCircleInfo /> {treatmentData.quantity.unit_type}(s) de {treatmentData.quantity.units_per_unit} {treatmentData.quantity.units_form}</span>
+              <span data-testid="presentation">
+                <CiCircleInfo /> {treatmentData.quantity.unit_type}(s) de{" "}
+                {treatmentData.quantity.units_per_unit}{" "}
+                {treatmentData.quantity.units_form}
+              </span>
               <div className="header">
                 <div className="intake-frequency">
-                  <div className="pill-radius" id="intakeNumber">
+                  <div
+                    data-testid="intakeNumber"
+                    className="pill-radius"
+                    id="intakeNumber"
+                  >
                     {treatmentData.frequency.intake_number}x par jour
                   </div>
-                  <div className="pill-radius" id="intakeTimeRange">
+                  <div
+                    data-testid="intakeTimeRange"
+                    className="pill-radius"
+                    id="intakeTimeRange"
+                  >
                     {treatmentData.frequency.intake_time_range.length > 0 &&
                       treatmentData.frequency.intake_time_range.map((time) => {
                         return time === "morning" ? (
@@ -353,17 +372,11 @@ export default function TreatmentPage() {
                   </div>
                 </div>
                 <div className="registration-info">
-                  <div className="registered-by">
-                    enregistré par
+                  <div data-testid="registeredBy" className="registered-by">
+                    enregistré par{" "}
                     {Object.keys(space).length > 1 && (
                       <span className="pill-radius">
-                        {/* {space.caregivers.find(
-                          (c) => c.user === treatmentData.registered_by,
-                        ).first_name +
-                          " " +
-                          space.caregivers.find(
-                            (c) => c.user === treatmentData.registered_by,
-                          ).last_name} */}
+                        {getTreatmentRegistrator()}
                       </span>
                     )}
                   </div>
@@ -379,12 +392,14 @@ export default function TreatmentPage() {
               </div>
               <div className="actions">
                 <Button
+                  data-testid="editButton"
                   variant="outline-md-green"
                   onClick={() => setShowMedicationDetails(true)}
                 >
                   <CiEdit /> Modifier
                 </Button>
                 <Button
+                  data-testid="deleteButton"
                   variant="outline-danger"
                   onClick={() => confirmRemoval()}
                 >

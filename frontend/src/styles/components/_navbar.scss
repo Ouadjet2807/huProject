@@ -39,7 +39,6 @@
         justify-content: center;
         height: 3vw;
         width: 3vw;
-        padding: 10px;
         position: relative;
 
         h6 {
@@ -145,17 +144,16 @@
         flex-direction: column;
         gap: 10px;
 
+        h6 {
+          margin: 0;
+          display: flex;
+          gap: 5px;
+          align-items: center;
+        }
 
-          h6 {
-            margin: 0;
-            display: flex;
-            gap: 5px;
-            align-items: center;
-          }
-
-          p {
-            font-size: 0.8rem;
-          }
+        p {
+          font-size: 0.8rem;
+        }
 
         &.new {
           background: $aqua;
@@ -169,6 +167,209 @@
 
         &:hover {
           background: $pearl;
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .navbar-container {
+    height: 7vw;
+
+    nav {
+      border-radius: $borderRadius $borderRadius 0 0;
+
+      &.mobile-nav {
+        .burger-nav {
+          height: 4vw;
+          width: 4vw;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: flex-end;
+          gap: 5px;
+          margin-right: 2vw;
+          z-index: 1000;
+
+          span {
+            display: block;
+            height: 0.4vw;
+            background: $white;
+            transition: 0.2s ease-in;
+            border-radius: $borderRadiusSmall;
+
+            &:nth-child(1) {
+              width: 4vw;
+            }
+            &:nth-child(2) {
+              width: 3vw;
+            }
+          }
+        }
+        ul {
+          position: absolute;
+          left: 105%;
+          transition: 0.2s ease-in;
+          align-items: center;
+          padding: 60px 5px;
+          background: $green;
+          z-index: 50;
+          height: 98.1vh;
+          width: 60%;
+          gap: 30px;
+          top: 0;
+          border-radius: 0px $borderRadius $borderRadius 0px;
+
+          .nav-item {
+            width: 80%;
+            border-radius: $borderRadius;
+            padding: 20px;
+
+            h6 {
+              top: 5%;
+              left: 7%;
+              font-size: 1.2vw;
+            }
+
+            &.active {
+              box-shadow:
+                inset 0px 1px 10px 0px #00977d,
+                0px 1px 10px 0px #b3c1b4;
+              span:not(.badge) {
+                color: $white;
+              }
+            }
+
+            a,
+            span {
+              color: $white;
+              justify-content: left;
+
+              svg,
+              span:not(.badge) {
+                font-size: 2vw;
+              }
+            }
+          }
+        }
+
+        &.active {
+          .burger-nav {
+            span {
+              width: 3vw;
+
+              &:nth-child(1) {
+                transform: rotateZ(45deg) translateX(0.6vw);
+              }
+
+              &:nth-child(2) {
+                transform: rotateZ(-45deg) translateX(0.8vw);
+              }
+            }
+          }
+
+          ul {
+            left: 40%;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 425px) {
+  .navbar-container {
+    height: 15vw;
+
+    nav {
+      &.mobile-nav {
+        .burger-nav {
+          height: 8vw;
+          width: 8vw;
+          margin-right: 3vw;
+
+          span {
+            display: block;
+            height: 1vw;
+            background: $white;
+            transition: 0.2s ease-in;
+            border-radius: $borderRadiusSmall;
+
+            &:nth-child(1) {
+              width: 8vw;
+            }
+            &:nth-child(2) {
+              width: 6vw;
+            }
+          }
+        }
+        ul {
+          position: absolute;
+          left: 105%;
+          transition: 0.2s ease-in;
+          align-items: center;
+          padding: 60px 5px;
+          background: $green;
+          z-index: 50;
+          height: 99vh;
+          width: 100%;
+          gap: 30px;
+          top: 0;
+          border-radius: 0px $borderRadius $borderRadius 0px;
+
+          .nav-item {
+            width: 80%;
+            border-radius: $borderRadius;
+            padding: 20px;
+
+            h6 {
+              top: 5%;
+              left: 8%;
+              font-size: 2.5vw;
+            }
+
+            &.active {
+              box-shadow:
+                inset 0px 1px 10px 0px #00977d,
+                0px 1px 10px 0px #b3c1b4;
+              span:not(.badge) {
+                color: $white;
+              }
+            }
+
+            a,
+            span {
+              color: $white;
+              justify-content: left;
+              gap: 25px;
+
+              svg,
+              span:not(.badge) {
+                font-size: 4vw;
+              }
+            }
+          }
+        }
+
+        &.active {
+          .burger-nav {
+            span {
+              width: 6vw;
+
+              &:nth-child(1) {
+                transform: rotateZ(45deg) translateX(1.2vw);
+              }
+
+              &:nth-child(2) {
+                transform: rotateZ(-45deg) translate(1.8vw, -0.3vw);
+              }
+            }
+          }
+
+          ul {
+            left: 0%;
+          }
         }
       }
     }

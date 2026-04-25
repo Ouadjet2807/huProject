@@ -240,6 +240,7 @@ export default function RecipientTreatments({ recipient }) {
     let treatmentsList = archiveTab
       ? treatmentsData.archived_treatments.content
       : treatmentsData.treatments.content;
+    
 
     if (!treatmentsList || treatmentsList.length === 0) {
       return (
@@ -274,6 +275,7 @@ export default function RecipientTreatments({ recipient }) {
           {row.map((item) => {
             return (
               <Col
+              data-testid={`${archiveTab ? "expiredT" : "t"}reatment`}
                 className={`${(item.is_expired || item.is_deleted) ? "expired" : ""}`}
                 onClick={() => !archiveTab &&
                   navigate(`${window.location.pathname}/${item.id}`)
@@ -302,7 +304,7 @@ export default function RecipientTreatments({ recipient }) {
                       <Badge bg="secondary" data-testid="deletedBadge">supprimé</Badge>
                     </h5>
                   )}
-                  <Card.Header>
+                  <Card.Header data-testid="treatmentHeader">
                     {item.name}{" "}
                     <span className="start-time">
                       <LuCalendarFold />{" "}
@@ -347,7 +349,7 @@ export default function RecipientTreatments({ recipient }) {
                     </ListGroup>
 
                     <div className="remaining">
-                      <small>
+                      <small data-testid="remainingUnits">
                         {getRemainingUnits(item)} {item.medication_format}(s)
                         restant(s)
                       </small>
@@ -423,8 +425,9 @@ export default function RecipientTreatments({ recipient }) {
     window.localStorage.setItem('treatments-layout', treatmentLayout)
   }, [treatmentLayout])
 
-  console.log(treatmentsData);
-  
+  // console.log(treatmentsData.treatments.content);
+  console.log(treatmentsData.archived_treatments.content);
+
   return (
     <div
     data-testid="treatmentsComponent"

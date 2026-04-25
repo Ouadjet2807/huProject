@@ -67,6 +67,7 @@
   "devDependencies": {
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/user-event": "^14.6.1",
+    "@vitest/coverage-v8": "^4.1.5",
     "babel-plugin-jsx-remove-data-test-id": "^3.0.0",
     "vitest": "^4.1.5"
   }

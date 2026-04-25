@@ -140,11 +140,6 @@ useEffect(() => {
 
       else setActiveTab('general')
   }, [tab])
-
-  console.log(window.location.pathname);
-  console.log(space);
-  console.log(formData);
-  console.log("recip");
   
 
   return (

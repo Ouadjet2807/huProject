@@ -59,7 +59,7 @@ export default function Account() {
     if (!window.location.pathname) return;
     let pathname = window.location.pathname.replace("/", "").split("/");
     console.log(window.pathname);
-    
+
     if (pathname.length > 1) {
       setActiveTab(pathname[1]);
       return;

@@ -13,6 +13,7 @@ import { BsPin } from "react-icons/bs";
 import { LuBell } from "react-icons/lu";
 import Badge from "react-bootstrap/Badge";
 import Notifications from "./Notifications";
+import { UseDimensionsContext } from "../context/UseDimensionsContext";
 
 gsap.registerPlugin(useGSAP);
 
@@ -21,11 +22,14 @@ export default function Navbar({ notifications, user, logout, message }) {
 
   const navigate = useNavigate();
 
+  const { width } = useContext(UseDimensionsContext);
+
   const location = useLocation();
   const [notificationsNotRead, setNotificationsNotRead] = useState(0);
   const [activeNav, setActiveNav] = useState(false);
   const [pinNav, setPinNav] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [mobileNavActive, setMobileNavActive] = useState(false);
 
   const navbar = useRef();
 
@@ -50,7 +54,7 @@ export default function Navbar({ notifications, user, logout, message }) {
   ];
 
   const handleNavAnimation = async (e) => {
-    if (pinNav) return;
+    if (pinNav || width < 800) return;
     e.stopPropagation();
     await sleep(500);
     setActiveNav(!activeNav);
@@ -69,7 +73,7 @@ export default function Navbar({ notifications, user, logout, message }) {
   };
 
   useGSAP(() => {
-    if (!user || process.env.NODE_ENV === "test") return;
+    if (!user || width < 800) return;
 
     if (activeNav) {
       gsap.to(".App", {
@@ -187,87 +191,140 @@ export default function Navbar({ notifications, user, logout, message }) {
     <div className="navbar-container">
       <nav
         data-testid="navigation"
-        className={`navigation ${user ? "left-tab-nav" : ""}`}
+        className={`navigation ${user ? "left-tab-nav" : ""} ${width < 800 ? "mobile-nav" : ""} ${mobileNavActive ? "active" : ""}`}
         onMouseEnter={(e) => handleNavAnimation(e)}
         onMouseLeave={(e) => handleNavAnimation(e)}
         ref={navbar}
       >
         {user && (
           <>
-            <div
-              data-testid="navPin"
-              className={`pin ${pinNav ? "active" : ""}`}
-              onClick={() => setPinNav(!pinNav)}
-            >
-              {pinNav ? <BsPinFill /> : <BsPin />}
-            </div>
-            <ul className="nav-list">
-              {auth_routes.map((item, index) => {
-                return (
+            {width > 800 ? (
+              <>
+                <div
+                  data-testid="navPin"
+                  className={`pin ${pinNav ? "active" : ""}`}
+                  onClick={() => setPinNav(!pinNav)}
+                >
+                  {pinNav ? <BsPinFill /> : <BsPin />}
+                </div>
+                <ul className="nav-list">
+                  {auth_routes.map((item, index) => {
+                    return (
+                      <li
+                        key={`nav_item_${index}`}
+                        className={`nav-item ${
+                          item.path === location.pathname ? "active" : ""
+                        }`}
+                      >
+                        <a href={item.path}>
+                          {activeNav ? (
+                            <>
+                              {item.icon}{" "}
+                              <span data-testid="navItemText">{item.name}</span>
+                            </>
+                          ) : (
+                            item.icon
+                          )}
+                        </a>
+                      </li>
+                    );
+                  })}
                   <li
-                  key={`nav_item_${index}`}
-                    className={`nav-item ${
-                      item.path === location.pathname ? "active" : ""
-                    }`}
+                    data-testid="showNotificationsButton"
+                    className="nav-item"
+                    onClick={() => setShowNotifications(!showNotifications)}
                   >
-                    <a href={item.path}>
+                    <span>
+                      {notificationsNotRead > 0 && (
+                        <h6 data-testid="notificationsPill">
+                          <Badge bg="danger">{notificationsNotRead}</Badge>
+                        </h6>
+                      )}
                       {activeNav ? (
                         <>
-                          {item.icon}{" "}
-                          <span data-testid="navItemText">{item.name}</span>
+                          <LuBell />{" "}
+                          <span data-testid="navItemText">Notifications</span>
                         </>
                       ) : (
-                        item.icon
+                        <LuBell />
                       )}
-                    </a>
+                    </span>
                   </li>
-                );
-              })}
-              <li
-                data-testid="showNotificationsButton"
-                className="nav-item"
-                onClick={() => setShowNotifications(!showNotifications)}
-              >
-                <span>
-                  {notificationsNotRead > 0 && (
-                    <h6 data-testid="notificationsPill">
-                      <Badge bg="danger">{notificationsNotRead}</Badge>
-                    </h6>
-                  )}
-                  {activeNav ? (
-                    <>
-                      <LuBell />{" "}
-                      <span data-testid="navItemText">Notifications</span>
-                    </>
-                  ) : (
-                    <LuBell />
-                  )}
-                </span>
-              </li>
-              <li className="nav-item" onClick={handleLogout}>
-                <span>
-                  {activeNav ? (
-                    <>
+                  <li className="nav-item" onClick={handleLogout}>
+                    <span>
+                      {activeNav ? (
+                        <>
+                          <LuLogOut />{" "}
+                          <span data-testid="navItemText">Déconnexion</span>
+                        </>
+                      ) : (
+                        <LuLogOut />
+                      )}
+                    </span>
+                  </li>
+                </ul>
+              </>
+            ) : (
+              <>
+                <div
+                  className="burger-nav"
+                  onClick={() => setMobileNavActive(!mobileNavActive)}
+                >
+                  <span></span>
+                  <span></span>
+                </div>
+                <ul className="nav-list">
+                  {auth_routes.map((item, index) => {
+                    return (
+                      <li
+                        key={`nav_item_${index}`}
+                        className={`nav-item ${
+                          item.path === location.pathname ? "active" : ""
+                        }`}
+                      >
+                        <a href={item.path}>
+                          {item.icon}{" "}
+                          <span data-testid="navItemText">{item.name}</span>
+                        </a>
+                      </li>
+                    );
+                  })}
+                  <li
+                    data-testid="showNotificationsButton"
+                    className="nav-item"
+                    onClick={() => setShowNotifications(!showNotifications)}
+                  >
+                    <span>
+                      {notificationsNotRead > 0 && (
+                        <h6 data-testid="notificationsPill">
+                          <Badge bg="danger">{notificationsNotRead}</Badge>
+                        </h6>
+                      )}
+
+                      <>
+                        <LuBell />{" "}
+                        <span data-testid="navItemText">Notifications</span>
+                      </>
+                    </span>
+                  </li>
+                  <li className="nav-item" onClick={handleLogout}>
+                    <span>
                       <LuLogOut />{" "}
                       <span data-testid="navItemText">Déconnexion</span>
-                    </>
-                  ) : (
-                    <LuLogOut />
-                  )}
-                </span>
-              </li>
-            </ul>
+                    </span>
+                  </li>
+                </ul>
+              </>
+            )}
           </>
         )}
       </nav>
-      {/* {showNotifications && ( */}
-        <Notifications
-          notifications={notifications}
-          notificationsNotRead={notificationsNotRead}
-          setNotificationsNotRead={setNotificationsNotRead}
-          setShow={setShowNotifications}
-        />
-      {/* )} */}
+      <Notifications
+        notifications={notifications}
+        notificationsNotRead={notificationsNotRead}
+        setNotificationsNotRead={setNotificationsNotRead}
+        setShow={setShowNotifications}
+      />
     </div>
   );
 }

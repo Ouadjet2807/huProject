@@ -50,6 +50,7 @@ describe("Recipient", () => {
             first_name: "John",
             last_name: "Doe",
             birth_date: "1998-02-20",
+            treatments: [],
           },
         ],
         todos: [],
@@ -99,6 +100,7 @@ describe("Recipient", () => {
             first_name: "John",
             last_name: "Doe",
             birth_date: "1998-02-20",
+            treatments: [],
           },
         ],
         todos: [],
@@ -149,6 +151,7 @@ describe("Recipient", () => {
             first_name: "John",
             last_name: "Doe",
             birth_date: "1998-02-20",
+            treatments: [],
           },
         ],
         todos: [],
@@ -199,6 +202,7 @@ describe("Recipient", () => {
             first_name: "John",
             last_name: "Doe",
             birth_date: "1998-02-20",
+            treatments: [],
           },
         ],
         todos: [],
@@ -207,7 +211,7 @@ describe("Recipient", () => {
     );
     const route = "/recipient/5";
     await act(async () => {
-    render(
+      render(
         <MemoryRouter initialEntries={[route]}>
           <Routes>
             <Route path="/recipient/:id" element={<Recipient />} />
@@ -222,16 +226,16 @@ describe("Recipient", () => {
       );
     });
 
-     const treatmentsTab = screen.getByTestId("treatmentsTab");
-     const generalTab = await screen.findByTestId("generalTab");
+    const treatmentsTab = screen.getByTestId("treatmentsTab");
+    const generalTab = await screen.findByTestId("generalTab");
 
     await userEvent.click(treatmentsTab);
-    expect(generalTab).toBeInTheDocument()
+    expect(generalTab).toBeInTheDocument();
 
     await userEvent.click(generalTab);
 
     const generalSectionComponent = await screen.findByTestId(
-      "generalSectionComponent",    
+      "generalSectionComponent",
     );
     expect(generalSectionComponent).toBeInTheDocument();
   });

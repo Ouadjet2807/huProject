@@ -176,11 +176,12 @@ export default function Space({ editMode, setEditMode, roles }) {
     }
   }, [refreshSpace]);
 
+  console.log(user);
   
   return (
   <div data-testid="spaceComponent">
 
-  {Object.keys(space).length > 0 && user ? (
+  {space.id !== ""  && user ? (
     <div className="space-container">
       <InviteUserModal show={showInviteModal} setShow={setShowInviteModal} />
 
@@ -370,7 +371,7 @@ export default function Space({ editMode, setEditMode, roles }) {
       <div className="box" id="recipients">
         <div className="box-header">
           <strong>Aidés</strong>
-          {space.caregivers.find(c => c.user === user.id).can_edit && (
+          {(user && space.caregivers.length > 0) && space.caregivers.find(c => c.user === user.id).can_edit && (
             <Button
             className={`edit-button ${
               editMode.active && editMode.target === "recipients"
@@ -405,7 +406,7 @@ export default function Space({ editMode, setEditMode, roles }) {
                     <p>
                       {item.first_name} {item.last_name}
                     </p>
-                    {editMode.active && editMode.target === "recipients" && space.caregivers.find(c => c.user === user.id).can_edit && (
+                    {(editMode.active && editMode.target === "recipients") && space.caregivers.find(c => c.user === user.id).can_edit && (
                       <Button
                       onClick={(e) => handleDeleteModal(e, item)}
                       className="remove-person"
@@ -422,7 +423,7 @@ export default function Space({ editMode, setEditMode, roles }) {
             <small style={{ textAlign: "center" }}>Aucun aidé</small>
           )}
         </ul>
-        {canEdit(space.caregivers.find((e) => e.user === user).access_level) && (
+        {space.caregivers.length > 0 && canEdit(space.caregivers.find((e) => e.user === user.id).access_level) && (
           <Button onClick={() => setAddRecipient(true)} className="add-person">
             <TbUsersPlus /> Ajouter un aidé
           </Button>
@@ -431,6 +432,6 @@ export default function Space({ editMode, setEditMode, roles }) {
     </div>
   ) : (
     <Loader />
-  )};
+  )}
         </div>)
 }

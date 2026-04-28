@@ -73,6 +73,7 @@
       &#generalInfo {
         display: grid;
         grid-template-columns: 25% 75%;
+        align-items: center;
 
         .icon {
           display: flex;
@@ -206,7 +207,6 @@
           &.recipient:hover {
             background: $whiteGreen;
             color: $green;
-
           }
 
           .status-badge {
@@ -255,11 +255,10 @@
               }
             }
 
-            
             p {
               margin-bottom: 0;
             }
-            
+
             .badge {
               border: 1px solid $greyGreen;
               background: transparent !important;
@@ -267,10 +266,8 @@
             }
           }
 
-          &.caregiver { 
-
+          &.caregiver {
             .info {
-
               > *:not(.actions) {
                 width: 10vw;
               }
@@ -278,7 +275,7 @@
           }
 
           &.current-user {
-            p{
+            p {
               font-weight: 600;
             }
           }
@@ -329,6 +326,93 @@
 
       &:focus-visible {
         outline: $error auto 1px;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 768px) {
+  #account {
+    overflow-x: scroll;
+
+    .profile-container,
+    .space-container {
+      width: 85%;
+    }
+
+    .profile-container {
+      .box {
+        &#personalInfo {
+          display: flex;
+          flex-direction: column;
+        }
+      }
+    }
+
+    .space-container {
+      .box {
+        align-items: center;
+
+        ul {
+          li {
+            &.caregiver {
+              .info {
+                > *:not(.actions) {
+                  width: 16vw;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 425px) {
+  #account {
+    display: flex;
+    flex-direction: column;
+
+    .toolbar {
+      margin-bottom: 5vw;
+
+      ul {
+        flex-direction: row;
+        justify-content: space-around;
+        margin-bottom: 0;
+
+        li {
+          border-radius: $borderRadius;
+        }
+      }
+    }
+
+    .space-container {
+      .box {
+        ul {
+          li {
+            &.caregiver {
+              gap: 10px;
+              align-items: flex-start;
+
+              .status-badge {
+                width: 3.5vw;
+                margin: 1vw 0 0 1vw;
+              }
+
+              .info {
+                flex-wrap: wrap;
+                align-items: start;
+                gap: 10px;
+
+                > *:not(.actions) {
+                  width: auto;
+                }
+              }
+            }
+          }
+        }
       }
     }
   }

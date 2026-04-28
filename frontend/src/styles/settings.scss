@@ -179,6 +179,10 @@ small {
 .form-range,
 .form-switch {
   filter: hue-rotate(300deg) !important;
+
+  .form-check-input {
+      filter: none !important;   // Prevent the filter to be applied twice because of nested classnames
+  }
 }
 
 .form-control:focus {

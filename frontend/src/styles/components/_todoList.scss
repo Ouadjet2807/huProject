@@ -194,3 +194,45 @@
           }
   }
 }
+
+
+@media screen and (max-width: 768px) {
+  #todoList {
+
+    .todo-category {
+
+      button {
+        font-size: 1.5vw;
+        padding: 5px;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 425px) {
+  #todoList {
+
+    .todo-category {
+          flex-wrap: wrap;
+         
+          button {
+             font-size: 3.5vw;
+          }
+    }
+
+    form {
+      align-items: start;
+
+      .input-group {
+        display: flex;
+        flex-direction: column;
+
+        button {
+              width: 100%;
+              border-radius: $borderRadiusSmall;
+              font-size: 3vw;
+        }
+      }
+    }
+  }
+}

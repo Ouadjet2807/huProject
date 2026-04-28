@@ -8,16 +8,19 @@ import { store } from "../redux/store";
 import { BrowserRouter } from "react-router";
 import userEvent from "@testing-library/user-event";
 import { act } from "react";
+import { UseDimensionProvider } from "../context/UseDimensionsContext";
 
 const ProviderWrapper = ({ children }) => (
   <Provider store={store}>
-    <AuthProvider>
-      <ToastProvider>
-        <ConfirmProvider>
-          <BrowserRouter>{children}</BrowserRouter>
-        </ConfirmProvider>
-      </ToastProvider>
-    </AuthProvider>
+    <UseDimensionProvider>
+      <AuthProvider>
+        <ToastProvider>
+          <ConfirmProvider>
+            <BrowserRouter>{children}</BrowserRouter>
+          </ConfirmProvider>
+        </ToastProvider>
+      </AuthProvider>
+    </UseDimensionProvider>
   </Provider>
 );
 
@@ -34,7 +37,9 @@ describe("Navbar", () => {
     expect(navigation).toBeInTheDocument();
   });
   it("Should display nav item labels when user hover over the navbar", async () => {
-    await act(async () => {render(<Navbar notifications={[]} />, { wrapper: ProviderWrapper });})
+    await act(async () => {
+      render(<Navbar notifications={[]} />, { wrapper: ProviderWrapper });
+    });
 
     const navigation = screen.getByTestId("navigation");
 
@@ -47,7 +52,9 @@ describe("Navbar", () => {
     });
   });
   it("Should hide nav item labels when user unhover over the navbar", async () => {
-    await act(async () => {render(<Navbar notifications={[]} />, { wrapper: ProviderWrapper })})
+    await act(async () => {
+      render(<Navbar notifications={[]} />, { wrapper: ProviderWrapper });
+    });
 
     const navigation = screen.getByTestId("navigation");
 
@@ -154,27 +161,28 @@ describe("Navbar", () => {
     expect(notificationsPill).not.toBeInTheDocument();
   });
   it("Should update unread notification number when user click on a notification", async () => {
-    await act(async () => {render(
-      <Navbar
-        user={{ id: 1, first_name: "John", last_name: "Doe" }}
-        notifications={[
-          {
-            id: 1,
-            title: "Notification 1",
-            is_read: false,
-            message: "Un traitement a expiré",
-          },
-          {
-            id: 2,
-            title: "Notification 2",
-            is_read: false,
-            message: "Rappel de votre événement dans 15 minute(s)",
-          },
-        ]}
-      />,
-      { wrapper: ProviderWrapper },
-    );
-  })
+    await act(async () => {
+      render(
+        <Navbar
+          user={{ id: 1, first_name: "John", last_name: "Doe" }}
+          notifications={[
+            {
+              id: 1,
+              title: "Notification 1",
+              is_read: false,
+              message: "Un traitement a expiré",
+            },
+            {
+              id: 2,
+              title: "Notification 2",
+              is_read: false,
+              message: "Rappel de votre événement dans 15 minute(s)",
+            },
+          ]}
+        />,
+        { wrapper: ProviderWrapper },
+      );
+    });
     const showNotificationsButton = await screen.findByTestId(
       "showNotificationsButton",
     );
@@ -192,26 +200,26 @@ describe("Navbar", () => {
   it("Should hide notifications number pill when all notification are read after update", async () => {
     await act(async () => {
       render(
-      <Navbar
-        user={{ id: 1, first_name: "John", last_name: "Doe" }}
-        notifications={[
-          {
-            id: 1,
-            title: "Notification 1",
-            is_read: false,
-            message: "Un traitement a expiré",
-          },
-          {
-            id: 2,
-            title: "Notification 2",
-            is_read: true,
-            message: "Rappel de votre événement dans 15 minute(s)",
-          },
-        ]}
-      />,
-      { wrapper: ProviderWrapper },
-    )
-  })
+        <Navbar
+          user={{ id: 1, first_name: "John", last_name: "Doe" }}
+          notifications={[
+            {
+              id: 1,
+              title: "Notification 1",
+              is_read: false,
+              message: "Un traitement a expiré",
+            },
+            {
+              id: 2,
+              title: "Notification 2",
+              is_read: true,
+              message: "Rappel de votre événement dans 15 minute(s)",
+            },
+          ]}
+        />,
+        { wrapper: ProviderWrapper },
+      );
+    });
     const showNotificationsButton = await screen.findByTestId(
       "showNotificationsButton",
     );

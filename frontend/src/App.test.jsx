@@ -6,19 +6,22 @@ import { AuthProvider } from "./context/AuthContext";
 import { store } from "./redux/store";
 import { ConfirmProvider } from "./context/ConfirmContext";
 import { act } from "react";
+import { UseDimensionProvider } from "./context/UseDimensionsContext.jsx";
 
 describe("App", () => {
   it("Should render App", async () => {
     await act(async () => {
       render(
         <Provider store={store}>
-          <ToastProvider>
-            <AuthProvider>
-              <ConfirmProvider>
-                <App />
-              </ConfirmProvider>
-            </AuthProvider>
-          </ToastProvider>
+          <UseDimensionProvider>
+            <ToastProvider>
+              <AuthProvider>
+                <ConfirmProvider>
+                  <App />
+                </ConfirmProvider>
+              </AuthProvider>
+            </ToastProvider>
+          </UseDimensionProvider>
         </Provider>,
       );
     });

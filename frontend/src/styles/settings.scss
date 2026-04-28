@@ -186,15 +186,17 @@ small {
   box-shadow: 0 0 0 0.25rem rgb(99 185 151 / 25%);
 }
 
-
 @media screen and (max-width: 768px) {
-  .App {
-    display: flex;
-    flex-direction: column;
+  html {
+    overflow-y: hidden;
+    .App {
+      display: flex;
+      flex-direction: column;
 
-    > div:not(.navbar-container) {
-      border-radius: 0px 0px $borderRadius $borderRadius;
-      height: 100%;
+      > div:not(.navbar-container) {
+        border-radius: 0px 0px $borderRadius $borderRadius;
+        height: 100%;
+      }
     }
   }
 }

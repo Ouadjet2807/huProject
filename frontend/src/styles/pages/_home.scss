@@ -137,7 +137,6 @@
         }
 
         li {
-          height: 3vw;
           background: rgba(255, 255, 255, 0.8);
           border-radius: $borderRadius;
           color: $green;
@@ -194,6 +193,35 @@
               }
             }
           }
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 768px) {
+  #home {
+    .home-container {
+      grid-template-columns: 35% 63%;
+    }
+  }
+}
+
+@media screen and (max-width: 768px) {
+  #home {
+    .home-container {
+      margin-top: 4vw;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+
+      .left-tab {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
+        > .box {
+          width: 100%;
         }
       }
     }

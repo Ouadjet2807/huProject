@@ -125,7 +125,7 @@ export default function Profile({ editMode, setEditMode, roles }) {
     <div data-testid="profileComponent">
      { userFormData && caregiverFormData ? (
       <div className="profile-container">
-        <h1>Hello {user && user.first_name}</h1>
+        <h1>Bonjour {user && user.first_name}</h1>
         <div className="box" id="generalInfo">
           <div className="icon">
             <FaUserCircle />
@@ -276,7 +276,7 @@ export default function Profile({ editMode, setEditMode, roles }) {
       </div>
       ) : (
       <Loader />
-      )};
+      )}
     </div>
   );
 }

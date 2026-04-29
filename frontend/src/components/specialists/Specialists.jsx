@@ -8,6 +8,8 @@ import { AuthContext } from "../../context/AuthContext";
 import { LuPhone } from "react-icons/lu";
 import { HiOutlineLocationMarker } from "react-icons/hi";
 import { useSelector } from "react-redux";
+import Row from "react-bootstrap/esm/Row";
+import Col from "react-bootstrap/esm/Col";
 
 export default function Specialists({ recipient }) {
   const [specialists, setSpecialists] = useState([]);
@@ -104,14 +106,17 @@ export default function Specialists({ recipient }) {
       />
       <h3>Spécialistes de la santé</h3>
       {!loading ? (
-        <div
+        <Row
           className="specialists-container"
           style={{ alignItems: specialists.length <= 0 ? "center" : "start" }}
         >
           {specialists.length > 0 ? (
             specialists.map((item) => {
               return (
-                <div
+                <Col
+                xs={12}
+                md={5}
+                lg={5}
                   className="specialist"
                   data-testid="specialist"
                   onClick={() => selectSpecialist(item)}
@@ -130,7 +135,7 @@ export default function Specialists({ recipient }) {
                       <LuPhone /> {item.contact.phone_number}
                     </span>
                   </div>
-                </div>
+                </Col>
               );
             })
           ) : (
@@ -148,7 +153,7 @@ export default function Specialists({ recipient }) {
               <FaUserMd /> Aucun spécialiste
             </small>
           )}
-        </div>
+        </Row>
       ) : (
         <div style={{ width: "100%" }}>
           <Loader />

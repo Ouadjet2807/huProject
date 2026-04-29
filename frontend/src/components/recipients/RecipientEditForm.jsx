@@ -198,7 +198,7 @@ export default function RecipientEditForm({
       ) : (
         <Loader />
       )}
-      <Button variant="aqua">
+      <Button className="save-button" variant="aqua">
         <LuSave /> Sauvegarder
       </Button>
     </div>

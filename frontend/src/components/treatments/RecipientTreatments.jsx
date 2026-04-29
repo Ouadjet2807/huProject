@@ -250,9 +250,9 @@ export default function RecipientTreatments({ recipient }) {
       );
     }
 
-    let breakPoints =
-      treatmentLayout === "list" || width < 800 ? 1 : width > 1200 ? 3 : 2;
-
+    let breakPoints = treatmentLayout === "list" ? 1 : width > 1200 ? 3 : width > 450 ? 2 : 1;
+    console.log(breakPoints);
+    
     treatmentsList.sort((a, b) => {
       return new Date(b.end_date) - new Date(a.end_date);
     });
@@ -271,10 +271,11 @@ export default function RecipientTreatments({ recipient }) {
 
     return rows.map((row) => {
       return (
-        <Row xs={1} md={2} lg={3} style={{ margin: "15px 0" }}>
+        <Row style={{ margin: "15px 0" }}>
           {row.map((item) => {
             return (
               <Col
+              xs={12} md={treatmentLayout === 'list' ? 12 : 6} xl={treatmentLayout === 'list' ? 12 : 4}
               data-testid={`${archiveTab ? "expiredT" : "t"}reatment`}
                 className={`${(item.is_expired || item.is_deleted) ? "expired" : ""}`}
                 onClick={() => !archiveTab &&
@@ -454,10 +455,12 @@ export default function RecipientTreatments({ recipient }) {
       />
       <div className="header">
         <h3>Traitements médicaux </h3>
+        {width > 700 &&
         <div className="layout-choice">
           {treatmentLayout === "list" ? <TbLayoutListFilled onClick={() => setTreatmentLayout("list")} /> : <TbLayoutList onClick={() => setTreatmentLayout("list")} />}
           {treatmentLayout === "grid" ? <TbLayoutGridFilled onClick={() => setTreatmentLayout("grid")} /> : <TbLayoutGrid onClick={() => setTreatmentLayout("grid")} />}
         </div>
+        }
         <Button
           data-testid="archiveButton"
           variant="aqua"

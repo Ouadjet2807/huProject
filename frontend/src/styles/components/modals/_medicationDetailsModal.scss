@@ -61,7 +61,7 @@
         align-items: center;
 
         input[type="number"] {
-          width: 4vw;
+          min-width: 4vw;
         }
 
         input,
@@ -305,6 +305,77 @@
         display: flex;
         align-items: center;
         gap: 10px;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 768px) {
+  #medicationDetailsModal {
+    form {
+      .posology,
+      .box-size,
+      .additional-info {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+
+        > * {
+          width: 100%;
+        }
+
+        .box-choices {
+          width: 100%;
+          margin: 5px 0px;
+          justify-content: center;
+        }
+
+        .form-switch {
+          margin: 0 auto;
+        }
+
+        .fields {
+          justify-content: center;
+
+          .field {
+            &.dayTime {
+              width: 5vw;
+              height: 5vw;
+              padding: 0px 5px;
+
+              svg {
+                font-size: 2vw;
+                width: 4vw;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 425px) {
+  #medicationDetailsModal {
+    form {
+      .posology {
+
+        .fields {
+
+          .field {
+            &.dayTime {
+              width: 8vw;
+              height: 8vw;
+              padding: 0px 5px;
+
+              svg {
+                font-size: 3vw;
+                width: 6vw;
+              }
+            }
+          }
+        }
       }
     }
   }

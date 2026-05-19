@@ -46,8 +46,6 @@ export default function InviteUserModal({ show, setShow }) {
 
     const handleSubmit = async () => {
 
-        console.log(formData);
-
         try {
             let post = await api.post("http://127.0.0.1:8000/api/invitations/", formData)
             console.log('Success', post);
@@ -63,7 +61,6 @@ export default function InviteUserModal({ show, setShow }) {
 
     useEffect(() => {
       if(!user) return
-        console.log(space);
         setFormData(prev => ({
         ...prev,
         sender: user.id,
@@ -71,7 +68,6 @@ export default function InviteUserModal({ show, setShow }) {
         token: uuidv4(),
     }))
     }, [space, user])
-    
 
   return (
     <Modal show={show} onHide={handleClose} id="inviteUserModal">

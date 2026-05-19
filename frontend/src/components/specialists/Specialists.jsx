@@ -105,10 +105,11 @@ export default function Specialists({ recipient }) {
         setSelectedSpecialist={setSelectedSpecialist}
       />
       <h3>Spécialistes de la santé</h3>
+      <div className="specialists-container">
+
       {!loading ? (
         <Row
-          className="specialists-container"
-          style={{ alignItems: specialists.length <= 0 ? "center" : "start" }}
+        style={{ alignItems: specialists.length <= 0 ? "center" : "start" }}
         >
           {specialists.length > 0 ? (
             specialists.map((item) => {
@@ -117,9 +118,9 @@ export default function Specialists({ recipient }) {
                 xs={12}
                 md={5}
                 lg={5}
-                  className="specialist"
-                  data-testid="specialist"
-                  onClick={() => selectSpecialist(item)}
+                className="specialist"
+                data-testid="specialist"
+                onClick={() => selectSpecialist(item)}
                 >
                   <div className="icon">
                     <FaUserMd />
@@ -141,14 +142,14 @@ export default function Specialists({ recipient }) {
           ) : (
             <small
             data-testid="noSpecialist"
-              style={{
-                textAlign: "center",
-                width: "100%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gridColumn: "2",
-              }}
+            style={{
+              textAlign: "center",
+              width: "100%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gridColumn: "2",
+            }}
             >
               <FaUserMd /> Aucun spécialiste
             </small>
@@ -159,6 +160,7 @@ export default function Specialists({ recipient }) {
           <Loader />
         </div>
       )}
+      </div>
       <Button
         variant="aqua"
         disabled={loading}

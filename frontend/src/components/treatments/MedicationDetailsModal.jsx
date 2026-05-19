@@ -79,13 +79,6 @@ export default function MedicationDetailsModal({
   };
 
   const isDisabled = (key) => {
-    // console.log(key);
-    // console.log( freeTake ||
-    //   (formData.frequency.intake_time_range.length ==
-    //     formData.frequency.intake_number &&
-    //     !formData.frequency.intake_time_range.includes(key)));
-    // console.log(formData.frequency.intake_number);
-    // console.log(formData.frequency.intake_time_range);
 
     return (
       freeTake ||
@@ -138,7 +131,6 @@ export default function MedicationDetailsModal({
 
   const handleDayTime = (e) => {
     let time_range = formData.frequency.intake_time_range;
-    console.log(time_range);
 
     if (
       time_range.length > formData.frequency.intake_number - 1 &&
@@ -375,8 +367,6 @@ export default function MedicationDetailsModal({
         prescribed_to: recipient.id,
       };
 
-      console.log(data);
-
       if (Object.keys(treatment).length > 1) {
         const response = await api.put(
           `http://127.0.0.1:8000/api/treatments/${treatment.id}/`,
@@ -491,15 +481,11 @@ export default function MedicationDetailsModal({
   useEffect(() => {
     if (!treatment || !show) return;
 
-    fetchMedication(treatment.cis_code); 
-
-    console.log("reach");
-    
+    fetchMedication(treatment.cis_code);
 
     let treatment_copy = JSON.stringify(treatment);
     let parsed_treatment_copy = JSON.parse(treatment_copy);
-    console.log(parsed_treatment_copy);
-    
+
     if (Object.keys(parsed_treatment_copy).length > 0) {
       let number_of_boxes = parsed_treatment_copy.quantity.number_of_boxes;
       delete parsed_treatment_copy.quantity.number_of_boxes;
@@ -777,7 +763,7 @@ export default function MedicationDetailsModal({
         <Modal.Footer>
           <Button
             data-testid="saveButton"
-            variant="primary"
+            variant="aqua"
             onClick={handleSubmit}
           >
             {treatment ? "Enregistrer" : "Ajouter"}

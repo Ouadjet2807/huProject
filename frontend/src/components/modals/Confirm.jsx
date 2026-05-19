@@ -10,7 +10,6 @@ export default function Confirm({ show, setShow, action, text, setReturnValue })
   const { setShowToast, setMessage, setColor } = useContext(ToastContext);
 
   const handleActionError = () => {
-    console.log('error');
     setMessage("Une erreur s'est produite veuillez-réessayer")
     setColor("danger");
     setShowToast(true);
@@ -18,7 +17,6 @@ export default function Confirm({ show, setShow, action, text, setReturnValue })
   };
 
   const handleActionSuccess = () => {
-    console.log('success');     
     setMessage("")
     setColor("success");
     setShowToast(true);

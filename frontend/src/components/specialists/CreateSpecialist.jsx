@@ -242,9 +242,6 @@ export default function CreateSpecialist({
 
   }, [returnValue])
 
-  console.log(preloadedData);
-  
-
   return (
     <Modal show={show} onHide={handleClose} className="create-specialist-modal">
       <Modal.Header closeButton>

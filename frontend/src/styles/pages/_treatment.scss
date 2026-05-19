@@ -4,6 +4,11 @@
   // justify-content: center;
   padding: 20px;
 
+  .not-found {
+    margin: auto;
+    color: $greyGreen;
+  }
+
   .treatment-info {
     display: flex;
     align-items: center;
@@ -17,12 +22,13 @@
 
       .left-tab {
         display: flex;
-        justify-content: flex-end;
+        justify-content: space-between;
         flex-direction: column;
         align-items: center;
         border: 1px solid #ddd;
         padding: 25px 10px;
         border-radius: 25px;
+        gap: 20px;
 
         h5 {
           width: 100%;
@@ -37,7 +43,7 @@
           transition: 0.2s ease-in;
 
           .tablet {
-            padding: 20px;
+            padding: 15px;
             width: 20vw;
             gap: 20px 10px;
             background: linear-gradient(
@@ -164,6 +170,8 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 10px;
 
         .registered-by {
           display: flex;
@@ -188,6 +196,37 @@
         .intake-frequency {
           display: flex;
           gap: 10px;
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .treatment-container {
+    gap: 40px;
+
+    .treatment-info {
+      .right-tab {
+        .date {
+          flex-wrap: wrap;
+        }
+      }
+
+      .container {
+        width: 95%;
+        display: flex;
+        flex-direction: column;
+
+        .left-tab {
+          .stock {
+            margin-top: 3vw;
+          }
+          .medication-tracker {
+            .tablet {
+              width: 60vw;
+            }
+          }
         }
       }
     }

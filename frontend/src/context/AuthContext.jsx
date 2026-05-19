@@ -21,6 +21,8 @@ export const AuthProvider = ({ children }) => {
   const [refreshSpace, setRefreshSpace] = useState(false);
 
   const fetchSpaces = async () => {
+    console.log("fetch space");
+
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
@@ -147,6 +149,8 @@ export const AuthProvider = ({ children }) => {
   };
 
   const initAuth = async () => {
+    console.log("init auth");
+
     const token = localStorage.getItem("accessToken");
 
     if (token) {
@@ -171,21 +175,13 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     initAuth();
-    fetchSpaces();
   }, []);
 
   useEffect(() => {
     if (space.id == "" || refreshSpace) {
       fetchSpaces();
     }
-  }, [refreshSpace, user]);
-
-  useEffect(() => {}, [space]);
-  useEffect(() => {
-    if (!loading) {
-      initAuth();
-    }
-  }, [loading]);
+  }, [user, refreshSpace]);
 
   const value = {
     user,
@@ -198,6 +194,11 @@ export const AuthProvider = ({ children }) => {
     setLoading,
     message,
   };
+
+  console.log(loading);
+  console.log(space);
+  
+  
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

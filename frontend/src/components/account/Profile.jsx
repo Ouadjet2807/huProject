@@ -119,7 +119,6 @@ export default function Profile({ editMode, setEditMode, roles }) {
   useEffect(() => {
     setCaregiverFormData(caregiverProfile);
   }, [caregiverProfile]);
-  
 
   return (
     <div data-testid="profileComponent">

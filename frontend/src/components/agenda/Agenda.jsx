@@ -338,7 +338,6 @@ export default function Agenda({loading, setLoading, agenda}) {
           startAccessor="start_date"
           endAccessor="end_date"
           onSelectEvent={setSelectedEvent}
-          style={{ height: "100%", width: "100%" }}
           messages={messages}
         />
       </div>

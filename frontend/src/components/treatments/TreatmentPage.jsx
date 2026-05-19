@@ -19,6 +19,7 @@ import { TiArrowBackOutline } from "react-icons/ti";
 import { AuthContext } from "../../context/AuthContext";
 import MedicationDetailsModal from "./MedicationDetailsModal";
 import { ConfirmContext } from "../../context/ConfirmContext";
+import { UseDimensionsContext } from "../../context/UseDimensionsContext";
 import Badge from "react-bootstrap/Badge";
 import { useSelector } from "react-redux";
 
@@ -26,6 +27,7 @@ export default function TreatmentPage() {
   const { id } = useParams();
   const { showConfirm, setShowConfirm, setText, setAction, returnValue } =
     useContext(ConfirmContext);
+  const { width, height } = useContext(UseDimensionsContext);
   const space = useSelector((state) => state.space);
   const navigate = useNavigate();
   const today = moment(new Date());
@@ -47,6 +49,10 @@ export default function TreatmentPage() {
     height: 0,
   });
   const [pathname, setPathname] = useState([]);
+  const [error, setError] = useState({
+    status: 0,
+    message: "",
+  });
 
   moment.locale("fr");
 
@@ -205,6 +211,10 @@ export default function TreatmentPage() {
         setTreatmentData(response.data);
       } catch (error) {
         console.log(error);
+        setError({
+          status: error.status,
+          message: error.message,
+        });
       }
     };
 
@@ -213,12 +223,14 @@ export default function TreatmentPage() {
 
   useEffect(() => {
     if (!tabletRef.current) return;
+    setTimeout(() => {
+      setVisualTrackerDimensions({
+        height: tabletRef.current.offsetHeight,
+        width: tabletRef.current.offsetWidth,
+      });
+    }, 200);
 
-    setVisualTrackerDimensions({
-      height: tabletRef.current.offsetHeight,
-      width: tabletRef.current.offsetWidth,
-    });
-  }, [tabletRef.current, boxes, window.innerWidth, window.innerHeight]);
+  }, [tabletRef, tabletRef.current, boxes, width, height]);
 
   useEffect(() => {
     let reg = /^[0-9]+$/g;
@@ -254,13 +266,13 @@ export default function TreatmentPage() {
 
     getTreatments();
   }, []);
-
-  console.log(treatmentData);
+  
 
   return (
     <div className="treatment-container">
       <Button
         variant="aqua"
+        id={`/${pathname[1]}/${pathname[2]}/${pathname[3]}`}
         onClick={() =>
           navigate(`/${pathname[1]}/${pathname[2]}/${pathname[3]}`)
         }
@@ -277,7 +289,11 @@ export default function TreatmentPage() {
         treatmentsData={treatmentsArray}
         setTreatmentsData={setTreatmentsArray}
       />
-      {Object.keys(treatmentData).length > 1 ? (
+      {error.status == 404 ? (
+        <p className="not-found">
+          Oups, La page que vous avez demandé n'existe pas
+        </p>
+      ) : Object.keys(treatmentData).length > 1 ? (
         <div className="treatment-info">
           <div className="container">
             <div className="left-tab">
@@ -313,8 +329,8 @@ export default function TreatmentPage() {
                             <div
                               className={`pill ${unit <= remainingUnits ? "fill" : "empty"}`}
                               style={{
-                                width: `${2 / Math.log10(unitsNumber)}vw`,
-                                height: `${2 / Math.log10(unitsNumber)}vw`,
+                                width: `${2 / Math.log10(unitsNumber) / (width / 1500)}vw`,
+                                height: `${2 / Math.log10(unitsNumber) / (width / 1500)}vw`,
                               }}
                               id={unit}
                             ></div>

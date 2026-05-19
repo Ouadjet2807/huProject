@@ -181,7 +181,7 @@ small {
   filter: hue-rotate(300deg) !important;
 
   .form-check-input {
-      filter: none !important;   // Prevent the filter to be applied twice because of nested classnames
+    filter: none !important; // Prevent the filter to be applied twice because of nested classnames
   }
 }
 
@@ -191,6 +191,20 @@ small {
 }
 
 @media screen and (max-width: 768px) {
+  .modal {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+
+    .modal-body {
+      max-height: 70vw;
+
+      form {
+        width: 60vw;
+      }
+    }
+  }
+
   html {
     overflow-y: hidden;
     .App {
@@ -200,6 +214,20 @@ small {
       > div:not(.navbar-container) {
         border-radius: 0px 0px $borderRadius $borderRadius;
         height: 100%;
+        overflow-x: scroll;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 425px) {
+  .modal {
+    .modal-body {
+      max-height: 90vw;
+      overflow-x: scroll;
+
+      form {
+        width: 100%;
       }
     }
   }

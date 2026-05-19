@@ -53,9 +53,9 @@ function App() {
     }
   }, [space]);
   // console.log("user ", user);
-
   console.log(space);
   
+    
   
   return (
     <div className="App">
@@ -76,8 +76,10 @@ function App() {
         <Navbar notifications={notifications} user={user} logout={logout} message={message}/>
         <Routes>
           <Route path="login" element={<Sign />} />
-          <Route path="account" element={<Account />} />
-          <Route path="account/:tab" element={<Account />} />
+          <Route path="account" element={<Account notifications={notifications}/>} />
+          <Route path="account/profile" element={<Account notifications={notifications}/>} />
+          <Route path="account/space" element={<Account notifications={notifications}/>} />
+          <Route path="account/notifications" element={<Account notifications={notifications}/>} />
           <Route
             path="/"
             element={

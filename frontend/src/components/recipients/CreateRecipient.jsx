@@ -101,10 +101,10 @@ export default function CreateRecipient({
         </form>
       </Modal.Body>
       <Modal.Footer>
-        <Button type="submit" onClick={(e) => handleSubmit(e)}>
+        <Button type="submit" variant="aqua" onClick={(e) => handleSubmit(e)}>
           Ajouter
         </Button>
-        <Button type="button" variant="secondary" onClick={handleClose}>
+        <Button type="button" variant="outline-secondary" onClick={handleClose}>
           Annuler
         </Button>
       </Modal.Footer>

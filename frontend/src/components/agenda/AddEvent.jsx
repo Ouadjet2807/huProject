@@ -38,7 +38,7 @@ export default function AddEvent({
   moment.locale("fr");
   const { user } = useContext(AuthContext);
   const space = useSelector((state) => state.space);
-  const { setShowToast, setMessage, setColor } = useContext(ToastContext);
+  const { setShowToast, setToastMessage, setColor } = useContext(ToastContext);
   const { showConfirm, setShowConfirm, setText, setAction, returnValue } =
     useContext(ConfirmContext);
 
@@ -184,7 +184,7 @@ export default function AddEvent({
         let index = agenda.items.indexOf(formData);
         let filter = agenda.items.toSpliced(index, 1, formData);
         setAgenda((prev) => ({ ...prev, items: filter }));
-        setMessage("Événement modifié avec succès");
+        setToastMessage("Événement modifié avec succès");
       } else {
         response = await api.post(
           "http://127.0.0.1:8000/api/agenda_items/",
@@ -194,7 +194,7 @@ export default function AddEvent({
           ...prev,
           items: [...prev.items, response.data],
         }));
-        setMessage("Événement crée avec succès");
+        setToastMessage("Événement crée avec succès");
       }
 
       setShowToast(true);
@@ -202,7 +202,7 @@ export default function AddEvent({
       handleClose();
     } catch (error) {
       setShowToast(true);
-      setMessage(
+      setToastMessage(
         "Une erreur s'est produite lors de la création de l'événement",
       );
       setColor("danger");

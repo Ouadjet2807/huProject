@@ -67,13 +67,14 @@ def reset_todos():
         "monthly": today - relativedelta(months=1)
     }
 
+
+
     for item in todo_items:
         if not item.completed or item.frequency == "punctual":
           continue
 
         for key in frequencies:
-
-            if item.frequency == key and item.updated_at < frequencies[key]:
+            if item.frequency == key and item.updated_at <= frequencies[key]:
                 item.completed = False
                 item.save()
 
@@ -100,10 +101,6 @@ def check_events_reminder():
 
         timedeltaKwargs = {f"{reminder_dict['value'][0]}": reminder_dict["value"][1]}
         reminder_time = event.start_date - timedelta(**timedeltaKwargs)
-        print(f"reminder_time: {reminder_time}")
-        print(f"start_date: {event.start_date}")
-        print(f"now: {now.replace(microsecond=0)}")
-        print(now.replace(microsecond=0) == reminder_time)
         if reminder_time == now.replace(microsecond=0):
 
 

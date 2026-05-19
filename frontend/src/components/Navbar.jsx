@@ -56,7 +56,10 @@ export default function Navbar({ notifications, user, logout, message }) {
   const handleNavAnimation = async (e) => {
     if (pinNav || width < 800) return;
     e.stopPropagation();
-    await sleep(500);
+
+    if(activeNav) {
+      await sleep(300);
+    }
     setActiveNav(!activeNav);
   };
 
@@ -142,23 +145,23 @@ export default function Navbar({ notifications, user, logout, message }) {
 
   useGSAP(() => {
     if (showNotifications) {
-      gsap.to(".notifications-container .header, .notifications-container ul", {
+      gsap.to(".notifications-container:not(.full-page) .header, .notifications-container:not(.full-page) ul, .notifications-container:not(.full-page) .btn-aqua" , {
         display: "flex",
         opacity: 1,
         duration: 0.3,
       });
-      gsap.to(".notifications-container", {
+      gsap.to(".notifications-container:not(.full-page)", {
         width: "25vw",
         padding: "20px",
         duration: 0.1,
       });
     } else {
-      gsap.to(".notifications-container .header, .notifications-container ul", {
+      gsap.to(".notifications-container:not(.full-page) .header, .notifications-container:not(.full-page) ul, .notifications-container:not(.full-page) .btn-aqua", {
         display: "none",
         opacity: 0,
         duration: 0.1,
       });
-      gsap.to(".notifications-container", {
+      gsap.to(".notifications-container:not(.full-page)", {
         width: "0vw",
         padding: 0,
         duration: 0.3,
@@ -292,9 +295,8 @@ export default function Navbar({ notifications, user, logout, message }) {
                   <li
                     data-testid="showNotificationsButton"
                     className="nav-item"
-                    onClick={() => setShowNotifications(!showNotifications)}
                   >
-                    <span>
+                    <a href="/account/notifications">
                       {notificationsNotRead > 0 && (
                         <h6 data-testid="notificationsPill">
                           <Badge bg="danger">{notificationsNotRead}</Badge>
@@ -305,7 +307,7 @@ export default function Navbar({ notifications, user, logout, message }) {
                         <LuBell />{" "}
                         <span data-testid="navItemText">Notifications</span>
                       </>
-                    </span>
+                    </a>
                   </li>
                   <li className="nav-item" onClick={handleLogout}>
                     <span>
@@ -323,7 +325,9 @@ export default function Navbar({ notifications, user, logout, message }) {
         notifications={notifications}
         notificationsNotRead={notificationsNotRead}
         setNotificationsNotRead={setNotificationsNotRead}
+        show={showNotifications}
         setShow={setShowNotifications}
+        fullPage={false}
       />
     </div>
   );

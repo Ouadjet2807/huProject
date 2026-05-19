@@ -15,7 +15,7 @@
       gap: 10px;
 
       li {
-        color: $mediumGreen2;
+        color: $whiteGreen;
         padding: 10px 15px;
         border-radius: $borderRadius 0 0 $borderRadius;
         cursor: pointer;
@@ -25,6 +25,79 @@
           background: $white;
           color: $success;
           font-weight: 600;
+        }
+      }
+    }
+  }
+
+  .notifications-container {
+    width: 70%;
+    margin: 20px auto;
+
+    h1 {
+      span {
+        color: $greyGreen;
+      }
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    ul {
+      padding: 0;
+      margin-top: 2vw;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      padding: 5px;
+      height: 43vw;
+      overflow-y: scroll;
+
+      &::-webkit-scrollbar {
+        background: transparent;
+        width: 0.3vw;
+      }
+      &::-webkit-scrollbar-thumb {
+        background: $whiteGreen;
+        border-radius: 5px;
+      }
+
+      li {
+        padding: 5px 10px;
+        background: $white;
+        border-radius: 5px;
+        transition: 0.3s ease;
+        cursor: pointer;
+        border: 1px solid $whiteGreen;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
+        h6 {
+          margin: 0;
+          display: flex;
+          gap: 5px;
+          align-items: center;
+        }
+
+        p {
+          font-size: 0.8rem;
+        }
+
+        &.new {
+          background: $aqua;
+          border: 1px solid $green;
+          color: $green;
+
+          &:hover {
+            background: $whiteGreen;
+          }
+        }
+
+        &:hover {
+          background: $pearl;
         }
       }
     }
@@ -334,9 +407,11 @@
 @media screen and (max-width: 768px) {
   #account {
     overflow-x: scroll;
+    grid-template-columns: 21% 79%;
 
     .profile-container,
-    .space-container {
+    .space-container,
+    .notifications-container {
       width: 85%;
     }
 
@@ -346,6 +421,12 @@
           display: flex;
           flex-direction: column;
         }
+      }
+    }
+
+    .notifications-container {
+      ul {
+        height: 70vw;
       }
     }
 
@@ -376,6 +457,7 @@
 
     .toolbar {
       margin-bottom: 5vw;
+      padding: 10px;
 
       ul {
         flex-direction: row;
@@ -383,8 +465,16 @@
         margin-bottom: 0;
 
         li {
-          border-radius: $borderRadius;
+          border-radius: $borderRadiusLight;
+          padding: 10px;
         }
+      }
+    }
+
+    .notifications-container {
+      ul {
+        height: 110vw;
+        margin-top: 5vw;
       }
     }
 

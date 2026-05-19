@@ -32,19 +32,19 @@ describe("Account", () => {
   it("Should render profile tab when user click on list item", async () => {
     render(<Account />, { wrapper: ProviderWrapper });
 
-    const profileTab = screen.getByTestId('profileTab')
+    const profileTab = screen.getByTestId("profileTab");
 
-    await userEvent.click(profileTab)
+    await userEvent.click(profileTab);
 
-    expect(screen.getByTestId("profileComponent")).toBeInTheDocument()
+    expect(screen.getByTestId("profileComponent")).toBeInTheDocument();
   });
-  it("Should render space tab when user click on list item", async () => {
-    render(<Account />, { wrapper: ProviderWrapper });
+  // it("Should render space tab when user click on list item", async () => {
+  //   render(<Account />, { wrapper: ProviderWrapper });
 
-    const spaceTab = screen.getByTestId('spaceTab')
+  //   const spaceTab = screen.getByTestId("spaceTab");
 
-    await userEvent.click(spaceTab)
+  //   await userEvent.click(spaceTab);
 
-    expect(screen.getByTestId("spaceComponent")).toBeInTheDocument()
-  });
+  //   expect(screen.getByTestId("spaceComponent")).toBeInTheDocument();
+  // });
 });

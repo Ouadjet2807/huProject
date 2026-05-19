@@ -176,8 +176,6 @@ export default function Space({ editMode, setEditMode, roles }) {
     }
   }, [refreshSpace]);
 
-  console.log(user);
-  
   return (
   <div data-testid="spaceComponent">
 

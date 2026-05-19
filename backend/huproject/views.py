@@ -427,12 +427,11 @@ class TreatmentViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         caregiver = user.caregiver
-        print(self.request)
 
         if self.request.GET:
             archives = self.request.GET.get('archives')
             recipient = self.request.GET.get("recipient")
-
+     
             if not user or not hasattr(user, 'caregiver'):
                 return Treatment.objects.none()
 
@@ -441,8 +440,10 @@ class TreatmentViewSet(viewsets.ModelViewSet):
 
             return Treatment.objects.filter(space__in=caregiver.caregivers_in.all(), prescribed_to=recipient).select_related('space')
 
-        elif self.request.POST:
-            print('blabla')
+        if len(self.request.path_info.split("/")[1:-1]) == 3:
+           treatment_id = self.request.path_info.split("/")[1:-1][2]
+           return Treatment.everything.filter(space__in=caregiver.caregivers_in.all(), id=treatment_id).select_related('space')
+        print()
         return Treatment.objects.filter(space__in=caregiver.caregivers_in.all()).select_related('space')
 
     def perform_create(self, serializer):

@@ -72,8 +72,6 @@ export default function RecipientEditForm({
     setLoading(false);
   }, [data]);
 
-  console.log("generalTab");
-
   return (
     <div id="generalSection" data-testid="generalSectionComponent">
       <h3>Informations générales</h3>

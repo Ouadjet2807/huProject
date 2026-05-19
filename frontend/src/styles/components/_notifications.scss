@@ -1,0 +1,97 @@
+.navbar-container {
+  .notifications-container {
+    width: 20vw;
+    padding: 20px;
+    height: 100%;
+    margin: 0;
+    top: 0;
+    position: absolute;
+    left: 100%;
+    z-index: 20;
+    background: $white;
+    backdrop-filter: blur(3px);
+    border-radius: 10px;
+
+    button {
+      margin: 1vw auto;
+
+      a {
+        text-decoration: none;
+        color: $green;
+      }
+    
+    }
+
+  }
+}
+
+.notifications-container {
+  .header {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  ul {
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 5px;
+    height: 88%;
+    overflow-y: scroll;
+
+    &::-webkit-scrollbar {
+      background: transparent;
+      width: 0.3vw;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: $whiteGreen;
+      border-radius: 5px;
+    }
+
+    li {
+      padding: 5px 10px;
+      background: $white;
+      border-radius: 5px;
+      transition: 0.3s ease;
+      cursor: pointer;
+      border: 1px solid $whiteGreen;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+
+      h6 {
+        margin: 0;
+        display: flex;
+        gap: 5px;
+        align-items: center;
+        justify-content: space-between;
+
+        .notification-title {
+          display: flex;
+          align-items: center;
+          gap: 5px;
+        }
+      }
+
+      p {
+        font-size: 0.8rem;
+      }
+
+      &.new {
+        background: $aqua;
+        border: 1px solid $green;
+        color: $green;
+
+        &:hover {
+          background: $whiteGreen;
+        }
+      }
+
+      &:hover {
+        background: $pearl;
+      }
+    }
+  }
+}

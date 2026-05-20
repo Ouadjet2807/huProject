@@ -39,6 +39,7 @@
         justify-content: center;
         height: 3vw;
         width: 3vw;
+        padding: 10px;
         position: relative;
 
         h6 {
@@ -96,206 +97,78 @@
       }
     }
   }
+  .notifications-container {
+    width: 20vw;
+    padding: 20px;
+    height: 100%;
+    margin: 0;
+    top: 0;
+    position: absolute;
+    left: 100%;
+    z-index: 20;
+    background: $white;
+    backdrop-filter: blur(3px);
+    border-radius: 10px;
 
-}
-
-@media screen and (max-width: 768px) {
-  .navbar-container {
-    height: 7vw;
-
-    nav {
-      border-radius: $borderRadius $borderRadius 0 0;
-
-      &.mobile-nav {
-        .burger-nav {
-          height: 4vw;
-          width: 4vw;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: flex-end;
-          gap: 5px;
-          margin-right: 2vw;
-          z-index: 1000;
-
-          span {
-            display: block;
-            height: 0.4vw;
-            background: $white;
-            transition: 0.2s ease-in;
-            border-radius: $borderRadiusSmall;
-
-            &:nth-child(1) {
-              width: 4vw;
-            }
-            &:nth-child(2) {
-              width: 3vw;
-            }
-          }
-        }
-        ul {
-          position: absolute;
-          left: 105%;
-          transition: 0.2s ease-in;
-          align-items: center;
-          padding: 60px 5px;
-          background: $green;
-          z-index: 50;
-          height: 98.1vh;
-          width: 60%;
-          gap: 30px;
-          top: 0;
-          border-radius: 0px $borderRadius $borderRadius 0px;
-
-          .nav-item {
-            width: 80%;
-            border-radius: $borderRadius;
-            padding: 20px;
-
-            h6 {
-              top: 5%;
-              left: 7%;
-              font-size: 1.2vw;
-            }
-
-            &.active {
-              box-shadow:
-                inset 0px 1px 10px 0px #00977d,
-                0px 1px 10px 0px #b3c1b4;
-              span:not(.badge) {
-                color: $white;
-              }
-            }
-
-            a,
-            span {
-              color: $white;
-              justify-content: left;
-
-              svg,
-              span:not(.badge) {
-                font-size: 2vw;
-              }
-            }
-          }
-        }
-
-        &.active {
-          .burger-nav {
-            span {
-              width: 3vw;
-
-              &:nth-child(1) {
-                transform: rotateZ(45deg) translateX(0.6vw);
-              }
-
-              &:nth-child(2) {
-                transform: rotateZ(-45deg) translateX(0.8vw);
-              }
-            }
-          }
-
-          ul {
-            left: 40%;
-          }
-        }
-      }
+    .header {
+      display: flex;
+      justify-content: space-between;
     }
-  }
-}
 
-@media screen and (max-width: 425px) {
-  .navbar-container {
-    height: 15vw;
+    ul {
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      padding: 5px;
+      height: 90%;
+      overflow-y: scroll;
 
-    nav {
-      &.mobile-nav {
-        .burger-nav {
-          height: 8vw;
-          width: 8vw;
-          margin-right: 3vw;
+      &::-webkit-scrollbar {
+        background: transparent;
+        width: 0.3vw;
+      }
+      &::-webkit-scrollbar-thumb {
+        background: $whiteGreen;
+        border-radius: 5px;
+      }
 
-          span {
-            display: block;
-            height: 1vw;
-            background: $white;
-            transition: 0.2s ease-in;
-            border-radius: $borderRadiusSmall;
+      li {
+        padding: 5px 10px;
+        background: $white;
+        border-radius: 5px;
+        transition: 0.3s ease;
+        cursor: pointer;
+        border: 1px solid $whiteGreen;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
 
-            &:nth-child(1) {
-              width: 8vw;
-            }
-            &:nth-child(2) {
-              width: 6vw;
-            }
+
+          h6 {
+            margin: 0;
+            display: flex;
+            gap: 5px;
+            align-items: center;
           }
-        }
-        ul {
-          position: absolute;
-          left: 105%;
-          transition: 0.2s ease-in;
-          align-items: center;
-          padding: 60px 5px;
-          background: $green;
-          z-index: 50;
-          height: 99vh;
-          width: 100%;
-          gap: 30px;
-          top: 0;
-          border-radius: 0px $borderRadius $borderRadius 0px;
 
-          .nav-item {
-            width: 80%;
-            border-radius: $borderRadius;
-            padding: 20px;
+          p {
+            font-size: 0.8rem;
+          }
 
-            h6 {
-              top: 5%;
-              left: 8%;
-              font-size: 2.5vw;
-            }
+        &.new {
+          background: $aqua;
+          border: 1px solid $green;
+          color: $green;
 
-            &.active {
-              box-shadow:
-                inset 0px 1px 10px 0px #00977d,
-                0px 1px 10px 0px #b3c1b4;
-              span:not(.badge) {
-                color: $white;
-              }
-            }
-
-            a,
-            span {
-              color: $white;
-              justify-content: left;
-              gap: 25px;
-
-              svg,
-              span:not(.badge) {
-                font-size: 4vw;
-              }
-            }
+          &:hover {
+            background: $whiteGreen;
           }
         }
 
-        &.active {
-          .burger-nav {
-            span {
-              width: 6vw;
-
-              &:nth-child(1) {
-                transform: rotateZ(45deg) translateX(1.2vw);
-              }
-
-              &:nth-child(2) {
-                transform: rotateZ(-45deg) translate(1.8vw, -0.3vw);
-              }
-            }
-          }
-
-          ul {
-            left: 0%;
-          }
+        &:hover {
+          background: $pearl;
         }
       }
     }

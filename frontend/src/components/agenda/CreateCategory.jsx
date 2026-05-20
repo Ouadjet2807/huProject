@@ -31,7 +31,7 @@ export default function CreateCategory({ show, setShow, agenda, selectCategory }
   const handleSubmit = async () => {
     try {
       let response = await api.post(
-        "http://127.0.0.1:8000/api/agenda_item_categories/",
+        "http://localhost:8001/api/agenda_item_categories/",
         newCategory
       );
       agenda.categories.push(response.data)

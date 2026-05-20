@@ -85,7 +85,7 @@ export default function Space({ editMode, setEditMode, roles }) {
     if (!space || !space.id) return;
     try {
       let res = await api.get(
-        `http://127.0.0.1:8000/api/space_memberships/?space=${space.id}`
+        `http://localhost:8001/api/space_memberships/?space=${space.id}`
       );
       setSpaceMemberships(res.data);
     } catch (error) {
@@ -121,7 +121,7 @@ export default function Space({ editMode, setEditMode, roles }) {
 
     try {
       await api.put(
-        `http://127.0.0.1:8000/api/caregivers/${targetCaregiver.id}/`,
+        `http://localhost:8001/api/caregivers/${targetCaregiver.id}/`,
         targetCaregiver
       );
     } catch (error) {
@@ -135,7 +135,7 @@ export default function Space({ editMode, setEditMode, roles }) {
     );
     try {
       let res = await api.delete(
-        `http://127.0.0.1:8000/api/space_memberships/${membership.id}/`
+        `http://localhost:8001/api/space_memberships/${membership.id}/`
       );
     } catch (error) {
       console.log(error);
@@ -149,7 +149,7 @@ export default function Space({ editMode, setEditMode, roles }) {
       return
     }
     try {
-      await api.delete(`http://127.0.0.1:8000/api/recipients/${recipient.id}/`)
+      await api.delete(`http://localhost:8001/api/recipients/${recipient.id}/`)
       space.recipients = space.recipients.filter(r => r.id !== recipient.id)
       handleClose()
     } catch (error) {

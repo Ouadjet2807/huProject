@@ -16,7 +16,7 @@ export default function AcceptInvite() {
     if(!token) return
 
     try {
-      const res = await axios.get(`http://127.0.0.1:8000/api/invitations/validate/?token=${token}`)
+      const res = await axios.get(`http://localhost:8001/api/invitations/validate/?token=${token}`)
       setInvitation(res.data)
     }
     catch (error) {

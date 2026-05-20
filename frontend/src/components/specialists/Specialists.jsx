@@ -70,7 +70,7 @@ export default function Specialists({ recipient }) {
     const getSpecialist = async () => {
       try {
         const res = await api.get(
-          "http://127.0.0.1:8000/api/healthcare_professionals/",
+          "http://localhost:8001/api/healthcare_professionals/",
         );
       } catch (error) {
         console.log(error);

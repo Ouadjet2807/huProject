@@ -47,7 +47,7 @@ export default function InviteUserModal({ show, setShow }) {
     const handleSubmit = async () => {
 
         try {
-            let post = await api.post("http://127.0.0.1:8000/api/invitations/", formData)
+            let post = await api.post("http://localhost:8001/api/invitations/", formData)
             console.log('Success', post);
         }
         catch (error) {

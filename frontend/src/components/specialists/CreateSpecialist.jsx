@@ -98,14 +98,14 @@ export default function CreateSpecialist({
 
     try {
       const response = await api.post(
-        "http://127.0.0.1:8000/api/healthcare_professionals/",
+        "http://localhost:8001/api/healthcare_professionals/",
         formData,
       );
 
       recipient.healthcare_professionals.push(response.data);
 
       await api.put(
-        `http://127.0.0.1:8000/api/recipients/${recipient.id}/`,
+        `http://localhost:8001/api/recipients/${recipient.id}/`,
         recipient,
       );
 
@@ -119,7 +119,7 @@ export default function CreateSpecialist({
     setText("Êtes-vous sûr(e) de vouloir supprimer ce professionel de santé ?");
     setAction(() => async () => {
         const response = await api.delete(
-          `http://127.0.0.1:8000/api/healthcare_professionals/${preloadedData.id}`,
+          `http://localhost:8001/api/healthcare_professionals/${preloadedData.id}`,
         );
         handleClose()
     });

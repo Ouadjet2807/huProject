@@ -145,8 +145,6 @@
       padding: 1vw 2vw 2vw 2vw;
       border-radius: 0 $borderRadius $borderRadius 0;
       margin: auto;
-      height: 100%;
-      width: 100%;
 
       .rbc-current-time-indicator {
         background-color: $mediumGreen2;
@@ -278,82 +276,6 @@
 
         .rbc-month-row {
           border-top: none;
-        }
-      }
-    }
-  }
-}
-
-@media screen and (max-width: 768px) {
-  #agenda {
-    display: flex;
-    flex-direction: column;
-    overflow-x: scroll;
-
-    .left-tab {
-      .todays-events {
-        ul {
-          height: auto;
-          flex-direction: row;
-          flex-wrap: nowrap;
-          overflow-x: scroll;
-          align-items: flex-start;
-
-          li {
-            .event-info {
-              width: max-content;
-            }
-          }
-        }
-      }
-    }
-
-    .right-tab {
-      border-radius: 0 0 20px 20px;
-      padding-top: 2vw;
-
-      .filter {
-        font-size: 3vw;
-      }
-
-      .rbc-calendar {
-        height: 90vw;
-
-        .rbc-toolbar {
-          justify-content: space-around;
-
-          .rbc-toolbar-label {
-            position: absolute;
-            margin-top: -9.5vw;
-            font-size: 3vw;
-          }
-        }
-
-        .rbc-month-view {
-          .rbc-month-row {
-            overflow: unset;
-          }
-        }
-      }
-    }
-  }
-}
-
-@media screen and (max-width: 425px) {
-  #agenda {
-    .right-tab {
-      .filter {
-        font-size: 6vw;
-      }
-
-      .rbc-calendar {
-        height: 140vw;
-
-        .rbc-toolbar {
-          .rbc-toolbar-label {
-            margin-top: -25.5vw;
-            font-size: 4vw;
-          }
         }
       }
     }

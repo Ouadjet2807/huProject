@@ -57,12 +57,12 @@ export default function Profile({ editMode, setEditMode, roles }) {
           JSON.stringify(caregiverFormData);
         if (userHasChanged) {
           let put = await api.post(
-            `http://127.0.0.1:8000/api/update_user/${user.id}/`,
+            `http://localhost:8001/api/update_user/${user.id}/`,
             userFormData,
           );
         } else if (caregiverHasChanged) {
           let put = await api.put(
-            `http://127.0.0.1:8000/api/caregivers/${caregiverProfile.id}/`,
+            `http://localhost:8001/api/caregivers/${caregiverProfile.id}/`,
             caregiverFormData,
           );
         }

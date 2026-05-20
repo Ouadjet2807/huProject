@@ -104,7 +104,7 @@ export default function Recipient({ tab, match}) {
       if (token) {
         try {
           const response = await api.get(
-            `http://127.0.0.1:8000/api/recipients/${recipient_id}`
+            `http://localhost:8001/api/recipients/${recipient_id}`
           );
           setRecipient(response.data);
         } catch (error) {

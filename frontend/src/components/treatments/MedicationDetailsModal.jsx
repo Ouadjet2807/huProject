@@ -369,7 +369,7 @@ export default function MedicationDetailsModal({
 
       if (Object.keys(treatment).length > 1) {
         const response = await api.put(
-          `http://127.0.0.1:8000/api/treatments/${treatment.id}/`,
+          `http://localhost:8001/api/treatments/${treatment.id}/`,
           data,
         );
         console.log(response);
@@ -393,7 +393,7 @@ export default function MedicationDetailsModal({
         }));
       } else {
         const response = await api.post(
-          "http://127.0.0.1:8000/api/treatments/",
+          "http://localhost:8001/api/treatments/",
           data,
         );
         setTreatmentsData((prev) => ({

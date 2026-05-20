@@ -71,7 +71,7 @@ export default function RecipientTreatments({ recipient }) {
 
     if(!recipient || Object.keys(recipient).length == 0) return
     try {
-      const response = await api.get(`http://127.0.0.1:8000/api/treatments/?archives=False&recipient=${recipient.id}`,);
+      const response = await api.get(`http://localhost:8001/api/treatments/?archives=False&recipient=${recipient.id}`,);
 
       const data = {
         content: response.data,
@@ -90,7 +90,7 @@ export default function RecipientTreatments({ recipient }) {
   const getArchivedTreatments = async () => {
     if(!recipient || Object.keys(recipient).length == 0) return
     try {
-      const response = await api.get(`http://127.0.0.1:8000/api/treatments/?archives=True&recipient=${recipient.id}`,)
+      const response = await api.get(`http://localhost:8001/api/treatments/?archives=True&recipient=${recipient.id}`,)
       const data = {
         content: response.data,
         status: response.status,
@@ -108,7 +108,7 @@ export default function RecipientTreatments({ recipient }) {
 
     try {
       const response = await api.post(
-        `http://127.0.0.1:8000/api/restore_treatment/${treatment.id}/`,
+        `http://localhost:8001/api/restore_treatment/${treatment.id}/`,
       );
     } catch(error) {
       console.log(error);
@@ -121,7 +121,7 @@ export default function RecipientTreatments({ recipient }) {
     setText("Êtes-vous sûr(e) de vouloir supprimer ce traitement ?");
     setAction(() => async () => {
       const response = await api.post(
-        `http://127.0.0.1:8000/api/soft_delete_treatment/${treatment.id}/`,
+        `http://localhost:8001/api/soft_delete_treatment/${treatment.id}/`,
       );
     });
     setShowConfirm(true);

@@ -49,7 +49,7 @@ export default function InviteUserModal({ show, setShow }) {
             console.log('Success', post);
         }
         catch (error) {
-            console.log(error);
+            console.log(error.response);
         }
     }
 

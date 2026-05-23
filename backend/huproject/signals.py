@@ -58,12 +58,12 @@ def send_invitation(sender, instance, created, **kwargs):
 
 
     try :
-        print("reach")
         send_mail(
         "Invitation à rejoindre un espace",
         message,
         settings.EMAIL_HOST_USER,
         [address],
+        fail_silently=False,
         )
 
     except Exception as e:

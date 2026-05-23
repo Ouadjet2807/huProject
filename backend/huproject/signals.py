@@ -65,7 +65,7 @@ def send_invitation(sender, instance, created, **kwargs):
         [address],
         )
     except Exception as e:
-        print("couldnt send email")
+        print("couldn't send email")
         print(e)
 
 

@@ -27,7 +27,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const token = localStorage.getItem("accessToken");
       if (token) {
-        const res = await api.get("http://localhost:8001/api/spaces/");
+        const res = await api.get("https://huproject-production.up.railway.app/api/spaces/");
         dispatch(setValues(res.data[0]));
       }
     } catch (err) {
@@ -45,7 +45,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     setLoading(true);
     try {
-      const response = await api.post("http://localhost:8001/api/login/", {
+      const response = await api.post("https://huproject-production.up.railway.app/api/login/", {
         email,
         password,
       });
@@ -54,7 +54,7 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem("accessToken", access);
       localStorage.setItem("refreshToken", refresh);
       api.defaults.headers.common["Authorization"] = `Bearer ${access}`;
-      const res = await api.get("http://localhost:8001/api/user/");
+      const res = await api.get("https://huproject-production.up.railway.app/api/user/");
       setUser({ ...res.data, isAuthenticated: true });
       setMessage({
         status: "success",
@@ -87,14 +87,14 @@ export const AuthProvider = ({ children }) => {
   const register = async (data) => {
     try {
       const response = await api.post(
-        "http://localhost:8001/api/register/",
+        "https://huproject-production.up.railway.app/api/register/",
         data,
       );
       const { access } = response.data.tokens;
       localStorage.setItem("accessToken", response.data.tokens.access);
       localStorage.setItem("refreshToken", response.data.tokens.refresh);
       api.defaults.headers.common["Authorization"] = `Bearer ${access}`;
-      const res = await api.get("http://localhost:8001/api/user/");
+      const res = await api.get("https://huproject-production.up.railway.app/api/user/");
       setUser({ ...res.data, isAuthenticated: true });
       setMessage({
         status: "success",
@@ -126,7 +126,7 @@ export const AuthProvider = ({ children }) => {
   const logout = async (refresh) => {
     if (refresh) {
       try {
-        await api.post("http://localhost:8001/api/logout/", {
+        await api.post("https://huproject-production.up.railway.app/api/logout/", {
           refresh: refresh,
         });
         localStorage.removeItem("accessToken");
@@ -158,7 +158,7 @@ export const AuthProvider = ({ children }) => {
     if (token) {
       api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       try {
-        const res = await api.get("http://localhost:8001/api/user/");
+        const res = await api.get("https://huproject-production.up.railway.app/api/user/");
         setUser({ ...res.data, isAuthenticated: true });
       } catch (err) {
         console.error("Failed to fetch user info", err);

@@ -39,7 +39,7 @@ export default function CreateRecipient({
 
     try {
       const response = await api.post(
-        "http://localhost:8001/api/recipients/",
+        "https://huproject-production.up.railway.app/api/recipients/",
         formData,
       );
       space.recipients.push(response.data);

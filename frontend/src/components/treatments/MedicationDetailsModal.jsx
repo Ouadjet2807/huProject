@@ -366,7 +366,7 @@ export default function MedicationDetailsModal({
 
       if (Object.keys(treatment).length > 1) {
         const response = await api.put(
-          `http://localhost:8001/api/treatments/${treatment.id}/`,
+          `https://huproject-production.up.railway.app/api/treatments/${treatment.id}/`,
           data,
         );
         console.log(response);
@@ -390,7 +390,7 @@ export default function MedicationDetailsModal({
         }));
       } else {
         const response = await api.post(
-          "http://localhost:8001/api/treatments/",
+          "https://huproject-production.up.railway.app/api/treatments/",
           data,
         );
         setTreatmentsData((prev) => ({

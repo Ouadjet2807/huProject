@@ -162,7 +162,7 @@ export default function AddEvent({
     setText("Êtes-vous sûr(e) de vouloir supprimer cet évenement ?");
     setAction(() => async () => {
       await api.delete(
-        `http://127.0.0.1:8000/api/agenda_items/${preloadedEvent.id}`,
+        `https://127.0.0.1:8000/api/agenda_items/${preloadedEvent.id}`,
       );
       handleClose();
       setSelectedEvent({});
@@ -178,7 +178,7 @@ export default function AddEvent({
       let response = "";
       if (Object.keys(preloadedEvent).length > 0) {
         response = await api.put(
-          `http://127.0.0.1:8000/api/agenda_items/${preloadedEvent.id}/`,
+          `https://127.0.0.1:8000/api/agenda_items/${preloadedEvent.id}/`,
           formData,
         );
         let index = agenda.items.indexOf(formData);
@@ -187,7 +187,7 @@ export default function AddEvent({
         setToastMessage("Événement modifié avec succès");
       } else {
         response = await api.post(
-          "http://127.0.0.1:8000/api/agenda_items/",
+          "https://127.0.0.1:8000/api/agenda_items/",
           formData,
         );
         setAgenda((prev) => ({
@@ -215,7 +215,7 @@ export default function AddEvent({
     if (!id) return;
     try {
       await api.delete(
-        `http://127.0.0.1:8000/api/agenda_item_categories/${id}`,
+        `https://127.0.0.1:8000/api/agenda_item_categories/${id}`,
       );
       let filterCategories = agenda.categories.filter((cat) => cat.id !== id);
 

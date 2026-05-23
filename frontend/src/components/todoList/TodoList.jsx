@@ -63,7 +63,7 @@ export default function TodoList({ user }) {
       if(process.env.NODE_ENV !== "test") {
 
         let response = await api.post(
-          "http://localhost:8001/api/todo_list_items/",
+          "https://huproject-production.up.railway.app/api/todo_list_items/",
           newTask,
         );
         newTask.id = response.data.id;
@@ -102,7 +102,7 @@ export default function TodoList({ user }) {
       if(process.env.NODE_ENV !== "test") {
 
         await api.put(
-          `http://localhost:8001/api/todo_list_items/${todo.id}/`,
+          `https://huproject-production.up.railway.app/api/todo_list_items/${todo.id}/`,
           todo,
         );
       }
@@ -118,7 +118,7 @@ export default function TodoList({ user }) {
     try {
       if (process.env.NODE_ENV !== "test") {
         await api.delete(
-          `http://localhost:8001/api/todo_list_items/${todo.id}/`,
+          `https://huproject-production.up.railway.app/api/todo_list_items/${todo.id}/`,
           todo,
         );
       }

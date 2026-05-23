@@ -69,7 +69,7 @@ export default function Specialists({ recipient }) {
     const getSpecialist = async () => {
       try {
         const res = await api.get(
-          "http://localhost:8001/api/healthcare_professionals/",
+          "https://huproject-production.up.railway.app/api/healthcare_professionals/",
         );
       } catch (error) {
         console.log(error);

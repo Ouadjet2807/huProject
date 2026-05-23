@@ -103,7 +103,7 @@ export default function Recipient({ tab, match}) {
       if (token) {
         try {
           const response = await api.get(
-            `http://localhost:8001/api/recipients/${recipient_id}`
+            `https://huproject-production.up.railway.app/api/recipients/${recipient_id}`
           );
           setRecipient(response.data);
         } catch (error) {

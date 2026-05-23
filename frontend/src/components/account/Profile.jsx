@@ -57,12 +57,12 @@ export default function Profile({ editMode, setEditMode, roles }) {
           JSON.stringify(caregiverFormData);
         if (userHasChanged) {
           let put = await api.post(
-            `http://localhost:8001/api/update_user/${user.id}/`,
+            `https://huproject-production.up.railway.app/api/update_user/${user.id}/`,
             userFormData,
           );
         } else if (caregiverHasChanged) {
           let put = await api.put(
-            `http://localhost:8001/api/caregivers/${caregiverProfile.id}/`,
+            `https://huproject-production.up.railway.app/api/caregivers/${caregiverProfile.id}/`,
             caregiverFormData,
           );
         }

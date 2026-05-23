@@ -110,7 +110,7 @@ export default function TreatmentPage() {
     setText("Êtes-vous sûr(e) de vouloir supprimer ce traitement ?");
     setAction(() => async () => {
       const response = await api.post(
-        `http://localhost:8001/api/soft_delete_treatment/${treatmentData.id}/`,
+        `https://huproject-production.up.railway.app/api/soft_delete_treatment/${treatmentData.id}/`,
       );
       navigate(`/${pathname[1]}/${pathname[2]}/${pathname[3]}`);
     });
@@ -210,7 +210,7 @@ export default function TreatmentPage() {
 
       try {
         let response = await api.get(
-          `http://localhost:8001/api/treatments/${id}`,
+          `https://huproject-production.up.railway.app/api/treatments/${id}`,
         );
         setTreatmentData(response.data);
       } catch (error) {
@@ -251,7 +251,7 @@ export default function TreatmentPage() {
       if (pathname.length === 0 || !pathname[2].match("^/0-9/$")) return;
       try {
         const response = await api.get(
-          `http://localhost:8001/api/treatments/?archives=False&recipient=${pathname[2].id}`,
+          `https://huproject-production.up.railway.app/api/treatments/?archives=False&recipient=${pathname[2].id}`,
         );
 
         const data = {

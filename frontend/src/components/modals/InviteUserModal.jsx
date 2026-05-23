@@ -45,7 +45,7 @@ export default function InviteUserModal({ show, setShow }) {
     const handleSubmit = async () => {
 
         try {
-            let post = await api.post("http://localhost:8001/api/invitations/", formData)
+            let post = await api.post("https://huproject-production.up.railway.app/api/invitations/", formData)
             console.log('Success', post);
         }
         catch (error) {

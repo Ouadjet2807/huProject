@@ -2,8 +2,6 @@ import React, { useState, useEffect, useContext } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form"
-import axios from "axios";
-import { IoIosSearch } from "react-icons/io";
 import { AuthContext } from "../../context/AuthContext";
 import {v4 as uuidv4} from "uuid"
 import moment from "moment";

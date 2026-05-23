@@ -4,15 +4,12 @@ import Button from "react-bootstrap/Button";
 import { LuTrash2 } from "react-icons/lu";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
-import { FaRegSquare } from "react-icons/fa";
-import { TbSquareCheckFilled } from "react-icons/tb";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 import Dropdown from "react-bootstrap/Dropdown";
 import DropdownButton from "react-bootstrap/DropdownButton";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 import moment from "moment";
-import { locale } from "moment";
 import { MdLibraryAdd } from "react-icons/md";
 import { useSelector } from "react-redux";
 

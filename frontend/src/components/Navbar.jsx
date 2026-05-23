@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState, useRef } from "react";
-import { AuthContext } from "../context/AuthContext";
-import { useLocation, useNavigate, useParams } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { RiAccountPinCircleLine } from "react-icons/ri";

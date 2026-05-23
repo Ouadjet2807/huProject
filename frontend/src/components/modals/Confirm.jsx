@@ -1,9 +1,6 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useContext } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
-import api from "../../api/api";
-import Form from "react-bootstrap/Form";
-import FloatingLabel from "react-bootstrap/FloatingLabel";
 import { ToastContext } from "../../context/ToastContext";
 
 export default function Confirm({ show, setShow, action, text, setReturnValue }) {

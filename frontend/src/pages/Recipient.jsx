@@ -6,7 +6,6 @@ import RecipientTreatments from "../components/treatments/RecipientTreatments";
 import Specialists from "../components/specialists/Specialists";
 import Loader from "../components/Loader";
 import moment from "moment";
-import { locale } from "moment";
 import { IoInformationCircleOutline } from "react-icons/io5";
 import { FaMedkit } from "react-icons/fa";
 import { FaUserMd } from "react-icons/fa";
@@ -94,9 +93,9 @@ export default function Recipient({ tab, match}) {
   useEffect(() => {
     const getRecipientData = async () => {
 
-      let findRecipient = space.recipients.find(r => r.id == recipient_id)
+      let findRecipient = space.recipients.find(r => r.id === recipient_id)
       if(findRecipient) {
-        setRecipient(space.recipients.find(r => r.id == recipient_id))
+        setRecipient(space.recipients.find(r => r.id === recipient_id))
         return
       }
 

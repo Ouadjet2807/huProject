@@ -1,4 +1,4 @@
-import React, { act, useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { FaUserCircle } from "react-icons/fa";
 import Loader from "../Loader";
 import { CiEdit } from "react-icons/ci";
@@ -108,7 +108,7 @@ export default function Profile({ editMode, setEditMode, roles }) {
     const getCaregiverProfile = async () => {
       if (!user || !space) return;
 
-      const caregiver = space.caregivers.find((c) => c.user == user.id);
+      const caregiver = space.caregivers.find((c) => c.user === user.id);
       setCaregiverProfile(caregiver);
     };
 

@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useContext } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router";
-import { AuthContext } from "../context/AuthContext";
 import CreateRecipient from "../components/recipients/CreateRecipient";
 import TodoList from "../components/todoList/TodoList";
 import Loader from "../components/Loader";
@@ -8,8 +7,7 @@ import InviteUserModal from "../components/modals/InviteUserModal";
 import { TbUsersPlus } from "react-icons/tb";
 import { FaUserCircle } from "react-icons/fa";
 import Button from "react-bootstrap/Button";
-import api from "../api/api";
-import { useSelector } from "react-redux";
+
 
 export default function Home({ user, loading, caregivers, recipients }) {
   const [addRecipient, setAddRecipient] = useState(false);
@@ -81,7 +79,7 @@ export default function Home({ user, loading, caregivers, recipients }) {
                           </div>
                           <span>
                             {item.first_name} {item.last_name}{" "}
-                            {item.access_level == 1 && (
+                            {item.access_level === 1 && (
                               <small data-testid="adminTag">(administrateur)</small>
                             )}
                           </span>

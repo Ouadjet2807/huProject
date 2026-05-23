@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 import Login from "../components/authentification/Login";
 import Register from "../components/authentification/Register";
-import { AuthContext, AuthProvider } from "../context/AuthContext";
+import { AuthContext } from "../context/AuthContext";
 export default function Sign({inviteData, token}) {
   const [activeTab, setActiveTab] = useState("register");
 
@@ -13,6 +13,8 @@ export default function Sign({inviteData, token}) {
         return <Login data={inviteData ? inviteData : null} token={token ? token : null} setActiveTab={setActiveTab} login={login} loading={loading} message={message}/>;
       case "register":
         return <Register data={inviteData ? token : null} token={token ? token : null} setActiveTab={setActiveTab} register={register} loading={loading} message={message}/>;
+      default:
+        <Login data={inviteData ? inviteData : null} token={token ? token : null} setActiveTab={setActiveTab} login={login} loading={loading} message={message}/>
     }
   };
 

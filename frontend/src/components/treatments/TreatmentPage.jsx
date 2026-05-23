@@ -16,7 +16,6 @@ import Button from "react-bootstrap/Button";
 import { CiEdit, CiCircleInfo } from "react-icons/ci";
 import { PiPillDuotone } from "react-icons/pi";
 import { TiArrowBackOutline } from "react-icons/ti";
-import { AuthContext } from "../../context/AuthContext";
 import MedicationDetailsModal from "./MedicationDetailsModal";
 import { ConfirmContext } from "../../context/ConfirmContext";
 import { UseDimensionsContext } from "../../context/UseDimensionsContext";
@@ -25,7 +24,7 @@ import { useSelector } from "react-redux";
 
 export default function TreatmentPage() {
   const { id } = useParams();
-  const { showConfirm, setShowConfirm, setText, setAction, returnValue } =
+  const { setShowConfirm, setText, setAction } =
     useContext(ConfirmContext);
   const { width, height } = useContext(UseDimensionsContext);
   const space = useSelector((state) => state.space);
@@ -80,10 +79,15 @@ export default function TreatmentPage() {
     switch (true) {
       case today.hours() > 17:
         intake_count.evening = true;
+        break;
       case today.hours() > 11:
         intake_count.midday = true;
+        break;
       case today.hours() > 5:
         intake_count.morning = true;
+        break;
+      default:
+        break;
     }
 
     if (intake_time_range.length > 1) {
@@ -244,7 +248,7 @@ export default function TreatmentPage() {
       setPathname(window.location.pathname.split("/"));
     }
     const getTreatments = async () => {
-      if (pathname.length == 0 || !pathname[2].match("^/0-9/$")) return;
+      if (pathname.length === 0 || !pathname[2].match("^/0-9/$")) return;
       try {
         const response = await api.get(
           `http://localhost:8001/api/treatments/?archives=False&recipient=${pathname[2].id}`,
@@ -289,7 +293,7 @@ export default function TreatmentPage() {
         treatmentsData={treatmentsArray}
         setTreatmentsData={setTreatmentsArray}
       />
-      {error.status == 404 ? (
+      {error.status === 404 ? (
         <p className="not-found">
           Oups, La page que vous avez demandé n'existe pas
         </p>

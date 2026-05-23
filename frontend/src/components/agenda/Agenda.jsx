@@ -105,7 +105,7 @@ export default function Agenda({loading, setLoading, agenda}) {
       formatted_events = JSON.parse(formatted_events);
       formatted_events.forEach((item) => {
         let find_category = agenda.categories.find(
-          (c) => c.id == item.category,
+          (c) => c.id === item.category,
         );
 
         item.category = find_category ? find_category : item.category;
@@ -114,7 +114,7 @@ export default function Agenda({loading, setLoading, agenda}) {
 
 
         item.reminder =
-          typeof item.reminder == "str" ? JSON.parse(item.reminder) : {};
+          typeof item.reminder === "str" ? JSON.parse(item.reminder) : {};
       });
       let searchTodaysEvent = formatted_events.filter(
         (item) =>
@@ -131,7 +131,7 @@ export default function Agenda({loading, setLoading, agenda}) {
         ),
       );
       setTodayAgendaItems(searchTodaysEvent);
-      if(process.env.NODE_ENV == "test") {
+      if(process.env.NODE_ENV === "test") {
         return
       }
       setLoading(false);

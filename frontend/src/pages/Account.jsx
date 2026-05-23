@@ -1,13 +1,8 @@
-import React, { useContext, useEffect, useState } from "react";
-import { AuthContext } from "../context/AuthContext";
-import { ToastContext } from "../context/ToastContext";
+import { useEffect, useState } from "react";
 import Profile from "../components/account/Profile";
 import Space from "../components/account/Space";
-import api from "../api/api";
 
 export default function Account() {
-  const { user } = useContext(AuthContext);
-  const { setMessage, setColor, setShowToast } = useContext(ToastContext);
 
   const roles = [
     [1, "administrateur"],
@@ -21,17 +16,6 @@ export default function Account() {
     target: "",
   });
 
-  useEffect(() => {
-    const getCaregivers = async () => {
-      try {
-        let response = await api.get("http://localhost:8001/api/caregivers");
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    getCaregivers();
-  }, []);
 
   const renderActiveTab = () => {
     switch (activeTab) {
@@ -43,10 +27,19 @@ export default function Account() {
             roles={roles}
           />
         );
-      case "space":
-        return (
-          <Space editMode={editMode} setEditMode={setEditMode} roles={roles} />
-        );
+        case "space":
+          return (
+            <Space editMode={editMode} setEditMode={setEditMode} roles={roles} />
+          );
+          default:
+            return (
+              <Profile
+                editMode={editMode}
+                setEditMode={setEditMode}
+                roles={roles}
+              />
+            );
+            
     }
   };
 

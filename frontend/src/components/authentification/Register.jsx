@@ -33,7 +33,7 @@ export default function Register({ data, token, setActiveTab, register, loading,
     setFormData((prev) => ({
       ...prev,
       [e.target.name]:
-        e.target.type == "email"
+        e.target.type === "email"
           ? e.target.value.toLowerCase()
           : e.target.value,
     }));

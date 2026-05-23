@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import api, { tokenStore } from "../api/api";
+import api from "../api/api";
 import { useSelector, useDispatch } from "react-redux";
 import { setValues } from "../redux/spaceSlice";
 export const AuthContext = createContext();
@@ -90,7 +90,7 @@ export const AuthProvider = ({ children }) => {
         "http://localhost:8001/api/register/",
         data,
       );
-      const { access, refresh } = response.data.tokens;
+      const { access } = response.data.tokens;
       localStorage.setItem("accessToken", response.data.tokens.access);
       localStorage.setItem("refreshToken", response.data.tokens.refresh);
       api.defaults.headers.common["Authorization"] = `Bearer ${access}`;
@@ -180,7 +180,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    if (space.id == "" || refreshSpace) {
+    if (space.id === "" || refreshSpace) {
       fetchSpaces();
     }
   }, [user, refreshSpace]);

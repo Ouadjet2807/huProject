@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import { FaRegTrashCan } from "react-icons/fa6";
 import { CiEdit } from "react-icons/ci";
-import { MdCancelPresentation } from "react-icons/md";
 import { LuSave } from "react-icons/lu";
 import Loader from "../Loader";
 export default function RecipientEditForm({

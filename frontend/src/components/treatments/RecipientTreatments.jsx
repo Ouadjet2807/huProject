@@ -1,4 +1,4 @@
-import React, { use, useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import SearchTreatmentsModal from "./SearchTreatmentsModal";
@@ -9,7 +9,6 @@ import Card from "react-bootstrap/Card";
 import Container from "react-bootstrap/Container";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
-import { GrPowerCycle } from "react-icons/gr";
 import { PiPillDuotone } from "react-icons/pi";
 import Badge from "react-bootstrap/Badge";
 import ListGroup from "react-bootstrap/ListGroup";
@@ -24,7 +23,6 @@ import { GoArchive } from "react-icons/go";
 import moment from "moment";
 import "moment/locale/fr";
 import { UseDimensionsContext } from "../../context/UseDimensionsContext";
-import { AuthContext } from "../../context/AuthContext";
 import { MdOutlineAutorenew } from "react-icons/md";
 import { ConfirmContext } from "../../context/ConfirmContext";
 import { CiMedicalClipboard } from "react-icons/ci";
@@ -69,7 +67,7 @@ export default function RecipientTreatments({ recipient }) {
 
     const getTreatments = async () => {
 
-    if(!recipient || Object.keys(recipient).length == 0) return
+    if(!recipient || Object.keys(recipient).length === 0) return
     try {
       const response = await api.get(`http://localhost:8001/api/treatments/?archives=False&recipient=${recipient.id}`,);
 
@@ -88,7 +86,7 @@ export default function RecipientTreatments({ recipient }) {
   };
 
   const getArchivedTreatments = async () => {
-    if(!recipient || Object.keys(recipient).length == 0) return
+    if(!recipient || Object.keys(recipient).length === 0) return
     try {
       const response = await api.get(`http://localhost:8001/api/treatments/?archives=True&recipient=${recipient.id}`,)
       const data = {

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import  { createContext, useState } from "react";
 
 export const UseDimensionsContext = createContext();
 

@@ -10,7 +10,7 @@ import Badge from "react-bootstrap/Badge";
 import api from "../../api/api";
 import { FaUserMinus } from "react-icons/fa";
 import Modal from "react-bootstrap/Modal";
-import { TbUsersMinus, TbUsersPlus } from "react-icons/tb";
+import { TbUsersPlus } from "react-icons/tb";
 import InviteUserModal from "../modals/InviteUserModal";
 import CreateRecipient from "../recipients/CreateRecipient";
 import { TiDelete } from "react-icons/ti";
@@ -160,7 +160,7 @@ export default function Space({ editMode, setEditMode, roles }) {
 
   useEffect(() => {
 
-    if(user == null || user == undefined && (!space || Object.keys(space).length <= 0)) return
+    if((user === null || user === undefined) && (!space || Object.keys(space).length <= 0)) return
 
     getSpaceMemberships();
 

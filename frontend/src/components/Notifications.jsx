@@ -1,4 +1,3 @@
-import React, { useEffect, useState } from "react";
 import { BsXLg } from "react-icons/bs";
 import { LuBell } from "react-icons/lu";
 import NotificationsList from "./NotificationsList";

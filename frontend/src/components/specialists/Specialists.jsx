@@ -1,10 +1,9 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import Loader from "../Loader";
 import { FaUserMd } from "react-icons/fa";
 import Button from "react-bootstrap/Button";
 import api from "../../api/api";
 import CreateSpecialist from "./CreateSpecialist";
-import { AuthContext } from "../../context/AuthContext";
 import { LuPhone } from "react-icons/lu";
 import { HiOutlineLocationMarker } from "react-icons/hi";
 import { useSelector } from "react-redux";
@@ -30,7 +29,7 @@ export default function Specialists({ recipient }) {
     let formatted_data = JSON.parse(jsonData);
 
     data.forEach((item, index) => {
-      if (typeof item.contact == "string") {
+      if (typeof item.contact === "string") {
         let parsed_contact = JSON.parse(item.contact);
         let splitted_address =
           parsed_contact.address.length > 0

@@ -67,8 +67,10 @@ def send_invitation(sender, instance, created, **kwargs):
         )
 
     except Exception as e:
-        print("couldn't send email")
-        print(e)
+            import traceback
+            print("MAIL ERROR:", repr(e))
+            traceback.print_exc()
+            raise
 
 
 @receiver(post_save, sender=Space)

@@ -57,15 +57,16 @@ def send_invitation(sender, instance, created, **kwargs):
     message = "Vous avez été invité(e) à rejoindre un espace aidant, suivez le lien ci-dessous pour vous inscrire. http://localhost:3000/invite/" + instance.token
 
 
-    # try :
-    #     send_mail(
-    #     "Invitation à rejoindre un espace",
-    #     message,
-    #     settings.EMAIL_HOST_USER,
-    #     [address],
-    #     )
-    # except Exception as e:
-    #     print(e)
+    try :
+        send_mail(
+        "Invitation à rejoindre un espace",
+        message,
+        settings.EMAIL_HOST_USER,
+        [address],
+        )
+    except Exception as e:
+        print("couldnt send email")
+        print(e)
 
 
 @receiver(post_save, sender=Space)
@@ -212,6 +213,8 @@ def create_caregiver_profile(sender, instance, created, **kwargs):
 
     if not created:
         return
+    
+    print(instance)
 
     invitation_info = json.loads(instance.invited)
 

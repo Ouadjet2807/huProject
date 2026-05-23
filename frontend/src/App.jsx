@@ -36,7 +36,7 @@ function App() {
 
   const getNotifications = async () => {
     try {
-      let response = await api.get("http://127.0.0.1:8000/api/notifications/");
+      let response = await api.get("http://localhost:8001/api/notifications/");
       setNotifications(response.data);
     } catch (error) {
       console.log(error);
@@ -75,7 +75,7 @@ function App() {
       <BrowserRouter>
         <Navbar notifications={notifications} user={user} logout={logout} message={message}/>
         <Routes>
-          <Route path="login" element={<Sign />} />
+          <Route path="login" element={<Sign inviteData={null} token={null}/>} />
           <Route path="account" element={<Account notifications={notifications}/>} />
           <Route path="account/profile" element={<Account notifications={notifications}/>} />
           <Route path="account/space" element={<Account notifications={notifications}/>} />

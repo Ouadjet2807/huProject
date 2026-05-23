@@ -138,6 +138,8 @@ export const AuthProvider = ({ children }) => {
           message: "Déconnexion",
         });
       } catch (error) {
+        console.log(error.response);
+        
         setMessage({
           status: "error",
           message: error.response.data,

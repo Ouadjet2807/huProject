@@ -4,6 +4,7 @@ import { AuthContext, useAuth } from '../context/AuthContext';
 import { useParams, useNavigate } from 'react-router';
 import axios from 'axios';
 import Register from './authentification/Register';
+import Sign from '../pages/Sign';
 
 export default function AcceptInvite() {
   const { token } = useParams();
@@ -37,7 +38,7 @@ export default function AcceptInvite() {
   <div id="acceptInvite">
     {errorMessage}
     <div className="container">
-    <Register data={invitation} token={token} register={register} loading={loading} message={message}/>
+    <Sign inviteData={invitation} token={token} register={register} loading={loading} message={message}/>
     </div>
   </div>
 );

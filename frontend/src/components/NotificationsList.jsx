@@ -22,7 +22,7 @@ export default function NotificationsList({
     if (process.env.NODE_ENV !== "test") {
       try {
         let response = await api.post(
-          `http://127.0.0.1:8000/api/read_notification/${notification.id}/`,
+          `http://localhost:8001/api/read_notification/${notification.id}/`,
         );
       } catch (error) {
         console.log(error);

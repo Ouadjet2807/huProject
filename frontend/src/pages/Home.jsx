@@ -22,7 +22,7 @@ export default function Home({ user, loading, caregivers, recipients }) {
       <div className="home-container">
         <InviteUserModal show={showInviteModal} setShow={setShowInviteModal} />
         <div className="left-tab">
-          <h1>Hi {user && user.first_name}, welcome</h1>
+          <h1>Hello {user && user.first_name}, Bienvenue</h1>
 
           <div className="recipients box">
             {loading && <Loader overlay={true} />}

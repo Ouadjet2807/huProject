@@ -40,7 +40,7 @@ export default function CreateRecipient({
 
     try {
       const response = await api.post(
-        "http://127.0.0.1:8000/api/recipients/",
+        "http://localhost:8001/api/recipients/",
         formData,
       );
       space.recipients.push(response.data);

@@ -38,7 +38,7 @@ export default function Login({ setActiveTab, login, loading, message }) {
   };
 
   useEffect(() => {
-    if (message.message === "") return;
+    if (!message || message.message === "") return;
     setToastMessage(message.message);
     if (message.status === "success") {
       setShowToast(true);

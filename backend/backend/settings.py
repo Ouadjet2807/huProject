@@ -222,7 +222,7 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 CSRF_COOKIE_SECURE=False
 
-CSRF_TRUSTED_ORIGINS=['https://*./huproject-production.up.railway.app']
+CSRF_TRUSTED_ORIGINS=['https://huproject-production.up.railway.app']
 
 # CORS_ORIGIN_WHITELIST = [
 #      'http://localhost:3000'

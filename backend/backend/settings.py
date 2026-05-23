@@ -219,6 +219,9 @@ CELERY_BEAT_SCHEDULE = {
 
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+CSRF_TRUSTED_ORIGINS=['https://*./huproject-production.up.railway.app']
+
 # CORS_ORIGIN_WHITELIST = [
 #      'http://localhost:3000'
 # ]

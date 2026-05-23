@@ -181,9 +181,9 @@ class InvitationSerializer(serializers.ModelSerializer):
         expires_at = now + timedelta(days=1)
         validated_data["expires_at"] = expires_at
 
-        invitiation = Invitation.objects.create(**validated_data)
+        invitation = Invitation.objects.create(**validated_data)
 
-        return invitiation
+        return invitation
 
 class AgendaItemCategorySerializer(serializers.ModelSerializer):
     agenda =  serializers.PrimaryKeyRelatedField(queryset=Agenda.objects.all())

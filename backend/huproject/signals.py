@@ -58,6 +58,7 @@ def send_invitation(sender, instance, created, **kwargs):
 
 
     try :
+        print("reach")
         send_mail(
         "Invitation à rejoindre un espace",
         message,
@@ -65,7 +66,6 @@ def send_invitation(sender, instance, created, **kwargs):
         [address],
         )
 
-        print("reach")
     except Exception as e:
         print("couldn't send email")
         print(e)

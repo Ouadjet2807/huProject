@@ -56,6 +56,7 @@ def send_invitation(sender, instance, created, **kwargs):
     address = instance.email
     message = "Vous avez été invité(e) à rejoindre un espace aidant, suivez le lien ci-dessous pour vous inscrire. http://localhost:3000/invite/" + instance.token
 
+    print("reach")
 
     try :
         send_mail(

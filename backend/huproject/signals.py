@@ -65,9 +65,9 @@ def send_invitation(sender, instance, created, **kwargs):
 
         r = resend.Emails.send({
             "from": "onboarding@resend.dev",
-            "to": "n.socrate@outlook.com",
+            "to": address,
             "subject": "Hello World",
-            "html": "<p>{message}</p>"
+            "html": "<p>" + message + "</p>"
         })
 
     except Exception as e:

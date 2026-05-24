@@ -1,3 +1,4 @@
+import os
 import logging
 from django.conf import settings
 from django.db.models.signals import post_save, pre_save, post_delete
@@ -9,8 +10,11 @@ from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db import IntegrityError
 import time
 import json
+import resend
 
 from .models import *
+
+resend.api_key = os.environ["RESEND_API_KEY"]
 
 logger = logging.getLogger(__name__)
 User = get_user_model()
@@ -58,18 +62,16 @@ def send_invitation(sender, instance, created, **kwargs):
 
 
     try :
-        send_mail(
-        "Invitation à rejoindre un espace",
-        message,
-        settings.EMAIL_HOST_USER,
-        [address],
-        fail_silently=False,
-        )
+
+        r = resend.Emails.send({
+            "from": "onboarding@resend.dev",
+            "to": "n.socrate@outlook.com",
+            "subject": "Hello World",
+            "html": "<p>{message}</p>"
+        })
 
     except Exception as e:
-            import traceback
-            print("MAIL ERROR:", repr(e))
-            traceback.print_exc()
+            print(e)
             raise
 
 

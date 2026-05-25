@@ -58,7 +58,8 @@ def send_invitation(sender, instance, created, **kwargs):
         return
 
     address = instance.email
-    message = "Vous avez été invité(e) à rejoindre un espace aidant, suivez le lien ci-dessous pour vous inscrire. http://blissful-elegance-production-9f51.up.railway.app/invite/" + instance.token
+    url = "http://blissful-elegance-production-9f51.up.railway.app/invite/" + instance.token
+    message = 'Vous avez été invité(e) à rejoindre un espace aidant, suivez ce <a href="' + url + '">lien</a> ci-dessous pour vous inscrire.'
 
 
     try :

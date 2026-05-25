@@ -7,7 +7,7 @@ import InviteUserModal from "../components/modals/InviteUserModal";
 import { TbUsersPlus } from "react-icons/tb";
 import { FaUserCircle } from "react-icons/fa";
 import Button from "react-bootstrap/Button";
-
+import { FiPlus } from "react-icons/fi";
 
 export default function Home({ user, loading, caregivers, recipients }) {
   const [addRecipient, setAddRecipient] = useState(false);
@@ -24,7 +24,7 @@ export default function Home({ user, loading, caregivers, recipients }) {
 
           <div className="recipients box">
             {loading && <Loader overlay={true} />}
-            <h3>Your recipients</h3>
+            <h3>Vos aidés</h3>
 
             {recipients && recipients.length > 0 ? (
               <ul>
@@ -54,12 +54,12 @@ export default function Home({ user, loading, caregivers, recipients }) {
             )}
 
             <Button variant="aqua" onClick={() => setAddRecipient(true)}>
-              Add a recipient
+              <FiPlus /> Ajouter un aidé
             </Button>
           </div>
           <div className="caregivers box">
             {loading && <Loader overlay={true} />}
-            <h3>Your recipients</h3>
+            <h3>Les autres aidants</h3>
             {caregivers && caregivers.length > 1 ? (
               <ul>
                 {caregivers

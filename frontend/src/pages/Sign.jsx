@@ -8,11 +8,13 @@ export default function Sign({inviteData, token}) {
   const { register, login, message, loading } = useContext(AuthContext);
 
   const renderActiveTab = () => {
-    switch (activeTab) {
-      case "login":
-        return <Login data={inviteData ? inviteData : null} token={token ? token : null} setActiveTab={setActiveTab} login={login} loading={loading} message={message}/>;
-      case "register":
-        return <Register data={inviteData ? token : null} token={token ? token : null} setActiveTab={setActiveTab} register={register} loading={loading} message={message}/>;
+    switch (true) {
+      case token:
+        return <Register data={inviteData ? inviteData : null} token={token ? token : null} setActiveTab={setActiveTab} register={register} loading={loading} message={message}/>;
+      case activeTab == "login":
+        return <Login data={inviteData ? inviteData : null} setActiveTab={setActiveTab} login={login} loading={loading} message={message}/>;
+      case activeTab == "register":
+        return <Register data={inviteData ? inviteData : null} token={token ? token : null} setActiveTab={setActiveTab} register={register} loading={loading} message={message}/>;
       default:
         <Login data={inviteData ? inviteData : null} token={token ? token : null} setActiveTab={setActiveTab} login={login} loading={loading} message={message}/>
     }

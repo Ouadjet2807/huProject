@@ -10,7 +10,8 @@ import { IoInformationCircleOutline } from "react-icons/io5";
 import { FaMedkit } from "react-icons/fa";
 import { FaUserMd } from "react-icons/fa";
 import { useSelector } from "react-redux";
-
+import Button from "react-bootstrap/esm/Button";
+import { TiArrowBackOutline } from "react-icons/ti";
 
 export default function Recipient({ tab, match}) {
   moment.locale("fr");
@@ -146,6 +147,7 @@ useEffect(() => {
       {Object.keys(recipient).includes("first_name") ? (
         <div className="recipient-container">
           <div className="recipient-left-tab">
+          <Button variant="aqua" onClick={() => navigate("/home")}><TiArrowBackOutline />  Retour</Button>
             <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
               <h2>
                 {recipient.first_name} {recipient.last_name} -{" "}

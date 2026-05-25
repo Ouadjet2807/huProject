@@ -31,7 +31,7 @@ export default function CreateCategory({ show, setShow, agenda, selectCategory }
   const handleSubmit = async () => {
     try {
       let response = await api.post(
-        "https://huproject-production.up.railway.app/api/agenda_item_categories/",
+        "https://www.curadash.fr/api/agenda_item_categories/",
         newCategory
       );
       agenda.categories.push(response.data)

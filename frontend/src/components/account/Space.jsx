@@ -85,7 +85,7 @@ export default function Space({ editMode, setEditMode, roles }) {
     if (!space || !space.id) return;
     try {
       let res = await api.get(
-        `https://huproject-production.up.railway.app/api/space_memberships/?space=${space.id}`
+        `https://www.curadash.fr/api/space_memberships/?space=${space.id}`
       );
       setSpaceMemberships(res.data);
     } catch (error) {
@@ -121,7 +121,7 @@ export default function Space({ editMode, setEditMode, roles }) {
 
     try {
       await api.put(
-        `https://huproject-production.up.railway.app/api/caregivers/${targetCaregiver.id}/`,
+        `https://www.curadash.fr/api/caregivers/${targetCaregiver.id}/`,
         targetCaregiver
       );
     } catch (error) {
@@ -135,7 +135,7 @@ export default function Space({ editMode, setEditMode, roles }) {
     );
     try {
       await api.delete(
-        `https://huproject-production.up.railway.app/api/space_memberships/${membership.id}/`
+        `https://www.curadash.fr/api/space_memberships/${membership.id}/`
       );
     } catch (error) {
       console.log(error);
@@ -149,7 +149,7 @@ export default function Space({ editMode, setEditMode, roles }) {
       return
     }
     try {
-      await api.delete(`https://huproject-production.up.railway.app/api/recipients/${recipient.id}/`)
+      await api.delete(`https://www.curadash.fr/api/recipients/${recipient.id}/`)
       space.recipients = space.recipients.filter(r => r.id !== recipient.id)
       handleClose()
     } catch (error) {

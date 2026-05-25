@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_BASE || 'https://huproject-production.up.railway.app/api',
+  baseURL: process.env.REACT_APP_API_BASE || 'https://www.curadash.fr/api',
   headers: {
     'Content-Type': 'application/json',
   },

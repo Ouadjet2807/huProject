@@ -15,7 +15,7 @@ export default function AcceptInvite() {
     if(!token) return
 
     try {
-      const res = await axios.get(`https://huproject-production.up.railway.app/api/invitations/validate/?token=${token}`)
+      const res = await axios.get(`https://www.curadash.fr/api/invitations/validate/?token=${token}`)
       setInvitation(res.data)
     }
     catch (error) {

@@ -69,7 +69,7 @@ export default function RecipientTreatments({ recipient }) {
 
     if(!recipient || Object.keys(recipient).length === 0) return
     try {
-      const response = await api.get(`https://huproject-production.up.railway.app/api/treatments/?archives=False&recipient=${recipient.id}`,);
+      const response = await api.get(`https://www.curadash.fr/api/treatments/?archives=False&recipient=${recipient.id}`,);
 
       const data = {
         content: response.data,
@@ -88,7 +88,7 @@ export default function RecipientTreatments({ recipient }) {
   const getArchivedTreatments = async () => {
     if(!recipient || Object.keys(recipient).length === 0) return
     try {
-      const response = await api.get(`https://huproject-production.up.railway.app/api/treatments/?archives=True&recipient=${recipient.id}`,)
+      const response = await api.get(`https://www.curadash.fr/api/treatments/?archives=True&recipient=${recipient.id}`,)
       const data = {
         content: response.data,
         status: response.status,
@@ -106,7 +106,7 @@ export default function RecipientTreatments({ recipient }) {
 
     try {
       const response = await api.post(
-        `https://huproject-production.up.railway.app/api/restore_treatment/${treatment.id}/`,
+        `https://www.curadash.fr/api/restore_treatment/${treatment.id}/`,
       );
     } catch(error) {
       console.log(error);
@@ -119,7 +119,7 @@ export default function RecipientTreatments({ recipient }) {
     setText("Êtes-vous sûr(e) de vouloir supprimer ce traitement ?");
     setAction(() => async () => {
       const response = await api.post(
-        `https://huproject-production.up.railway.app/api/soft_delete_treatment/${treatment.id}/`,
+        `https://www.curadash.fr/api/soft_delete_treatment/${treatment.id}/`,
       );
     });
     setShowConfirm(true);

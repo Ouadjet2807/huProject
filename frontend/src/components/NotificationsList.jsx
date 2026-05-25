@@ -22,7 +22,7 @@ export default function NotificationsList({
     if (process.env.NODE_ENV !== "test") {
       try {
         let response = await api.post(
-          `https://huproject-production.up.railway.app/api/read_notification/${notification.id}/`,
+          `https://www.curadash.fr/api/read_notification/${notification.id}/`,
         );
       } catch (error) {
         console.log(error);

@@ -69,7 +69,7 @@ export default function Specialists({ recipient }) {
     const getSpecialist = async () => {
       try {
         const res = await api.get(
-          "https://huproject-production.up.railway.app/api/healthcare_professionals/",
+          "https://www.curadash.fr/api/healthcare_professionals/",
         );
       } catch (error) {
         console.log(error);

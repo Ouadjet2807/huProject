@@ -215,7 +215,7 @@ export default function AddEvent({
     if (!id) return;
     try {
       await api.delete(
-        `https://127.0.0.1:8000/api/agenda_item_categories/${id}`,
+        `https://www.curadash.fr/api/agenda_item_categories/${id}`,
       );
       let filterCategories = agenda.categories.filter((cat) => cat.id !== id);
 

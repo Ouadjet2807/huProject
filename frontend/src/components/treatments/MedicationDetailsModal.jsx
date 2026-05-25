@@ -366,7 +366,7 @@ export default function MedicationDetailsModal({
 
       if (Object.keys(treatment).length > 1) {
         const response = await api.put(
-          `https://huproject-production.up.railway.app/api/treatments/${treatment.id}/`,
+          `https://www.curadash.fr/api/treatments/${treatment.id}/`,
           data,
         );
         console.log(response);
@@ -390,7 +390,7 @@ export default function MedicationDetailsModal({
         }));
       } else {
         const response = await api.post(
-          "https://huproject-production.up.railway.app/api/treatments/",
+          "https://www.curadash.fr/api/treatments/",
           data,
         );
         setTreatmentsData((prev) => ({

@@ -103,7 +103,7 @@ export default function Recipient({ tab, match}) {
       if (token) {
         try {
           const response = await api.get(
-            `https://huproject-production.up.railway.app/api/recipients/${recipient_id}`
+            `https://www.curadash.fr/api/recipients/${recipient_id}`
           );
           setRecipient(response.data);
         } catch (error) {

@@ -36,7 +36,7 @@ function App() {
 
   const getNotifications = async () => {
     try {
-      let response = await api.get("https://huproject-production.up.railway.app/api/notifications/");
+      let response = await api.get("https://www.curadash.fr/api/notifications/");
       setNotifications(response.data);
     } catch (error) {
       console.log(error);

@@ -97,14 +97,14 @@ export default function CreateSpecialist({
 
     try {
       const response = await api.post(
-        "https://huproject-production.up.railway.app/api/healthcare_professionals/",
+        "https://www.curadash.fr/api/healthcare_professionals/",
         formData,
       );
 
       recipient.healthcare_professionals.push(response.data);
 
       await api.put(
-        `https://huproject-production.up.railway.app/api/recipients/${recipient.id}/`,
+        `https://www.curadash.fr/api/recipients/${recipient.id}/`,
         recipient,
       );
 
@@ -118,7 +118,7 @@ export default function CreateSpecialist({
     setText("Êtes-vous sûr(e) de vouloir supprimer ce professionel de santé ?");
     setAction(() => async () => {
         const response = await api.delete(
-          `https://huproject-production.up.railway.app/api/healthcare_professionals/${preloadedData.id}`,
+          `https://www.curadash.fr/api/healthcare_professionals/${preloadedData.id}`,
         );
         handleClose()
     });

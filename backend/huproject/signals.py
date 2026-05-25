@@ -64,7 +64,7 @@ def send_invitation(sender, instance, created, **kwargs):
     try :
 
         r = resend.Emails.send({
-            "from": "onboarding@resend.dev",
+            "from": "mail@curadash.fr",
             "to": address,
             "subject": "Hello World",
             "html": "<p>" + message + "</p>"

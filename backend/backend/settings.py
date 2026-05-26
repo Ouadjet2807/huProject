@@ -139,7 +139,8 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 
 DATABASES = {
       'default': {
-        'DATABASE': os.getenv("PG_NAME"),
+        'ENGINE': os.getenv("DB_ENGINE"),
+        'NAME': os.getenv("PG_NAME"),
         'USER': os.getenv("PGUSER"),
         'PASSWORD': os.getenv("PGPASSWORD"),
         'HOST': os.getenv("PGHOST"),

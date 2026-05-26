@@ -42,7 +42,7 @@ def check_treatment_expiration():
             )
             treatment.reminder_sent = True
             treatment.save()
-        if treatment.end_date == (today - timedelta(1)) and not treatment.expired_notification_sent:
+        if treatment.end_date <= (today - timedelta(1)) and not treatment.expired_notification_sent:
 
             title = "Un traitement a expiré"
             message = f"Le traitement {treatment.name} a expiré"

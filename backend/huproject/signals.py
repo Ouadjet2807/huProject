@@ -234,7 +234,7 @@ def create_caregiver_profile(sender, instance, created, **kwargs):
             user=instance,
             first_name=first_name,
             last_name=last_name,
-            access_level=invitation_info['role']
+            access_level=instance.invited['role']
         )
         logger.info(f"Caregiver created for user {instance!s}: caregiver id={caregiver.id}")
     except Exception as e:

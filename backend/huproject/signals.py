@@ -220,8 +220,8 @@ def create_caregiver_profile(sender, instance, created, **kwargs):
 
     if not created:
         return
-    
-    print(instance)
+
+    print(instance.invited)
 
     invitation_info = json.loads(instance.invited)
 

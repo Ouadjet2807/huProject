@@ -66,7 +66,8 @@ export default function Register({ data, token, setActiveTab, register, loading,
 
       const suffix = uuidv4()
       console.log(suffix);
-      console.log(suffix.match(/\d+/)[0]);
+      console.log(suffix.matchAll(/\d+/));
+      console.log(suffix.matchAll(/\d+/)[0]);
       
 
       const username =

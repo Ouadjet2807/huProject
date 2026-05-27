@@ -186,21 +186,27 @@ export default function AddEvent({
         setAgenda((prev) => ({ ...prev, items: filter }));
         setToastMessage("Événement modifié avec succès");
       } else {
+        console.log("no preloaded");
+        
         response = await api.post(
           "https://www.curadash.fr/api/agenda_items/",
           formData,
         );
-        setAgenda((prev) => ({
-          ...prev,
-          items: [...prev.items, response.data],
-        }));
+        // setAgenda((prev) => ({
+        //   ...prev,
+        //   items: [...prev.items, response.data],
+        // }));
         setToastMessage("Événement crée avec succès");
       }
 
       setShowToast(true);
       setColor("success");
       handleClose();
+      console.log("success");
+      
     } catch (error) {
+      console.log(error);
+      
       setShowToast(true);
       setToastMessage(
         "Une erreur s'est produite lors de la création de l'événement",

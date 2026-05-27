@@ -162,7 +162,7 @@ export default function AddEvent({
     setText("Êtes-vous sûr(e) de vouloir supprimer cet évenement ?");
     setAction(() => async () => {
       await api.delete(
-        `https://127.0.0.1:8000/api/agenda_items/${preloadedEvent.id}`,
+        `https://www.curadash.fr/api/agenda_items/${preloadedEvent.id}`,
       );
       handleClose();
       setSelectedEvent({});
@@ -178,7 +178,7 @@ export default function AddEvent({
       let response = "";
       if (Object.keys(preloadedEvent).length > 0) {
         response = await api.put(
-          `https://127.0.0.1:8000/api/agenda_items/${preloadedEvent.id}/`,
+          `https://www.curadash.fr/api/agenda_items/${preloadedEvent.id}/`,
           formData,
         );
         let index = agenda.items.indexOf(formData);
@@ -187,7 +187,7 @@ export default function AddEvent({
         setToastMessage("Événement modifié avec succès");
       } else {
         response = await api.post(
-          "https://127.0.0.1:8000/api/agenda_items/",
+          "https://www.curadash.fr/api/agenda_items/",
           formData,
         );
         setAgenda((prev) => ({

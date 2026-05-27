@@ -223,7 +223,7 @@ def create_caregiver_profile(sender, instance, created, **kwargs):
 
     print(instance.invited)
 
-    invitation_info = json.loads(instance.invited)
+    invitation_info = json.dumps(instance.invited)
 
     try:
         first_name = getattr(instance, 'first_name', '') or ''

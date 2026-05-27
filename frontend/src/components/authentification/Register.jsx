@@ -65,15 +65,11 @@ export default function Register({ data, token, setActiveTab, register, loading,
     if (formData.first_name.length > 0 && formData.last_name.length > 0) {
 
       const suffix = uuidv4()
-      console.log(suffix);
-      console.log(suffix.matchAll(/\d+/g));
-      console.log(suffix.matchAll(/\d+/g)[0]);
-      
 
       const username =
         formData.first_name[0].toLowerCase() +
         formData.last_name.toLowerCase() +
-        suffix.match(/\d+/)[0].slice(0, 4);
+        suffix.match(/[0-9]/g).join("").slice(0, 4);
 
       setFormData((prev) => ({
         ...prev,
@@ -97,6 +93,7 @@ export default function Register({ data, token, setActiveTab, register, loading,
       email: data.email,
     }));
   }, [data]);
+
 
   return (
     <div id="register" data-testid="registerComponent">

@@ -102,6 +102,8 @@ def remove_caregiver_from_space(sender, instance, **kwargs):
     Remove the caregiver from the space when its membership is deleted by the admin and create a new space
     """
 
+    print(instance.user)
+
     caregiver = Caregiver.objects.get(user=instance.user)
     space = Space.objects.get(id=instance.space.id)
 

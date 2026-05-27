@@ -65,6 +65,9 @@ export default function Register({ data, token, setActiveTab, register, loading,
     if (formData.first_name.length > 0 && formData.last_name.length > 0) {
 
       const suffix = uuidv4()
+      console.log(suffix);
+      console.log(suffix.match(/\d+/)[0]);
+      
 
       const username =
         formData.first_name[0].toLowerCase() +

@@ -106,7 +106,7 @@ def remove_caregiver_from_space(sender, instance, **kwargs):
 
     caregiver = Caregiver.objects.filter(user=instance.user)
 
-    if caregiver is None:
+    if caregiver[0] is None:
         return
 
     try:

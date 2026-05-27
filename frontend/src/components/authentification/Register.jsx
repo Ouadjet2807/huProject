@@ -94,6 +94,9 @@ export default function Register({ data, token, setActiveTab, register, loading,
     }));
   }, [data]);
 
+  console.log(formData);
+  
+
 
   return (
     <div id="register" data-testid="registerComponent">

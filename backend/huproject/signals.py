@@ -27,7 +27,7 @@ def register_treatment_date(sender, instance, created, **kwargs):
         return
 
     target_agenda = Agenda.objects.get(space=instance.space)
-    target_category = AgendaItemCategory.objects.get_or_create(name="Traitements médicaux", agenda_id=target_agenda.id)
+    target_category = AgendaItemCategory.objects.get_or_create(name="Traitements médicaux", agenda_id=target_agenda.id, color=json.dumps({"background": "#88abffe6", "text":"#264cc0ff"}))
 
     title = "Traitement " + (instance.name[:30] + '...') if len(instance.name) > 30 else instance.name
     recipients = Treatment.objects.get(id=instance.id)

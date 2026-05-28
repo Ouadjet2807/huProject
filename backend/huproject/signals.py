@@ -31,7 +31,7 @@ def register_treatment_date(sender, instance, created, **kwargs):
 
     title = "Traitement " + (instance.name[:30] + '...') if len(instance.name) > 30 else instance.name
     recipients = Treatment.objects.get(id=instance.id)
-    print(recipients.prescribed_to)
+    print(target_category)
 
     try:
         new_event = AgendaItem.objects.create(

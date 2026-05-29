@@ -2,26 +2,33 @@ import React, { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import api from "../../api/api";
-import Form from "react-bootstrap/Form"
+import Form from "react-bootstrap/Form";
 import FloatingLabel from "react-bootstrap/FloatingLabel";
 import { useSelector, useDispatch } from "react-redux";
 import { setValues } from "../../redux/spaceSlice";
 
-export default function CreateCategory({ show, setShow, agenda, selectCategory }) {
+export default function CreateCategory({
+  show,
+  setShow,
+  agenda,
+  selectCategory,
+}) {
   let colors = [
-    {background: "#ffcabde6", text:"#d49687ff"},
-    {background: "#ffdb87d7", text: "#bd9947ff"},
-    {background: "#fff395cf", text: "#a49837ff"},
-    {background: "#8eff6fae", text: "#4a9136ff"},
-    {background: "#92f0f9b7", text: "#2d787cff"},
-    {background: "#7eb6fbc7", text: "#3e6391ff"},
-    {background: "#c6bdffc5", text: "#564d94ff"},
-    {background: "#f3bdffc8", text: "#874397ff"},
-    {background: "#ffbdd2da", text: "#8a455bff"},
-    {background: "#ffd3a3d7", text: "#a0774bff"},
+    { background: "#ffcabde6", text: "#d49687ff" },
+    { background: "#ffdb87d7", text: "#bd9947ff" },
+    { background: "#fff395cf", text: "#a49837ff" },
+    { background: "#8eff6fae", text: "#4a9136ff" },
+    { background: "#92f0f9b7", text: "#2d787cff" },
+    { background: "#7eb6fbc7", text: "#3e6391ff" },
+    { background: "#c6bdffc5", text: "#564d94ff" },
+    { background: "#f3bdffc8", text: "#874397ff" },
+    { background: "#ffbdd2da", text: "#8a455bff" },
+    { background: "#ffd3a3d7", text: "#a0774bff" },
   ];
 
   const dispatch = useDispatch();
+
+  const space = useSelector((state) => state.space);
 
   const [newCategory, setNewCategory] = useState({
     name: "",
@@ -36,18 +43,17 @@ export default function CreateCategory({ show, setShow, agenda, selectCategory }
     try {
       let response = await api.post(
         "https://www.curadash.fr/api/agenda_item_categories/",
-        newCategory
+        newCategory,
       );
-      let updated_categories = agenda.categories.slice()
-      updated_categories.push(response.data)
-      dispatch(setValues(prev => ({
-        ...prev,
-        agenda: {
-          ...prev.agenda,
-          categories: updated_categories
-        }
-      })))
-      selectCategory(response.data)
+      let updated_categories = agenda.categories.slice();
+      updated_categories.push(response.data);
+      dispatch(
+        setValues({
+          ...space,
+          agenda: { ...space.agenda, categories: updated_categories },
+        }),
+      );
+      selectCategory(response.data);
       setNewCategory({
         name: "",
         color: colors[0],
@@ -68,42 +74,57 @@ export default function CreateCategory({ show, setShow, agenda, selectCategory }
   }, [agenda]);
 
   return (
-    <Modal data-testid="createCategoryModal" show={show} onHide={handleClose} className="create-category-modal">
+    <Modal
+      data-testid="createCategoryModal"
+      show={show}
+      onHide={handleClose}
+      className="create-category-modal"
+    >
       <Modal.Header closeButton>
         <Modal.Title>Créer une catégorie</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form action="" className="add-event">
-            <FloatingLabel
-              controlId="floatingInput"
-              label="Nouvelle catégorie"
-              className=""
-            >
-
-          <Form.Control
-            type="text"
-            name="category"
-            id=""
-            size="sm"
-            placeholder="Nouvelle catégorie"
-            onChange={(e) =>
-              setNewCategory((prev) => ({ ...prev, name: e.target.value.trim() }))
-            }
+          <FloatingLabel
+            controlId="floatingInput"
+            label="Nouvelle catégorie"
+            className=""
+          >
+            <Form.Control
+              type="text"
+              name="category"
+              id=""
+              size="sm"
+              placeholder="Nouvelle catégorie"
+              onChange={(e) =>
+                setNewCategory((prev) => ({
+                  ...prev,
+                  name: e.target.value.trim(),
+                }))
+              }
             />
-            </FloatingLabel>
+          </FloatingLabel>
           <label>Couleur</label>
           <div className="colors">
             {colors.map((color) => {
               return (
                 <div
                   className={`color ${
-                    newCategory.color.background === color.background ? "selected" : ""
+                    newCategory.color.background === color.background
+                      ? "selected"
+                      : ""
                   }`}
                   onClick={() =>
                     setNewCategory((prev) => ({ ...prev, color: color }))
                   }
                 >
-                  <div className="center" style={{ background: color.background, border: `1px solid ${color.text}` }}></div>
+                  <div
+                    className="center"
+                    style={{
+                      background: color.background,
+                      border: `1px solid ${color.text}`,
+                    }}
+                  ></div>
                 </div>
               );
             })}
@@ -111,7 +132,9 @@ export default function CreateCategory({ show, setShow, agenda, selectCategory }
         </Form>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="md-green" onClick={handleSubmit}>Créer</Button>
+        <Button variant="md-green" onClick={handleSubmit}>
+          Créer
+        </Button>
         <Button variant="outline-secondary" onClick={handleClose}>
           Annuler
         </Button>

@@ -159,13 +159,15 @@ export default function AddEvent({
   const deleteEvent = async () => {
     if (!preloadedEvent.id) return;
     setText("Êtes-vous sûr(e) de vouloir supprimer cet évenement ?");
-    setAction(() => async () => {
+
+    const deleteFunc = async () => {
       const response = await api.delete(
         `https://www.curadash.fr/api/agenda_items/${preloadedEvent.id}`,
       );
       handleClose();
       setSelectedEvent({});
-    });
+    }
+    setAction(() => deleteFunc());
     setShowConfirm(true);
   };
 

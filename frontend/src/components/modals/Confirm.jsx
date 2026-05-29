@@ -37,6 +37,9 @@ export default function Confirm({ show, setShow, action, text, setReturnValue })
 
   };
 
+  console.log(action);
+  
+
   return (
     <Modal show={show} onHide={handleClose} className="confirm-modal">
       <Modal.Header closeButton>

@@ -22,9 +22,10 @@ import FloatingLabel from "react-bootstrap/FloatingLabel";
 import { IoIosClose } from "react-icons/io";
 import { AiOutlineUsergroupAdd } from "react-icons/ai";
 import { HiOutlineBars3BottomLeft } from "react-icons/hi2";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { BsCheck2 } from "react-icons/bs";
 import { LuAlarmClockCheck } from "react-icons/lu";
+import { setValues } from "../../redux/spaceSlice.js";
 
 export default function AddEvent({
   agenda,
@@ -41,6 +42,8 @@ export default function AddEvent({
   const { setShowToast, setToastMessage, setColor } = useContext(ToastContext);
   const { showConfirm, setShowConfirm, setText, setAction, returnValue } =
     useContext(ConfirmContext);
+
+  const dispatch = useDispatch();
 
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [showCreateCategory, setShowCreateCategory] = useState(false);
@@ -78,7 +81,7 @@ export default function AddEvent({
     .local()
     .format();
 
-    const initialEventData = {
+  const initialEventData = {
     title: "",
     private: false,
     category: null,
@@ -90,10 +93,9 @@ export default function AddEvent({
     caregivers: [],
     recipients: [],
     reminder: { name: "15 minutes avant", value: ["minutes", 15] },
-  }
+  };
 
   const [formData, setFormData] = useState(initialEventData);
-
 
   const handleChange = (e) => {
     // handling different input types
@@ -148,7 +150,6 @@ export default function AddEvent({
   };
 
   const selectCategory = (category) => {
-
     setFormData((prev) => ({
       ...prev,
       category: category.id,
@@ -173,7 +174,6 @@ export default function AddEvent({
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-
     try {
       let response = "";
       if (Object.keys(preloadedEvent).length > 0) {
@@ -186,16 +186,22 @@ export default function AddEvent({
         setAgenda((prev) => ({ ...prev, items: filter }));
         setToastMessage("Événement modifié avec succès");
       } else {
-        console.log("no preloaded");
-        
         response = await api.post(
           "https://www.curadash.fr/api/agenda_items/",
           formData,
         );
-        // setAgenda((prev) => ({
-        //   ...prev,
-        //   items: [...prev.items, response.data],
-        // }));
+        
+        // dispatch(setValues({
+        //   ...space,
+        //   agenda: {
+        //     ...space.agenda,
+        //     items: 
+        //   }
+        // }))
+        setAgenda((prev) => ({
+          ...prev,
+          items: [...prev.items, response.data],
+        }));
         setToastMessage("Événement crée avec succès");
       }
 
@@ -203,10 +209,9 @@ export default function AddEvent({
       setColor("success");
       handleClose();
       console.log("success");
-      
     } catch (error) {
       console.log(error);
-      
+
       setShowToast(true);
       setToastMessage(
         "Une erreur s'est produite lors de la création de l'événement",
@@ -237,7 +242,7 @@ export default function AddEvent({
 
   const handleClose = () => {
     if (!preloadedEvent) {
-      setFormData({initialEventData});
+      setFormData({ initialEventData });
     }
     setShow(false);
   };
@@ -265,7 +270,6 @@ export default function AddEvent({
 
   useEffect(() => {
     if (formData.start_date) {
-
       let start_date = moment(formData.start_date);
       setFormData((prev) => ({
         ...prev,
@@ -276,7 +280,7 @@ export default function AddEvent({
 
   useEffect(() => {
     if (Object.keys(preloadedEvent).length <= 0) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         start_date: default_start_date,
         end_date: default_end_date,
@@ -340,7 +344,7 @@ export default function AddEvent({
         agenda={agenda}
       />
       <Modal
-      data-testid="addEventModal"
+        data-testid="addEventModal"
         size="lg"
         show={show}
         onHide={handleClose}
@@ -380,7 +384,7 @@ export default function AddEvent({
                   agenda.categories.map((category) => {
                     return (
                       <Dropdown.Item
-                        className={`${formData.category && formData.category === category.id ? 'selected' : ''}`}
+                        className={`${formData.category && formData.category === category.id ? "selected" : ""}`}
                         onClick={() => {
                           selectCategory(category);
                         }}
@@ -425,7 +429,7 @@ export default function AddEvent({
                 {reminders.map((reminder) => {
                   return (
                     <Dropdown.Item
-                      className={`${formData.reminder && JSON.stringify(formData.reminder.value) === JSON.stringify(reminder.value) ? 'selected' : ''}`}
+                      className={`${formData.reminder && JSON.stringify(formData.reminder.value) === JSON.stringify(reminder.value) ? "selected" : ""}`}
                       style={{
                         display: "flex",
                         gap: "10px",

@@ -29,11 +29,9 @@ import { setValues } from "../../redux/spaceSlice.js";
 
 export default function AddEvent({
   agenda,
-  setAgenda,
   show,
   setShow,
   preloadedEvent,
-  fetchAgenda,
   setSelectedEvent,
 }) {
   moment.locale("fr");
@@ -173,7 +171,7 @@ export default function AddEvent({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    let updated_events
     try {
       let response = "";
       if (Object.keys(preloadedEvent).length > 0) {
@@ -182,8 +180,7 @@ export default function AddEvent({
           formData,
         );
         let index = agenda.items.indexOf(formData);
-        let filter = agenda.items.toSpliced(index, 1, formData);
-        setAgenda((prev) => ({ ...prev, items: filter }));
+        updated_events = agenda.items.toSpliced(index, 1, formData);
         setToastMessage("Événement modifié avec succès");
       } else {
         response = await api.post(
@@ -191,19 +188,19 @@ export default function AddEvent({
           formData,
         );
         
-        // dispatch(setValues({
-        //   ...space,
-        //   agenda: {
-        //     ...space.agenda,
-        //     items: 
-        //   }
-        // }))
-        setAgenda((prev) => ({
-          ...prev,
-          items: [...prev.items, response.data],
-        }));
+        updated_events = agenda.items.slice()
+        updated_events.push(response.data)
+
         setToastMessage("Événement crée avec succès");
       }
+
+      dispatch(setValues({
+        ...space,
+        agenda: {
+          ...space.agenda,
+          items: updated_events
+        }
+      }))
 
       setShowToast(true);
       setColor("success");

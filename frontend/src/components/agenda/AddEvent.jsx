@@ -226,8 +226,13 @@ export default function AddEvent({
         `https://www.curadash.fr/api/agenda_item_categories/${id}`,
       );
       let filterCategories = agenda.categories.filter((cat) => cat.id !== id);
-
-      setAgenda((prev) => ({ ...prev, categories: filterCategories }));
+       dispatch(setValues({
+        ...space,
+        agenda: {
+          ...space.agenda,
+          categories: filterCategories
+        }
+      }))
       if (selectedCategory.id === id) {
         setSelectedCategory(null);
         setFormData((prev) => ({ ...prev, category: "" }));

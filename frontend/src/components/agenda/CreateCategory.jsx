@@ -4,6 +4,8 @@ import Modal from "react-bootstrap/Modal";
 import api from "../../api/api";
 import Form from "react-bootstrap/Form"
 import FloatingLabel from "react-bootstrap/FloatingLabel";
+import { useSelector, useDispatch } from "react-redux";
+import { setValues } from "../../redux/spaceSlice";
 
 export default function CreateCategory({ show, setShow, agenda, selectCategory }) {
   let colors = [
@@ -18,6 +20,8 @@ export default function CreateCategory({ show, setShow, agenda, selectCategory }
     {background: "#ffbdd2da", text: "#8a455bff"},
     {background: "#ffd3a3d7", text: "#a0774bff"},
   ];
+
+  const dispatch = useDispatch();
 
   const [newCategory, setNewCategory] = useState({
     name: "",
@@ -34,7 +38,15 @@ export default function CreateCategory({ show, setShow, agenda, selectCategory }
         "https://www.curadash.fr/api/agenda_item_categories/",
         newCategory
       );
-      agenda.categories.push(response.data)
+      let updated_categories = agenda.categories.slice()
+      updated_categories.push(response.data)
+      dispatch(setValues(prev => ({
+        ...prev,
+        agenda: {
+          ...prev.agenda,
+          categories: updated_categories
+        }
+      })))
       selectCategory(response.data)
       setNewCategory({
         name: "",

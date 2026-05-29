@@ -160,7 +160,7 @@ export default function AddEvent({
     if (!preloadedEvent.id) return;
     setText("Êtes-vous sûr(e) de vouloir supprimer cet évenement ?");
     setAction(() => async () => {
-      await api.delete(
+      const response = await api.delete(
         `https://www.curadash.fr/api/agenda_items/${preloadedEvent.id}`,
       );
       handleClose();

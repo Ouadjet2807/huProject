@@ -4,17 +4,17 @@ import Modal from "react-bootstrap/Modal";
 import { ToastContext } from "../../context/ToastContext";
 
 export default function Confirm({ show, setShow, action, text, setReturnValue }) {
-  const { setShowToast, setMessage, setColor } = useContext(ToastContext);
+  const { setShowToast, setToasttMessage, setColor } = useContext(ToastContext);
 
   const handleActionError = () => {
-    setMessage("Une erreur s'est produite veuillez-réessayer")
+    setToasttMessage("Une erreur s'est produite veuillez-réessayer")
     setColor("danger");
     setShowToast(true);
     setReturnValue(false)
   };
 
   const handleActionSuccess = () => {
-    setMessage("")
+    setToasttMessage("")
     setColor("success");
     setShowToast(true);
     setReturnValue(true)

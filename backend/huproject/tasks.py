@@ -15,6 +15,9 @@ def register_notification(message, title, data, path, space, receivers):
 @shared_task
 def check_treatment_expiration():
 
+
+    print("check treatments")
+
     today = timezone.now().date()
     reminder_date = today + timedelta(7)
 
@@ -59,6 +62,8 @@ def check_treatment_expiration():
 def reset_todos():
     todo_items = TodoListItem.objects.all()
 
+    print("reset todos")
+
     today = timezone.now()
 
     frequencies = {
@@ -80,6 +85,9 @@ def reset_todos():
 
 @shared_task
 def check_events_reminder():
+
+
+    print("check events")
 
     events = AgendaItem.objects.all()
 

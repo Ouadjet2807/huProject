@@ -102,6 +102,8 @@ def check_events_reminder():
 
     events = AgendaItem.objects.all()
 
+    print(events)
+
     now = timezone.now() + timedelta(hours=1)
 
     frequency_fr = {

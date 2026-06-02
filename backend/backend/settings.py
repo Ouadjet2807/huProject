@@ -201,15 +201,15 @@ CELERY_TIMEZONE = 'UTC'
 CELERY_BEAT_SCHEDULE = {
     "check-treatment-expiration-daily": {
         "task": "huproject.tasks.check_treatment_expiration",
-        "schedule":crontab(minute='*/1',)
+        "schedule":crontab(minute='*/5',)
     },
     "check-event-reminder-daily": {
         "task": "huproject.tasks.check_events_reminder",
-        "schedule":crontab(minute='*/1',)
+        "schedule":crontab(minute='*/5',)
     },
     "reset-todos-daily": {
         "task": "huproject.tasks.reset_todos",
-        "schedule":crontab(minute='*/1',)
+        "schedule":crontab(minute='*/5',)
     },
 }
 

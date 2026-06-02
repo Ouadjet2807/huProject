@@ -63,6 +63,8 @@ def check_treatment_expiration():
 def reset_todos():
     todo_items = TodoListItem.objects.all()
 
+    print(todo_items)
+
     print("reset todos")
 
     today = timezone.now()
@@ -97,7 +99,7 @@ def check_events_reminder():
 
     print("check events")
     print("blablablou")
-    
+
     events = AgendaItem.objects.all()
 
     now = timezone.now() + timedelta(hours=1)

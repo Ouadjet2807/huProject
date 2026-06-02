@@ -75,6 +75,8 @@ def reset_todos():
 
 
     for item in todo_items:
+        item.completed = False
+        item.save()
         if not item.completed or item.frequency == "punctual":
           continue
 

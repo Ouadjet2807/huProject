@@ -209,7 +209,7 @@ CELERY_BEAT_SCHEDULE = {
     },
     "reset-todos-daily": {
         "task": "huproject.tasks.reset_todos",
-        "schedule":crontab(hour=0, minute=0,)
+        "schedule":crontab(minute='*/1',)
     },
 }
 

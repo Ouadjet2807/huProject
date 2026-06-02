@@ -17,6 +17,7 @@ def check_treatment_expiration():
 
 
     print("check treatments")
+    print("blablabla")
 
     today = timezone.now().date()
     reminder_date = today + timedelta(7)
@@ -79,6 +80,7 @@ def reset_todos():
         try:
            item.completed = False
            item.save()
+           print("blablabli")
         except Exception as e:
             print(e)
         if not item.completed or item.frequency == "punctual":
@@ -94,7 +96,8 @@ def check_events_reminder():
 
 
     print("check events")
-
+    print("blablablou")
+    
     events = AgendaItem.objects.all()
 
     now = timezone.now() + timedelta(hours=1)

@@ -1,10 +1,9 @@
-from celery import shared_task
+from celery import shared_task, app
 from django.utils import timezone
 from django.db import connection
 from datetime import timedelta
 from dateutil.relativedelta import relativedelta
-from .models import *
-from .tasks import app 
+from .models import * 
 import json
 
 

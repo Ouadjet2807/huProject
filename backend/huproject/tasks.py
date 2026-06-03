@@ -7,11 +7,11 @@ from .models import *
 import json
 
 
-@shared_task
-def debug_db():
-    print("DATABASES:", settings.DATABASES)
-    print("DB NAME:", connection.settings_dict["NAME"])
-    print("DB HOST:", connection.settings_dict["HOST"])
+# @shared_task
+# def debug_db():
+#     print("DATABASES:", settings.DATABASES)
+#     print("DB NAME:", connection.settings_dict["NAME"])
+#     print("DB HOST:", connection.settings_dict["HOST"])
 
 
 def register_notification(message, title, data, path, space, receivers):

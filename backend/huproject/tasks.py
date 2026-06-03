@@ -71,6 +71,7 @@ def check_treatment_expiration():
 @shared_task
 def reset_todos():
     todo_items = TodoListItem.objects.all()
+    print(TodoListItem.objects.count)
 
     print(todo_items)
 

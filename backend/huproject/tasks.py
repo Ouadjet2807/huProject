@@ -4,6 +4,7 @@ from django.db import connection
 from datetime import timedelta
 from dateutil.relativedelta import relativedelta
 from .models import *
+from .tasks import app 
 import json
 
 

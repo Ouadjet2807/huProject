@@ -1,9 +1,18 @@
 from celery import shared_task
 from django.utils import timezone
+from django.db import connection
 from datetime import timedelta
 from dateutil.relativedelta import relativedelta
 from .models import *
 import json
+
+
+@app.task
+def debug_db():
+    print("DATABASES:", settings.DATABASES)
+    print("DB NAME:", connection.settings_dict["NAME"])
+    print("DB HOST:", connection.settings_dict["HOST"])
+
 
 def register_notification(message, title, data, path, space, receivers):
 

@@ -7,32 +7,24 @@ from .models import *
 import json
 
 
-@shared_task
-def debug_db():
-    print("DATABASES:", settings.DATABASES)
-    print("DB NAME:", connection.settings_dict["NAME"])
-    print("DB HOST:", connection.settings_dict["HOST"])
-
 
 def register_notification(message, title, data, path, space, receivers):
 
     json_data = json.dumps(data)
 
     for receiver in receivers:
-        Notification.objects.create(space=space, title=title, message=message, user=receiver, reference_item=json_data, object_path=path)
+        try:
+            Notification.objects.create(space=space, title=title, message=message, user=receiver, reference_item=json_data, object_path=path)
+        except Exception as e:
+            print(e)
 
 @shared_task
 def check_treatment_expiration():
-
-
-    print("check treatments")
-    print("blablabla")
 
     today = timezone.now().date()
     reminder_date = today + timedelta(7)
 
     treatments = Treatment.everything.all()
-
 
     for treatment in treatments:
 
@@ -50,32 +42,34 @@ def check_treatment_expiration():
             title = "Un traitement va bientôt expirer"
             message = f"Le traitement {treatment.name} arrive à expiration dans 7 jours"
 
-            register_notification(
-                message, title, data, path, space, space.caregivers.all()
-            )
-            treatment.reminder_sent = True
-            treatment.save()
+            try:
+                register_notification(
+                    message, title, data, path, space, space.caregivers.all()
+                )
+                treatment.reminder_sent = True
+                treatment.save()
+            except Exception as e:
+                print(e)
+
         if treatment.end_date <= (today - timedelta(1)) and not treatment.expired_notification_sent:
 
             title = "Un traitement a expiré"
             message = f"Le traitement {treatment.name} a expiré"
 
-            register_notification(
-                message, title, data, path, space, space.caregivers.all()
-            )
+            try:
+                register_notification(
+                    message, title, data, path, space, space.caregivers.all()
+                )
 
-            treatment.expired_notification_sent = True
-            treatment.save()
+                treatment.expired_notification_sent = True
+                treatment.save()
+            except Exception as e:
+                print(e)
 
 
 @shared_task
 def reset_todos():
     todo_items = TodoListItem.objects.all()
-    print(TodoListItem.objects.count())
-
-    print(todo_items)
-
-    print("reset todos")
 
     today = timezone.now()
 
@@ -86,34 +80,23 @@ def reset_todos():
     }
 
 
-
     for item in todo_items:
 
-        try:
-           item.completed = False
-           item.save()
-           print("blablabli")
-        except Exception as e:
-            print(e)
         if not item.completed or item.frequency == "punctual":
           continue
 
         for key in frequencies:
             if item.frequency == key and item.updated_at <= frequencies[key]:
-                item.completed = False
-                item.save()
+                try:
+                    item.completed = False
+                    item.save()
+                except Exception as e:
+                    print(e)
 
 @shared_task
 def check_events_reminder():
 
-
-    print("check events")
-    print("blablablou")
-
     events = AgendaItem.objects.all()
-
-    print(events)
-
     now = timezone.now() + timedelta(hours=1)
 
     frequency_fr = {
@@ -132,6 +115,7 @@ def check_events_reminder():
 
         timedeltaKwargs = {f"{reminder_dict['value'][0]}": reminder_dict["value"][1]}
         reminder_time = event.start_date - timedelta(**timedeltaKwargs)
+
         if reminder_time == now.replace(microsecond=0):
 
 
@@ -147,10 +131,13 @@ def check_events_reminder():
 
             space = Space.objects.get(agenda_space=event.agenda)
 
-            register_notification(
-                message, title, data, path, space, event.caregivers.all()
-            )
+            try:
+                register_notification(
+                    message, title, data, path, space, event.caregivers.all()
+                )
 
-            event.reminder_sent = True
-            event.save()
+                event.reminder_sent = True
+                event.save()
+            except Exception as e:
+                print(e)
 

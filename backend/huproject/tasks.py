@@ -1,4 +1,4 @@
-from celery import shared_task, app
+from celery import shared_task
 from django.utils import timezone
 from django.db import connection
 from datetime import timedelta
@@ -7,7 +7,7 @@ from .models import *
 import json
 
 
-@app.task
+@shared_task
 def debug_db():
     print("DATABASES:", settings.DATABASES)
     print("DB NAME:", connection.settings_dict["NAME"])

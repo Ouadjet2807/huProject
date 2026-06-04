@@ -211,10 +211,6 @@ CELERY_BEAT_SCHEDULE = {
         "task": "huproject.tasks.reset_todos",
         "schedule":crontab(minute='*/5',)
     },
-    "debug_db": {
-        "task": "huproject.tasks.debug_db",
-        "schedule":crontab(minute='*/5',)
-    },
 }
 
 

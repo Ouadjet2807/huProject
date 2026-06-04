@@ -86,7 +86,7 @@ def reset_todos():
           continue
 
         for key in frequencies:
-            print(item.updated_at.replace(hour=0, minute=0, second=0, microsecond=0))
+
             if item.frequency == key and item.updated_at.replace(hour=0, minute=0, second=0, microsecond=0) <= frequencies[key]:
                 try:
                     item.completed = False

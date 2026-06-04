@@ -71,7 +71,7 @@ def check_treatment_expiration():
 def reset_todos():
     todo_items = TodoListItem.objects.all()
 
-    today = timezone.now().replace(microsecond=0)
+    today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
 
     frequencies = {
         "daily": today - timedelta(days=1),
@@ -86,7 +86,8 @@ def reset_todos():
           continue
 
         for key in frequencies:
-            if item.frequency == key and item.updated_at.replace(microsecond=0) <= frequencies[key]:
+            print(item.updated_at.replace(hour=0, minute=0, second=0, microsecond=0))
+            if item.frequency == key and item.updated_at.replace(hour=0, minute=0, second=0, microsecond=0) <= frequencies[key]:
                 try:
                     item.completed = False
                     item.save()

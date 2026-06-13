@@ -59,6 +59,9 @@ class CustomAdminUser(UserAdmin):
     list_display = ('id', 'username', 'email', 'first_name', 'last_name', 'invited')
     add_form = CustomUserCreationForm
     form = CustomUserChangeForm
+    fieldsets = UserAdmin.fieldsets + (
+    (None, {'fields': ('invited',)}),
+)
     model = CustomUser
 
 

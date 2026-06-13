@@ -203,13 +203,15 @@ export default function TodoList({ user }) {
                     {todo.title}
                   </Form.Check.Label>
                 </div>
+                {todo.created_by == user &&
                 <div
-                  data-testid="deleteTodoButton"
-                  className="delete"
-                  onClick={() => deleteTodo(todo)}
+                data-testid="deleteTodoButton"
+                className="delete"
+                onClick={() => deleteTodo(todo)}
                 >
                   <LuTrash2 />
                 </div>
+                }
               </div>
             );
           })}

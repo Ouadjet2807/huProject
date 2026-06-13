@@ -15,6 +15,18 @@ export default function Home({ user, loading, caregivers, recipients }) {
 
   const navigate = useNavigate();
 
+  const canAddRecipient = (user) => {
+
+    if(!user) return
+
+    let role = JSON.parse(user.invited).role
+
+    return role < 3
+  }
+
+
+  console.log(user);
+  
   return (
     <div id="home">
       <div className="home-container">
@@ -52,10 +64,11 @@ export default function Home({ user, loading, caregivers, recipients }) {
             ) : (
               <p data-testid="noRecipients">Aucun aidé</p>
             )}
-
+            {canAddRecipient(user) &&
             <Button variant="aqua" onClick={() => setAddRecipient(true)}>
               <FiPlus /> Ajouter un aidé
             </Button>
+            }
           </div>
           <div className="caregivers box">
             {loading && <Loader overlay={true} />}

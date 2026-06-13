@@ -17,9 +17,9 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ('id', 'username', 'email', 'last_name', 'first_name', 'password', 'confirm_password', 'invited', 'is_admin')
+        fields = ('id', 'username', 'email', 'last_name', 'first_name', 'password', 'confirm_password', 'invited', 'is_admin', 'can_edit')
         extra_kwargs = {'password': {"write_only": True}}
-        read_only_fields = ('id', 'is_admin')
+        read_only_fields = ('id', 'is_admin', 'can_edit')
 
     def validate(self, attrs):
         if attrs["password"] != attrs["confirm_password"]:

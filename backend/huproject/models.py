@@ -69,6 +69,10 @@ class CustomUser(AbstractUser):
     def is_admin(self) -> bool:
         membership = SpaceMembership.objects.get(user=self)
         return membership.role == 1
+    
+    def can_edit(self) -> bool:
+        membership = SpaceMembership.objects.get(user=self)
+        return membership.role < 3
 
     def __str__(self) -> str:
         return self.email

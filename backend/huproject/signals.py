@@ -222,6 +222,8 @@ def create_caregiver_profile(sender, instance, created, **kwargs):
 
     print(instance.invited)
 
+    invitation_info = json.loads(instance.invited)
+
     try:
         first_name = getattr(instance, 'first_name', '') or ''
         last_name = getattr(instance, 'last_name', '') or ''
@@ -231,7 +233,7 @@ def create_caregiver_profile(sender, instance, created, **kwargs):
             user=instance,
             first_name=first_name,
             last_name=last_name,
-            access_level=instance.invited.role
+            access_level=invitation_info["role"]
         )
         logger.info(f"Caregiver created for user {instance!s}: caregiver id={caregiver.id}")
     except Exception as e:

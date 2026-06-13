@@ -103,22 +103,22 @@ def remove_caregiver_from_space(sender, instance, **kwargs):
     space = Space.objects.get(id=instance.space.id)
 
     caregiver = Caregiver.objects.get(user=instance.user)
-    
+
     try:
       space.caregivers.remove(caregiver)
 
-      new_space_name = f"{caregiver.first_name or caregiver.user.email}'s Space"
-      new_space = Space.objects.create(
-                name=new_space_name,
-                description="Personal space created automatically",
-                created_by=caregiver.user  # ensure created_by FK exists and allows null if needed
-            )
-      new_space.caregivers.add(caregiver)
-      membership = SpaceMembership.objects.create(
-        space=new_space,
-        user= caregiver.user,
-        role = caregiver.access_level
-        )
+    #   new_space_name = f"{caregiver.first_name or caregiver.user.email}'s Space"
+    #   new_space = Space.objects.create(
+    #             name=new_space_name,
+    #             description="Personal space created automatically",
+    #             created_by=caregiver.user  # ensure created_by FK exists and allows null if needed
+    #         )
+    #   new_space.caregivers.add(caregiver)
+    #   membership = SpaceMembership.objects.create(
+    #     space=new_space,
+    #     user= caregiver.user,
+    #     role = caregiver.access_level
+    #     )
     except Exception as e:
         raise ValidationError("couldn't remove the caregiver")
 

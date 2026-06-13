@@ -160,7 +160,7 @@ def create_caregiver_space(sender, instance, created, **kwargs):
         membership = SpaceMembership.objects.create(
         space=space,
         user= instance.user,
-        role = instance.access_level
+        role = instance.role
         )
         logger.info(f"Space created for caregiver {instance!s}: space id={space.id}")
         logger.info(f"Membership created for space {instance!s}: membership id={membership.id}")
@@ -225,9 +225,7 @@ def create_caregiver_profile(sender, instance, created, **kwargs):
     if not created:
         return
 
-    print(instance.invited)
-
-    invitation_info = json.dumps(instance.invited)
+    print(instance.invited.role)
 
     try:
         first_name = getattr(instance, 'first_name', '') or ''

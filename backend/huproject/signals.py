@@ -103,10 +103,7 @@ def remove_caregiver_from_space(sender, instance, **kwargs):
     space = Space.objects.get(id=instance.space.id)
 
     caregiver = Caregiver.objects.get(user=instance.user)
-
-    if len(caregiver) == 0:
-        return
-
+    
     try:
       space.caregivers.remove(caregiver)
 

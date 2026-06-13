@@ -5,6 +5,7 @@ from rest_framework.generics import GenericAPIView, RetrieveAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.exceptions import NotFound
+from django.contrib.auth import logout
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import IntegrityError
 from django.shortcuts import get_object_or_404
@@ -74,7 +75,7 @@ class UserLogoutAPIView(GenericAPIView):
 
     def post(self, request, *args, **kwargs):
         try:
-            request.user.auth_token.delete()
+            logout(request)
             return Response({"message": "Logged out successfully"}, status=200)
         except Exception as e:
             return Response(str(e), status=status.HTTP_400_BAD_REQUEST)

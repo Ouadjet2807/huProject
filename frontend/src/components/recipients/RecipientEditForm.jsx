@@ -160,20 +160,23 @@ export default function RecipientEditForm({
                       type="text"
                       name="allergies"
                       id=""
+                      disabled={user && !user.can_edit}
                       value={medicalInfo.allergies[index]}
                       onChange={(e) => handleMedicalInfo(e, index)}
                     />
+                    {(user && user.can_edit) &&
                     <Button
-                      type="button"
-                      name="delete_field"
-                      data-testid={`deleteFieldButton_${index + 1}`}
-                      className="delete"
-                      variant="outline-green"
-                      onClick={(e) => deleteAllergiesField(e, index)}
-                      disabled={medicalInfo.allergies.length < 2}
+                    type="button"
+                    name="delete_field"
+                    data-testid={`deleteFieldButton_${index + 1}`}
+                    className="delete"
+                    variant="outline-green"
+                    onClick={(e) => deleteAllergiesField(e, index)}
+                    disabled={medicalInfo.allergies.length < 2}
                     >
                       <FaRegTrashCan />
                     </Button>
+                    }
                   </div>
                 );
               })}
@@ -203,9 +206,11 @@ export default function RecipientEditForm({
         <Loader />
       )}
 
+      {(user && user.can_edit) &&
       <Button className="save-button" variant="aqua">
         <LuSave /> Sauvegarder
       </Button>
+      }
     </div>
   );
 }

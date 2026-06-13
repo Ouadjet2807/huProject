@@ -1,4 +1,4 @@
-import React, { use, useEffect, useRef, useState } from "react";
+import React, { use, useContext, useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
@@ -21,6 +21,7 @@ import Dropdown from "react-bootstrap/Dropdown";
 import Form from "react-bootstrap/Form";
 import { PiTagDuotone } from "react-icons/pi";
 import { useNavigate, useParams } from "react-router";
+import { AuthContext } from "../../context/AuthContext";
 
 export default function Agenda({loading, setLoading, agenda}) {
   const [events, setEvents] = useState([]);
@@ -32,6 +33,8 @@ export default function Agenda({loading, setLoading, agenda}) {
   const today = new Date();
 
   const { id } = useParams();
+
+  const { user } = useContext(AuthContext)
 
   const calendarRef = useRef()
 
@@ -272,18 +275,21 @@ export default function Agenda({loading, setLoading, agenda}) {
             </div>
           </>
         )}
+
+        {(user && user.can_edit) &&
         <Button
-          disabled={loading}
-          data-testid="addEventButton"
-          variant="aqua"
-          className="add-event-btn"
-          style={{ margin: "0 auto" }}
-          onClick={() => setShowEventForm(true)}
+        disabled={loading}
+        data-testid="addEventButton"
+        variant="aqua"
+        className="add-event-btn"
+        style={{ margin: "0 auto" }}
+        onClick={() => setShowEventForm(true)}
         >
           <LuCalendarPlus />{" "}
           {Object.keys(selectedEvent).length > 0 ? "Modifier l'" : "Ajouter un"}{" "}
           événement
         </Button>
+        }
       </div>
       <div className="right-tab">
         {loading && <Loader overlay={true} />}

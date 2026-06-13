@@ -31,6 +31,7 @@ import { TbLayoutListFilled } from "react-icons/tb";
 import { TbLayoutGrid } from "react-icons/tb";
 import { TbLayoutGridFilled } from "react-icons/tb";
 import { useNavigate } from "react-router";
+import { AuthContext } from "../../context/AuthContext";
 
 
 export default function RecipientTreatments({ recipient }) {
@@ -57,6 +58,7 @@ export default function RecipientTreatments({ recipient }) {
   const { width, height } = useContext(UseDimensionsContext);
   const { showConfirm, setShowConfirm, setText, setAction, returnValue } =
     useContext(ConfirmContext);
+    const { user } = useContext(AuthContext)
   const [loading, setLoading] = useState(true);
 
   moment.locale("fr");
@@ -486,15 +488,18 @@ export default function RecipientTreatments({ recipient }) {
           </div>
         )}
       </div>
+
+      {(user && user.can_edit) && 
       <Button
-        variant="aqua"
-        disabled={loading}
-        data-testid="addTreatmentButton"
-        className="add-treatment-btn"
-        onClick={() => setShowAddTreatement(true)}
+      variant="aqua"
+      disabled={loading}
+      data-testid="addTreatmentButton"
+      className="add-treatment-btn"
+      onClick={() => setShowAddTreatement(true)}
       >
         <CiMedicalClipboard /> Ajouter un traitement
       </Button>
+      }
     </div>
   );
 }

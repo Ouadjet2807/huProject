@@ -21,12 +21,15 @@ import { ConfirmContext } from "../../context/ConfirmContext";
 import { UseDimensionsContext } from "../../context/UseDimensionsContext";
 import Badge from "react-bootstrap/Badge";
 import { useSelector } from "react-redux";
+import { AuthContext } from "../../context/AuthContext";
 
 export default function TreatmentPage() {
   const { id } = useParams();
   const { setShowConfirm, setText, setAction } =
     useContext(ConfirmContext);
   const { width, height } = useContext(UseDimensionsContext);
+  const { user } = useContext(AuthContext)
+  
   const space = useSelector((state) => state.space);
   const navigate = useNavigate();
   const today = moment(new Date());
@@ -410,22 +413,24 @@ export default function TreatmentPage() {
                     .format("dddd Do MMMM YYYY")}
                 </strong>
               </div>
+              {(user && user.can_edit) &&
               <div className="actions">
                 <Button
                   data-testid="editButton"
                   variant="outline-md-green"
                   onClick={() => setShowMedicationDetails(true)}
-                >
+                  >
                   <CiEdit /> Modifier
                 </Button>
                 <Button
                   data-testid="deleteButton"
                   variant="outline-danger"
                   onClick={() => confirmRemoval()}
-                >
+                  >
                   <LuTrash2 /> Supprimer
                 </Button>
               </div>
+                }
             </div>
           </div>
         </div>

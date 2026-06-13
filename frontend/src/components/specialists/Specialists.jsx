@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Loader from "../Loader";
 import { FaUserMd } from "react-icons/fa";
 import Button from "react-bootstrap/Button";
@@ -9,12 +9,15 @@ import { HiOutlineLocationMarker } from "react-icons/hi";
 import { useSelector } from "react-redux";
 import Row from "react-bootstrap/esm/Row";
 import Col from "react-bootstrap/esm/Col";
+import { AuthContext } from "../../context/AuthContext";
 
 export default function Specialists({ recipient }) {
   const [specialists, setSpecialists] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAddSpecialist, setShowAddSpecialist] = useState(false);
   const [selectedSpecialist, setSelectedSpecialist] = useState();
+
+  const { user } = useContext(AuthContext)
 
   const space = useSelector((state) => state.space);
 
@@ -160,15 +163,17 @@ export default function Specialists({ recipient }) {
         </div>
       )}
       </div>
+      {(user && user.can_edit) &&
       <Button
-        variant="aqua"
-        disabled={loading}
-        data-testid="addSpecialistButton"
-        className="add-specialist-btn"
-        onClick={() => setShowAddSpecialist(true)}
+      variant="aqua"
+      disabled={loading}
+      data-testid="addSpecialistButton"
+      className="add-specialist-btn"
+      onClick={() => setShowAddSpecialist(true)}
       >
         <FaUserMd /> Ajouter un specialiste
       </Button>
+      }
     </div>
   );
 }

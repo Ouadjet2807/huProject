@@ -108,7 +108,7 @@ def remove_caregiver_from_space(sender, instance, **kwargs):
         return
 
     try:
-      space.caregivers.remove(caregiver)
+      space.caregivers.remove(caregiver.id)
 
       new_space_name = f"{caregiver.first_name or caregiver.user.email}'s Space"
       new_space = Space.objects.create(

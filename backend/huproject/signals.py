@@ -158,7 +158,7 @@ def create_caregiver_space(sender, instance, created, **kwargs):
         membership = SpaceMembership.objects.create(
         space=space,
         user= instance.user,
-        role = instance.role
+        role = instance.access_level
         )
         logger.info(f"Space created for caregiver {instance!s}: space id={space.id}")
         logger.info(f"Membership created for space {instance!s}: membership id={membership.id}")

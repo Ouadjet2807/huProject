@@ -133,12 +133,6 @@ def create_caregiver_space(sender, instance, created, **kwargs):
     user = CustomUser.objects.get(id=instance.user.id)
 
     invitation_info = json.loads(user.invited) if isinstance(user.invited, str) else user.invited 
-    print(invitation_info)
-    print(type(invitation_info))
-  
-
-    for key in invitation_info:
-        print(key)
 
     if not created:
         return
@@ -148,8 +142,8 @@ def create_caregiver_space(sender, instance, created, **kwargs):
 
         space = {}
 
-        if invitation_info.invited and (invitation_info.invited_by is not None):
-            space = Space.objects.get(created_by=invitation_info.invited_by)
+        if invitation_info["invited"] and (invitation_info["invited_by"] is not None):
+            space = Space.objects.get(created_by=invitation_info["invited_by"])
 
         else:
             space = Space.objects.create(

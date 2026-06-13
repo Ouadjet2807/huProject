@@ -144,8 +144,8 @@ def create_caregiver_space(sender, instance, created, **kwargs):
 
         space = {}
 
-        if invitation_info["invited"] and (invitation_info["invited_by"] is not None):
-            space = Space.objects.get(created_by=invitation_info["invited_by"])
+        if invitation_info.invited and (invitation_info.invited_by is not None):
+            space = Space.objects.get(created_by=invitation_info.invited_by)
 
         else:
             space = Space.objects.create(

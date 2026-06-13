@@ -125,10 +125,12 @@ export default function Recipient({ tab, match}) {
 useEffect(() => {
   if(recipient && Object.keys(recipient).length > 0) {
      setFormData({
+            id: recipient_id,
             first_name: recipient.first_name,
             last_name: recipient.last_name,
             birth_date: recipient.birth_date,
             treatments: recipient.treatments,
+            healthcare_professionals: [],
             gender: recipient.gender,
             medical_info: recipient.medical_info,
             space: recipient.space,

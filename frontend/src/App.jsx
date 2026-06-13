@@ -54,9 +54,7 @@ function App() {
   }, [space]);
   // console.log("user ", user);
   console.log(space);
-  
-    
-  
+
   return (
     <div className="App">
       <Toast

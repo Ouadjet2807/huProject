@@ -5,6 +5,8 @@ import { CiEdit } from "react-icons/ci";
 import { LuSave } from "react-icons/lu";
 import Loader from "../Loader";
 import { AuthContext } from "../../context/AuthContext";
+import { ToastContext } from "../../context/ToastContext";
+import api from "../../api/api";
 export default function RecipientEditForm({
   data,
   medicalInfo,
@@ -13,6 +15,7 @@ export default function RecipientEditForm({
   const [editionMode, setEditionMode] = useState(false);
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({});
+  const { setShowToast, setColor, setToastMessage } = useContext(ToastContext)
 
   const { user } = useContext(AuthContext);
 
@@ -66,6 +69,32 @@ export default function RecipientEditForm({
     }
   };
 
+  const handleSubmit = async () => {
+    console.log("submit");
+      console.log(data);
+      console.log(data.id);
+      
+    if(!data || !data.id) return
+
+    try {
+      let response = await api.put(`https://www.curadash.fr/api/recipients/${data.id}/`, formData)
+      setShowToast(true);
+      setColor("success");
+       setToastMessage(
+        "Vos modifications ont bien été prises en compte",
+      );
+      setEditionMode(false)
+    }
+    catch (error) {
+      console.log(error.response);
+        setShowToast(true);
+      setToastMessage(
+        "Une erreur s'est produite lors de la création de l'événement",
+      );
+      setColor("danger");
+    }
+  }
+
   useEffect(() => {
     if (Object.keys(data).length < 0) return;
 
@@ -74,6 +103,8 @@ export default function RecipientEditForm({
     setLoading(false);
   }, [data]);
 
+  console.log(formData);
+  
   return (
     <div id="generalSection" data-testid="generalSectionComponent">
       <h3>Informations générales</h3>
@@ -207,7 +238,7 @@ export default function RecipientEditForm({
       )}
 
       {(user && user.can_edit) &&
-      <Button className="save-button" variant="aqua">
+      <Button className="save-button" variant="aqua" onClick={handleSubmit}>
         <LuSave /> Sauvegarder
       </Button>
       }

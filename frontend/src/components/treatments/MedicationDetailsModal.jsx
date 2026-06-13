@@ -369,7 +369,6 @@ export default function MedicationDetailsModal({
           `https://www.curadash.fr/api/treatments/${treatment.id}/`,
           data,
         );
-        console.log(response);
 
         let index = treatmentsData.treatments.content.findIndex(
           (elem) =>

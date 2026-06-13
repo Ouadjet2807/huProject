@@ -3,7 +3,8 @@ import { AuthContext } from "../../context/AuthContext";
 import api from "../../api/api";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setValues } from "../../redux/spaceSlice";
 
 export default function CreateRecipient({
   setRefreshRecipients,
@@ -22,6 +23,8 @@ export default function CreateRecipient({
     medical_info: "",
     space: "",
   });
+
+  const dispatch = useDispatch()
 
   const handleClose = () => {
     setShow(false);
@@ -42,7 +45,12 @@ export default function CreateRecipient({
         "https://huproject-production.up.railway.app/api/recipients/",
         formData,
       );
-      space.recipients.push(response.data);
+      let updated_recipients = space.recipients.slice()
+      updated_recipients.push(response.data)
+      dispatch(setValues({
+        ...space,
+        recipients: updated_recipients
+      }))
       handleClose();
     } catch (error) {
       console.log(error);

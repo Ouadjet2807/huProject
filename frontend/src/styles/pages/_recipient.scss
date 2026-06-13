@@ -3,10 +3,9 @@
 
   .recipient-container {
     height: 100%;
-    display: grid;
-    grid-template-columns: 25% 75%;
+    display: flex;
+    justify-content: flex-start;
     margin: auto;
-    justify-content: center;
 
     .recipient-left-tab {
       padding: 2vw;
@@ -54,6 +53,8 @@
       display: flex;
       flex-direction: column;
       align-items: flex-end;
+      max-width: 100%;
+      min-width: 65%;
       border-left: 1px solid $whiteGreen;
     }
 
@@ -102,7 +103,7 @@
           display: grid;
           grid-template-columns: 49% 49%;
           gap: 0 10px;
-          width: 100%;
+          width: 50vw;
 
           input {
             width: 100%;
@@ -112,7 +113,7 @@
         .field {
           display: flex;
           flex-direction: column;
-          width: 100%;
+          width: 50vw;
           align-items: center;
 
           label,
@@ -575,6 +576,10 @@
       #generalSection {
         form {
           height: auto;
+
+          .form-row, .field {
+            width: 80vw;
+          }
         }
       }
 

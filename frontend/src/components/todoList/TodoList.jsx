@@ -60,8 +60,7 @@ export default function TodoList({ user }) {
     e.preventDefault();
 
     try {
-      if(process.env.NODE_ENV !== "test") {
-
+      if (process.env.NODE_ENV !== "test") {
         let response = await api.post(
           "https://www.curadash.fr/api/todo_list_items/",
           newTask,
@@ -78,7 +77,6 @@ export default function TodoList({ user }) {
           created_by: user && user.id,
         });
       }
-
 
       selectInputRef.current.selectedIndex = 0;
     } catch (error) {
@@ -99,8 +97,7 @@ export default function TodoList({ user }) {
     setTodoList(filter);
 
     try {
-      if(process.env.NODE_ENV !== "test") {
-
+      if (process.env.NODE_ENV !== "test") {
         await api.put(
           `https://www.curadash.fr/api/todo_list_items/${todo.id}/`,
           todo,
@@ -127,6 +124,17 @@ export default function TodoList({ user }) {
       console.log(error);
     }
   };
+
+  const renderTodoType = (todo) => {
+    if(activeCategory !== "all") return
+
+    let category = todoCategory.find(elem => Object.values(elem).find(value => value == "monthly")).name
+
+    return `- ${category.substring(0, category.length -1)}`
+    
+  }
+
+  
 
   useEffect(() => {
     if (!user || !Object.keys(space).length > 0 || !space.todos.items) return;
@@ -161,6 +169,8 @@ export default function TodoList({ user }) {
     };
     filterCategories();
   }, [activeCategory, todoList]);
+
+
 
   return (
     <div id="todoList">
@@ -202,71 +212,75 @@ export default function TodoList({ user }) {
                   <Form.Check.Label data-testid="todoItemLabel">
                     {todo.title}
                   </Form.Check.Label>
+                  <small>{renderTodoType(todo)}</small>
                 </div>
-                {todo.created_by == user &&
-                <div
-                data-testid="deleteTodoButton"
-                className="delete"
-                onClick={() => deleteTodo(todo)}
-                >
-                  <LuTrash2 />
-                </div>
-                }
+                {todo.created_by == user && (
+                  <div
+                    data-testid="deleteTodoButton"
+                    className="delete"
+                    onClick={() => deleteTodo(todo)}
+                  >
+                    <LuTrash2 />
+                  </div>
+                )}
               </div>
             );
           })}
       </div>
-      <form
-        id="addTaskForm"
-        action=""
-        onKeyDown={(e) => e.key === "Enter" && handleSubmit(e)}
-      >
-        <InputGroup>
-          <Form.Control
-            aria-label="Text input with dropdown button"
-            type="text"
-            name="title"
-            id=""
-            value={newTask.title}
-            placeholder="Nouvelle tâche"
-            onChange={(e) => handleChange(e)}
-          />
 
-          <DropdownButton
-            variant="outline-secondary"
-            title={
-              Object.keys(newTask).includes("frequency")
-                ? todoCategory.find((cat) => cat.value === newTask.frequency)
-                    .name
-                : "Fréquence"
-            }
-            id="input-group-dropdown-2"
-            align="end"
-          >
-            {todoCategory.length > 0 &&
-              todoCategory
-                .filter((item) => item.value !== "all")
-                .map((category, index) => {
-                  return (
-                    <Dropdown.Item
-                      key={`category_${index + 1}`}
-                      onClick={() =>
-                        setNewTask((prev) => ({
-                          ...prev,
-                          frequency: category.value,
-                        }))
-                      }
-                    >
-                      {category.name}
-                    </Dropdown.Item>
-                  );
-                })}
-          </DropdownButton>
-        </InputGroup>
-        <div className="add-button" onClick={(e) => handleSubmit(e)}>
-          <MdLibraryAdd />
-        </div>
-      </form>
+      {user && user.can_edit && (
+        <form
+          id="addTaskForm"
+          action=""
+          onKeyDown={(e) => e.key === "Enter" && handleSubmit(e)}
+        >
+          <InputGroup>
+            <Form.Control
+              aria-label="Text input with dropdown button"
+              type="text"
+              name="title"
+              id=""
+              value={newTask.title}
+              placeholder="Nouvelle tâche"
+              onChange={(e) => handleChange(e)}
+            />
+
+            <DropdownButton
+              variant="outline-secondary"
+              title={
+                Object.keys(newTask).includes("frequency")
+                  ? todoCategory.find((cat) => cat.value === newTask.frequency)
+                      .name
+                  : "Fréquence"
+              }
+              id="input-group-dropdown-2"
+              align="end"
+            >
+              {todoCategory.length > 0 &&
+                todoCategory
+                  .filter((item) => item.value !== "all")
+                  .map((category, index) => {
+                    return (
+                      <Dropdown.Item
+                        key={`category_${index + 1}`}
+                        onClick={() =>
+                          setNewTask((prev) => ({
+                            ...prev,
+                            frequency: category.value,
+                          }))
+                        }
+                      >
+                        {category.name}
+                      </Dropdown.Item>
+                    );
+                  })}
+            </DropdownButton>
+          </InputGroup>
+          <div className="add-button" onClick={(e) => handleSubmit(e)}>
+            <MdLibraryAdd />
+          </div>
+        </form>
+      )}
     </div>
   );
 }

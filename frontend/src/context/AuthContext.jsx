@@ -2,16 +2,14 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import api from "../api/api";
 import { useSelector, useDispatch } from "react-redux";
 import { setValues } from "../redux/spaceSlice";
-import { ToastContext } from "./ToastContext";
+
 export const AuthContext = createContext();
 
 export const useAuth = () => {
   return useContext(AuthContext);
 };
 
-
 export const AuthProvider = ({ children }) => {
-  const {setToastMessage, setColor, setShowToast} = useContext(ToastContext)
   const [user, setUser] = useState(null);
   const [message, setMessage] = useState({
     status: "",
@@ -59,25 +57,31 @@ export const AuthProvider = ({ children }) => {
       api.defaults.headers.common["Authorization"] = `Bearer ${access}`;
       const res = await api.get("https://www.curadash.fr/api/user/");
       setUser({ ...res.data, isAuthenticated: true });
-      setToastMessage("Connexion réussie, bienvenue !"
-      );
-      setColor("success")
+      setMessage({
+        status: "success",
+        message: "Connexion réussie, bienvenue !",
+      });
     } catch (error) {
       console.log("Error", error.response.data);
       if (error.response && error.response.data) {
-        setColor("danger")
         Object.keys(error.response.data).forEach((field) => {
           const errorMessages = error.response.data[field];
           if (errorMessages && errorMessages.length > 0) {
-            setToastMessage(errorMessages[0]);
+            setMessage({
+              status: "error",
+              message: errorMessages[0],
+            });
           } else {
-            setToastMessage(
-              "Une erreur inconnue s'est produite, veuillez réessayer ultérieurement");
-            }
-          });
-        }
+            setMessage({
+              status: "error",
+              message:
+                "Une erreur inconnue s'est produite, veuillez réessayer ultérieurement",
+            });
+          }
+        });
       }
-    setShowToast(true)
+    }
+
     setLoading(false);
   };
 
@@ -93,23 +97,30 @@ export const AuthProvider = ({ children }) => {
       api.defaults.headers.common["Authorization"] = `Bearer ${access}`;
       const res = await api.get("https://www.curadash.fr/api/user/");
       setUser({ ...res.data, isAuthenticated: true });
-      setColor("success")
-      setToastMessage("Compte crée avec succès, bienvenue !");
+      setMessage({
+        status: "success",
+        message: "Compte crée avec succès, bienvenue !",
+      });
     } catch (error) {
       console.error("Register failed:", error);
       if (error.response && error.response.data) {
-        setColor("danger")
         Object.keys(error.response.data).forEach((field) => {
           const errorMessages = error.response.data[field];
           if (errorMessages && errorMessages.length > 0) {
-            setToastMessage(errorMessages[0]);
+            setMessage({
+              status: "error",
+              message: errorMessages[0],
+            });
           } else {
-            setToastMessage("Une erreur inconnue s'est produite, veuillez réessayer ultérieurement");
+            setMessage({
+              status: "error",
+              message:
+                "Une erreur inconnue s'est produite, veuillez réessayer ultérieurement",
+            });
           }
         });
       }
     }
-    setShowToast(true)
     setLoading(false);
   };
 
@@ -123,14 +134,18 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem("refreshToken");
         delete api.defaults.headers.common["Authorization"];
         setUser(null);
-        setColor("neutral")
-        setMessage("Déconnexion");
+        setMessage({
+          status: "neutral",
+          message: "Déconnexion",
+        });
       } catch (error) {
         console.log(error.response);
-        setColor("danger")
-        setToastMessage(error.response.data);
+        
+        setMessage({
+          status: "error",
+          message: error.response.data,
+        });
       }
-      setShowToast(true)
 
       initAuth();
     }

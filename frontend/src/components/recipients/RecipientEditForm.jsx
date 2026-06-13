@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import { FaRegTrashCan } from "react-icons/fa6";
 import { CiEdit } from "react-icons/ci";
 import { LuSave } from "react-icons/lu";
 import Loader from "../Loader";
+import { AuthContext } from "../../context/AuthContext";
 export default function RecipientEditForm({
   data,
   medicalInfo,
@@ -12,6 +13,8 @@ export default function RecipientEditForm({
   const [editionMode, setEditionMode] = useState(false);
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({});
+
+  const { user } = useContext(AuthContext);
 
   const genderChoices = [
     { name: "Femme", value: "F" },
@@ -127,20 +130,22 @@ export default function RecipientEditForm({
               })}
             </select>
           </div>
-          <Button
-            data-testid="editModeButton"
-            variant="edit"
-            className="edit-sensible-info"
-            onClick={() => setEditionMode(!editionMode)}
-          >
-            {!editionMode ? (
-              <>
-                <CiEdit /> Modifier les informations ci-dessus
-              </>
-            ) : (
-              <>Annuler</>
-            )}
-          </Button>
+          {user && user.can_edit && (
+            <Button
+              data-testid="editModeButton"
+              variant="edit"
+              className="edit-sensible-info"
+              onClick={() => setEditionMode(!editionMode)}
+            >
+              {!editionMode ? (
+                <>
+                  <CiEdit /> Modifier les informations ci-dessus
+                </>
+              ) : (
+                <>Annuler</>
+              )}
+            </Button>
+          )}
           <div className="field">
             <label htmlFor="allergies">Allergies</label>
             {Object.keys(medicalInfo).includes("allergies") &&
@@ -172,14 +177,16 @@ export default function RecipientEditForm({
                   </div>
                 );
               })}
-            <Button
-              variant="edit"
-              name="add_field"
-              data-testid="addFieldButton"
-              onClick={(e) => addAllergiesField(e)}
-            >
-              Ajouter une allergie
-            </Button>
+            {user && user.can_edit && (
+              <Button
+                variant="edit"
+                name="add_field"
+                data-testid="addFieldButton"
+                onClick={(e) => addAllergiesField(e)}
+              >
+                Ajouter une allergie
+              </Button>
+            )}
           </div>
           <div className="field">
             <label htmlFor="notes">Notes</label>
@@ -195,6 +202,7 @@ export default function RecipientEditForm({
       ) : (
         <Loader />
       )}
+
       <Button className="save-button" variant="aqua">
         <LuSave /> Sauvegarder
       </Button>

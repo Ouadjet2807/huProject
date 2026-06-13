@@ -14,18 +14,6 @@ export default function Home({ user, loading, caregivers, recipients }) {
   const [showInviteModal, setShowInviteModal] = useState(false);
 
   const navigate = useNavigate();
-
-  const canAddRecipient = (user) => {
-
-    if(!user) return
-
-    let role = JSON.parse(user.invited).role
-
-    return role < 3
-  }
-
-
-  console.log(user);
   
   return (
     <div id="home">
@@ -64,7 +52,7 @@ export default function Home({ user, loading, caregivers, recipients }) {
             ) : (
               <p data-testid="noRecipients">Aucun aidé</p>
             )}
-            {canAddRecipient(user) &&
+            {(user && user.can_edit) &&
             <Button variant="aqua" onClick={() => setAddRecipient(true)}>
               <FiPlus /> Ajouter un aidé
             </Button>

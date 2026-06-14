@@ -67,11 +67,18 @@ export default function Navbar({ notifications, user, logout, message }) {
       const refreshToken = localStorage.getItem("refreshToken");
 
       logout(refreshToken);
+      setToastMessage("Déconnexion")
+      setColor("neutral")
     } catch (error) {
       console.log(error);
+      setColor("danger")
+      setToastMessage("Une erreur s'est produite, nous n'avons pas pu vous déconnecter")
     } finally {
-      navigate("/login");
+      setTimeout(() => {
+        navigate("/login");
+      }, 2000)
     }
+    setShowToast(true)
   };
 
   useGSAP(() => {

@@ -128,7 +128,7 @@ export default function TodoList({ user }) {
   const renderTodoType = (todo) => {
     if(activeCategory !== "all") return
 
-    let category = todoCategory.find(elem => Object.values(elem).find(value => value == "monthly")).name
+    let category = todoCategory.find(elem => Object.values(elem).find(value => value == todo.frequency)).name
 
     return `- ${category.substring(0, category.length -1)}`
     

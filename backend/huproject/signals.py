@@ -243,6 +243,6 @@ def create_caregiver_profile(sender, instance, created, **kwargs):
         )
         logger.info(f"Caregiver created for user {instance!s}: caregiver id={caregiver.id}")
     except Exception as e:
-        # Make sure we log the error so you can see why creation failed
+
         logger.exception(f"Failed to create Caregiver for user {instance!s}: {e}")
 

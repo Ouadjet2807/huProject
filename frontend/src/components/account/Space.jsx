@@ -14,7 +14,8 @@ import { TbUsersPlus } from "react-icons/tb";
 import InviteUserModal from "../modals/InviteUserModal";
 import CreateRecipient from "../recipients/CreateRecipient";
 import { TiDelete } from "react-icons/ti";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setValues } from "../../redux/spaceSlice";
 
   export const canEdit = (accessLevel) => {
     if (!accessLevel) return;
@@ -39,6 +40,8 @@ export default function Space({ editMode, setEditMode, roles }) {
   const [refreshSpace, setRefreshSpace] = useState(false);
   const [validationField, setValidationField] = useState("");
   const [validationError, setValidationError] = useState(false);
+
+  const dispatch = useDispatch()
 
   const navigate = useNavigate();
 
@@ -113,10 +116,10 @@ export default function Space({ editMode, setEditMode, roles }) {
   const handleChange = async (e, id) => {
     if (!e.target) return;
 
-    let caregivers = space.caregivers.slice();
-    console.log(caregivers);
+    let caregivers_arr = space.caregivers.slice();
+    console.log(caregivers_arr);
 
-    let targetCaregiver = JSON.parse(JSON.stringify(caregivers.find((e) => e.id === id)))
+    let targetCaregiver = JSON.parse(JSON.stringify(caregivers_arr.find((e) => e.id === id)))
     console.log(e.target.name);
     
     targetCaregiver[e.target.name] =
@@ -129,6 +132,13 @@ export default function Space({ editMode, setEditMode, roles }) {
         `https://www.curadash.fr/api/caregivers/${targetCaregiver.id}/`,
         targetCaregiver
       );
+      let targetId = caregivers_arr.map(e => e.id).indexOf(targetCaregiver.id)
+
+      dispatch(setValues({
+        ...space,
+        caregivers: caregivers_arr.toSpliced(targetId, 1, targetCaregiver)
+      }))
+
     } catch (error) {
       console.log(error);
     }

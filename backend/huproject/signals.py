@@ -8,6 +8,7 @@ from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db import IntegrityError
+from django.shortcuts import get_object_or_404
 import time
 import json
 import resend
@@ -104,7 +105,7 @@ def remove_caregiver_from_space(sender, instance, **kwargs):
 
     space = Space.objects.get(id=instance.space.id)
 
-    caregiver = Caregiver.objects.get_object_or_404(user=instance.user) or None
+    caregiver = get_object_or_404(Caregiver, user=instance.user) 
 
     print(caregiver)
 

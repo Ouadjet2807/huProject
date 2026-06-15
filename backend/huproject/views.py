@@ -5,7 +5,7 @@ from rest_framework.generics import GenericAPIView, RetrieveAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.exceptions import NotFound
-from django.contrib.auth import logout
+from django.shortcuts import get_object_or_404
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import IntegrityError
 from django.shortcuts import get_object_or_404

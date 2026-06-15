@@ -106,7 +106,7 @@ def remove_caregiver_from_space(sender, instance, **kwargs):
     space = Space.objects.get(id=instance.space.id)
 
     caregiver = None
-    
+
     try:
         caregiver = Caregiver.objects.get(user=instance.user)
     except Exception as e:
@@ -229,15 +229,12 @@ def create_caregiver_profile(sender, instance, created, **kwargs):
     if not created:
         return
 
-    print(instance.invited)
-
-    invitation_info = json.loads(instance.invited)
+    invitation_info = json.loads(instance.invited) if isinstance(instance.invited, str) else instance.invited
 
     try:
         first_name = getattr(instance, 'first_name', '') or ''
         last_name = getattr(instance, 'last_name', '') or ''
 
-        # If fields in Person are required, provide safe fallbacks
         caregiver = Caregiver.objects.create(
             user=instance,
             first_name=first_name,

@@ -14,7 +14,9 @@ import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 import FloatingLabel from "react-bootstrap/FloatingLabel";
 import { ConfirmContext } from "../../context/ConfirmContext";
-import { useSelector } from "react-redux";
+import { ToastContext } from "../../context/ToastContext";
+import { useDispatch, useSelector } from "react-redux";
+import { setValues } from "../../redux/spaceSlice";
 
 export default function CreateSpecialist({
   show,
@@ -23,15 +25,14 @@ export default function CreateSpecialist({
   preloadedData,
   setSelectedSpecialist,
 }) {
-
-
   const { showConfirm, setShowConfirm, setText, setAction, returnValue } =
     useContext(ConfirmContext);
+    const { setShowToast, setToastMessage, setColor } = useContext(ToastContext);
   const [placeholderSuggestion, setPlaceholderSuggestion] = useState();
   const [debouncedValue, setDebouncedValue] = useState();
   const [addressSuggestions, setAddressSuggestions] = useState([]);
   const [editMode, setEditMode] = useState(false);
-    const space = useSelector((state) => state.space);
+  const space = useSelector((state) => state.space);
   const [contact, setContact] = useState({
     address: "",
     phone_number: "",
@@ -43,6 +44,8 @@ export default function CreateSpecialist({
     notes: "",
     space: space && space.id,
   });
+
+  const dispatch = useDispatch();
 
   const handleTelField = (e) => {
     if (/^[A-Z]$/gi.test(e.target.value)) return;
@@ -66,7 +69,7 @@ export default function CreateSpecialist({
   };
 
   const handleClose = () => {
-    if(process.env.NODE_ENV === "test") return
+    if (process.env.NODE_ENV === "test") return;
     setContact({
       address: "",
       phone_number: "",
@@ -79,11 +82,10 @@ export default function CreateSpecialist({
       space: space.id,
     });
     setShow(false);
-    setSelectedSpecialist()
+    setSelectedSpecialist();
   };
 
   const handleChange = (e) => {
-
     setFormData((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
@@ -101,15 +103,36 @@ export default function CreateSpecialist({
         formData,
       );
 
-      recipient.healthcare_professionals.push(response.data);
+      let updated_recipient = JSON.parse(JSON.stringify(recipient));
+      updated_recipient.healthcare_professionals.push(response.data);
+
+      let recipients_arr = [...space.recipients];
+      let target = recipients_arr.map(e => e.id).indexOf(recipient.id);
+
+      let updated_recipients_arr = recipients_arr.toSpliced(
+        target,
+        1,
+        updated_recipient,
+      );
+      
+       dispatch(setValues({
+              ...space,
+              recipients: [...updated_recipients_arr]
+            }))
 
       await api.put(
         `https://www.curadash.fr/api/recipients/${recipient.id}/`,
-        recipient,
+        updated_recipient,
       );
-
+      console.log(space);
+      setShowToast(true)
+      setColor("success")
+      setToastMessage("Nouveau spécialiste ajouté avec succès")
       handleClose();
     } catch (error) {
+      setShowToast(true)
+      setColor("danger")
+      setToastMessage("Une erreur s'est produite, veuillez réessayer ultérieurement")
       console.log(error);
     }
   };
@@ -117,10 +140,10 @@ export default function CreateSpecialist({
   const confirmRemoval = () => {
     setText("Êtes-vous sûr(e) de vouloir supprimer ce professionel de santé ?");
     setAction(() => async () => {
-        const response = await api.delete(
-          `https://www.curadash.fr/api/healthcare_professionals/${preloadedData.id}`,
-        );
-        handleClose()
+      const response = await api.delete(
+        `https://www.curadash.fr/api/healthcare_professionals/${preloadedData.id}`,
+      );
+      handleClose();
     });
     setShowConfirm(true);
   };
@@ -233,13 +256,15 @@ export default function CreateSpecialist({
   }, [preloadedData]);
 
   useEffect(() => {
-    if (!returnValue || !preloadedData || Object.keys(preloadedData).length < 0) return
+    if (!returnValue || !preloadedData || Object.keys(preloadedData).length < 0)
+      return;
 
-    const filter = recipient.healthcare_professionals.filter(doc => doc.id !== preloadedData.id)
+    const filter = recipient.healthcare_professionals.filter(
+      (doc) => doc.id !== preloadedData.id,
+    );
 
-    recipient.healthcare_professionals = filter
-
-  }, [returnValue])
+    recipient.healthcare_professionals = filter;
+  }, [returnValue]);
 
   return (
     <Modal show={show} onHide={handleClose} className="create-specialist-modal">
@@ -318,7 +343,10 @@ export default function CreateSpecialist({
               </FloatingLabel>
             </InputGroup>
             {addressSuggestions && addressSuggestions.length > 0 && (
-              <ul className="address-suggestions" data-testid="address-suggestion">
+              <ul
+                className="address-suggestions"
+                data-testid="address-suggestion"
+              >
                 {addressSuggestions.map((item) => {
                   return (
                     <li
@@ -384,7 +412,11 @@ export default function CreateSpecialist({
             {editMode ? "Enregistrer" : "Ajouter"}
           </Button>
         ) : (
-          <Button data-testid="editModeButton" variant="md-green" onClick={() => setEditMode(true)}>
+          <Button
+            data-testid="editModeButton"
+            variant="md-green"
+            onClick={() => setEditMode(true)}
+          >
             Modifier
           </Button>
         )}

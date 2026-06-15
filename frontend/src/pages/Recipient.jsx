@@ -113,7 +113,7 @@ export default function Recipient({ tab, match}) {
       }
     };
     getRecipientData();
-  }, []);
+  }, [space]);
 
   useEffect(() => {
     setFormData((prev) => ({

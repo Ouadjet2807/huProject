@@ -127,6 +127,8 @@ class CaregiverViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
 
+        print("reach")
+
         if not user or not hasattr(user, 'caregiver'):
             return Caregiver.objects.none()
 

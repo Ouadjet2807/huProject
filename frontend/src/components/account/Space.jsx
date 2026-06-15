@@ -112,8 +112,13 @@ export default function Space({ editMode, setEditMode, roles }) {
 
   const handleChange = async (e, id) => {
     if (!e.target) return;
-    let targetCaregiver = space.caregivers.slice().find((e) => e.id === id);
 
+    let caregivers = space.caregivers.slice();
+    console.log(caregivers);
+
+    let targetCaregiver = {...caregivers.find((e) => e.id === id)}
+    console.log(targetCaregiver);
+    
     targetCaregiver[e.target.name] =
       e.target.type === "select-one"
         ? parseInt(e.target.value)

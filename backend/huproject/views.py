@@ -127,7 +127,6 @@ class CaregiverViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
 
-
         if not user or not hasattr(user, 'caregiver'):
             return Caregiver.objects.none()
 
@@ -138,6 +137,8 @@ class CaregiverViewSet(viewsets.ModelViewSet):
                 return Caregiver.objects.filter(id=caregiver.id)
             except Caregiver.DoesNotExist:
                 raise NotFound("Caregiver not found")
+        else:
+            return Caregiver.objects.all()
 
     # If you want caregivers to be created automatically from user signups, override perform_create:
     def perform_create(self, serializer):

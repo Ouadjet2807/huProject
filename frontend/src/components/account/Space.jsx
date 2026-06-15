@@ -165,7 +165,7 @@ export default function Space({ editMode, setEditMode, roles }) {
     getSpaceMemberships();
 
     if(user && Object.keys(user).includes("id")) { 
-      setSpaceCreator(space.created_by.id === user.id ? 'vous' : `${space.created_by.first_name} ${space.last_name}`)
+      setSpaceCreator(space.created_by.id === user.id ? 'vous' : `${space.created_by.first_name} ${space.created_by.last_name}`)
     }
 
   }, [space]);

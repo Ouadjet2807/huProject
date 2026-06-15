@@ -104,7 +104,7 @@ def remove_caregiver_from_space(sender, instance, **kwargs):
 
     space = Space.objects.get(id=instance.space.id)
 
-    caregiver = Caregiver.objects.get(user=instance.user) or None
+    caregiver = Caregiver.objects.get_object_or_404(user=instance.user) or None
 
     print(caregiver)
 

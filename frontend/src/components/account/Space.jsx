@@ -116,8 +116,8 @@ export default function Space({ editMode, setEditMode, roles }) {
     let caregivers = space.caregivers.slice();
     console.log(caregivers);
 
-    let targetCaregiver = {...caregivers.find((e) => e.id === id)}
-    console.log(targetCaregiver);
+    let targetCaregiver = JSON.parse(JSON.stringify(caregivers.find((e) => e.id === id)))
+    console.log(e.target.name);
     
     targetCaregiver[e.target.name] =
       e.target.type === "select-one"

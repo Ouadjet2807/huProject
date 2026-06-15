@@ -127,13 +127,13 @@ class CaregiverViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
 
-        print("reach")
 
         if not user or not hasattr(user, 'caregiver'):
             return Caregiver.objects.none()
 
         elif self.request.GET.get("id"):
             caregiver = user.caregiver
+            print("reach")
             try:
                 return Caregiver.objects.filter(id=caregiver.id)
             except Caregiver.DoesNotExist:

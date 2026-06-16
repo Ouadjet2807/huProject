@@ -9,7 +9,6 @@ from django.contrib.auth import logout
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import IntegrityError
-from django.shortcuts import get_object_or_404
 from django.db.models import Prefetch
 from datetime import date, timedelta
 from .models import *
@@ -58,7 +57,7 @@ class UserUpdateAPIView(GenericAPIView):
        if request.method=='POST':
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user = CustomUser.objects.get_object_or_404(id = request.user.id)
+        user = CustomUser.objects.get(id = request.user.id)
         user.first_name = request.data.get('first_name')
         user.last_name = request.data.get('last_name')
         user.username = request.data.get('username')
@@ -93,9 +92,8 @@ class UserInfoAPIView(RetrieveAPIView):
         if user_id is None:
             return self.request.user
 
-        # If id provided → return that user
         try:
-            return CustomUser.objects.get_object_or_404(id=user_id)
+            return CustomUser.objects.get(id=user_id)
         except CustomUser.DoesNotExist:
             raise NotFound("User not found")
 

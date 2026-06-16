@@ -214,7 +214,7 @@ export default function TodoList({ user }) {
                   </Form.Check.Label>
                   <small>{renderTodoType(todo)}</small>
                 </div>
-                {todo.created_by == user && (
+                {todo.created_by == user.id && (
                   <div
                     data-testid="deleteTodoButton"
                     className="delete"

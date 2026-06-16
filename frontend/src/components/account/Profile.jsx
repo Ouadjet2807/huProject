@@ -12,7 +12,7 @@ import { useSelector } from "react-redux";
 
 export default function Profile({ editMode, setEditMode, roles }) {
   const { user } = useContext(AuthContext);
-  const { setMessage, setColor, setShowToast } = useContext(ToastContext);
+  const { setToastMessage, setColor, setShowToast } = useContext(ToastContext);
   const space = useSelector((state) => state.space);
   const [caregiverProfile, setCaregiverProfile] = useState({});
   const [caregiverFormData, setCaregiverFormData] = useState({});
@@ -70,7 +70,7 @@ export default function Profile({ editMode, setEditMode, roles }) {
       setEditMode({ active: false, target: "" });
       setShowToast(true);
       setColor("success");
-      setMessage("Vos modifications ont bien été prises en compte");
+      setToastMessage("Vos modifications ont bien été prises en compte");
     } catch (error) {
       console.log(error);
       setShowToast(true);
@@ -79,9 +79,9 @@ export default function Profile({ editMode, setEditMode, roles }) {
         Object.keys(error.response.data).forEach((field) => {
           const errorMessages = error.response.data[field];
           if (errorMessages && errorMessages.length > 0) {
-            setMessage(errorMessages[0]);
+            setToastMessage(errorMessages[0]);
           } else {
-            setMessage(
+            setToastMessage(
               "Une erreur inconnue s'est produite, veuillez réessayer ultérieurement",
             );
           }

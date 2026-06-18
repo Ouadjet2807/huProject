@@ -81,14 +81,13 @@ export default function TodoList({ user }) {
 
       selectInputRef.current.selectedIndex = 0;
     } catch (error) {
-      console.log(error);
+      console.log(error.response);
     }
   };
 
   const updateTodo = async (todo) => {
     todo.completed = !todo.completed;
-    todo.completed_by = user;
-    todo.completed_by_id = user.id;
+    todo.completed_by = user.id;
     todo.updated_at = moment(new Date()).format();
 
     let initial_index = todoList.indexOf(todo);
@@ -105,7 +104,7 @@ export default function TodoList({ user }) {
         );
       }
     } catch (error) {
-      console.log(error);
+      console.log(error.response);
     }
   };
 
@@ -160,8 +159,7 @@ export default function TodoList({ user }) {
       todo_list: space.todos.id,
       frequency: "punctual",
       completed: false,
-      completed_by: null,
-      completed_by_id: null,
+      completed_by: user.id,
       title: "",
       description: "",
       created_by: user.id,
@@ -246,7 +244,7 @@ export default function TodoList({ user }) {
                   }
                   {(renderName(todo.completed_by) && renderName(todo.completed_by).length > 0) &&
                   <div className="todo_updated_by">
-                    <span className="initals" title={renderName(todo.completed_by)[0] + " " + renderName(todo.completed_by)[1]}>
+                    <span className="initials" title={renderName(todo.completed_by)[0] + " " + renderName(todo.completed_by)[1]}>
                       {renderName(todo.completed_by)[0][0] + renderName(todo.completed_by)[1][0]}
                     </span>
                   </div>

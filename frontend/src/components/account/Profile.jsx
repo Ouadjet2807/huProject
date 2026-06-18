@@ -45,7 +45,10 @@ export default function Profile({ editMode, setEditMode, roles }) {
 
   const handleFile = (e) => {
     console.log(e.target.value);
-    
+    // setCaregiverFormData((prev) => {
+    //   ...prev,
+    //   photo: ""
+    // })
   }
 
   const handleSubmit = async () => {
@@ -134,17 +137,17 @@ export default function Profile({ editMode, setEditMode, roles }) {
         <h1>Bonjour {user && user.first_name}</h1>
         <div className="box" id="generalInfo">
           <div className="icon">
-            {editMode.active && editMode.target === "generalInfo" && 
+            {/* {editMode.active && editMode.target === "generalInfo" && 
               <div className="overlay" onClick={() => setToggleGallery(true)}>
                 <span><FaCamera className="camera"/></span>
               </div>
-            }
+            } */}
             <FaUserCircle />
             {toggleGallery &&
             <div className="gallery">
               <div className="import">
                 <FaCamera />
-                <input type="file" onChange={(e) => handleFile(e)}/>
+                <input type="file" accept="image/png, image/jpeg" onChange={(e) => handleFile(e)}/>
               </div>
               <img src="/Assets/user_icon_lightgreen.png" alt="" />
               <img src="/Assets/user_icon_orange.png" alt="" />
@@ -165,7 +168,7 @@ export default function Profile({ editMode, setEditMode, roles }) {
           <div className="user-info">
             <div className="text">
               <strong className="name">
-                {user && user.first_name} {user && user.last_name}
+                {user && user.first_name} {user && user.last_name} 
               </strong>
               {editMode.active && editMode.target === "generalInfo" ? (
                 <div className="username-field">

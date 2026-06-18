@@ -107,8 +107,8 @@ export default function Specialists({ recipient }) {
         setSelectedSpecialist={setSelectedSpecialist}
       />
       <h3>Spécialistes de la santé</h3>
-      <div className="specialists-container">
-
+      <div className="specialists-container" style={{ display: "flex", alignItems: specialists.length <= 0 ? "center" : "start" }}>
+ 
       {!loading ? (
         <Row
         style={{ alignItems: specialists.length <= 0 ? "center" : "start" }}

@@ -79,7 +79,7 @@ class CaregiverSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Caregiver
-        fields = ('id', 'gender', 'first_name', 'last_name', 'birth_date', 'user', 'access_level', 'can_edit')
+        fields = ('id', 'gender', 'first_name', 'last_name', 'birth_date', 'user', 'access_level', 'can_edit', 'photo')
         read_only_fields = ('id', 'user', 'can_edit')
 
     def update(self, instance, validated_data):
@@ -318,4 +318,11 @@ class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notification
         fields = ['id', 'title', 'reference_item', 'is_read', 'space', 'message', 'user', 'timestamp', 'object_path']
+        read_only_fields = ['id', 'space', 'timestamp']
+
+
+class NewsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = News
+        fields = ['id', 'user', 'message', 'is_read', 'timestamp']
         read_only_fields = ['id', 'space', 'timestamp']

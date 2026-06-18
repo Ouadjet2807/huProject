@@ -594,3 +594,24 @@ class NotificationUnreadAPIView(GenericAPIView):
                 return Response(request.data, status=status.HTTP_200_OK)
             except Exception as e:
                 return Response(e.args, status=status.HTTP_400_BAD_REQUEST)
+
+class NewsViewSet(viewsets.ModelViewSet):
+    serializer_class = NewsSerializer
+    lookup_field = 'id'
+    queryset = News.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['id', 'user']
+    ordering_fields = ['user', 'timestamp']
+
+    def get_queryset(self):
+        user = self.request.user
+
+        if not user:
+            return News.objects.none()
+        caregiver = user.caregiver
+
+        return News.objects.filter(user=caregiver).order_by('-timestamp')
+
+    def perform_create(self, serializer):
+        serializer.save()

@@ -7,6 +7,7 @@ import { useGSAP } from "@gsap/react";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 import Dropdown from "react-bootstrap/Dropdown";
 import DropdownButton from "react-bootstrap/DropdownButton";
+import { LuCheckCheck } from "react-icons/lu";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 import moment from "moment";
@@ -71,7 +72,7 @@ export default function TodoList({ user }) {
           todo_list: Object.keys(space).length > 0 && space.todos.id,
           frequency: "punctual",
           completed: false,
-          completed_by: null,
+          completed_by: user.id,
           title: "",
           description: "",
           created_by: user && user.id,
@@ -125,16 +126,27 @@ export default function TodoList({ user }) {
     }
   };
 
-  const renderTodoType = (todo) => {
-    if(activeCategory !== "all") return
+  const renderTodoType = (frequency) => {
+    if (activeCategory !== "all") return;
 
-    let category = todoCategory.find(elem => Object.values(elem).find(value => value == todo.frequency)).name
+    let category = todoCategory.find((elem) =>
+      Object.values(elem).find((value) => value == frequency),
+    ).name;
 
-    return `- ${category.substring(0, category.length -1)}`
+    return category.substring(0, category.length - 1);
+  };
+
+  const renderName = (target_id) => {
+    if(!target_id) return
+    console.log(target_id);
     
-  }
+    let findTarget = space.caregivers.find(e => Object.values(e).find((value) => value == target_id))
+    console.log(findTarget);
 
-  
+    if(!findTarget) return
+
+    return [findTarget.first_name, findTarget.last_name]
+  }
 
   useEffect(() => {
     if (!user || !Object.keys(space).length > 0 || !space.todos.items) return;
@@ -170,8 +182,6 @@ export default function TodoList({ user }) {
     filterCategories();
   }, [activeCategory, todoList]);
 
-
-
   return (
     <div id="todoList">
       <ButtonGroup className="todo-category">
@@ -191,42 +201,71 @@ export default function TodoList({ user }) {
             );
           })}
       </ButtonGroup>
-      <div className="todo-list-items">
-        {filteredTodoList &&
-          filteredTodoList.length > 0 &&
-          filteredTodoList.map((todo, index) => {
-            return (
-              <div
-                data-testid={`${todo.frequency}Todo_${index}`}
-                key={`todo_${todo.id}`}
-                className={`todo-item ${todo.completed ? "completed" : ""}`}
-              >
-                <div className="field">
-                  <Form.Check
-                    data-testid="todoItemInput"
-                    type="checkbox"
-                    id=""
-                    checked={todo.completed}
-                    onChange={() => updateTodo(todo)}
-                  />
-                  <Form.Check.Label data-testid="todoItemLabel">
-                    {todo.title}
-                  </Form.Check.Label>
-                  <small>{renderTodoType(todo)}</small>
-                </div>
-                {todo.created_by == user.id && (
-                  <div
-                    data-testid="deleteTodoButton"
-                    className="delete"
-                    onClick={() => deleteTodo(todo)}
-                  >
-                    <LuTrash2 />
+
+
+        <div className="todo-list-items">
+        <div className="todo-header">
+            <div><LuCheckCheck /></div>
+            <div>Intitulé</div>
+            <div>Fréquence</div>
+            <div>Crée par</div>
+            <div>Dernière mise à jour</div>
+        </div>
+          {filteredTodoList &&
+            filteredTodoList.length > 0 &&
+            filteredTodoList.map((todo, index) => {
+              return (
+                <div
+                  data-testid={`${todo.frequency}Todo_${index}`}
+                  key={`todo_${todo.id}`}
+                  className={`todo-item ${todo.completed ? "completed" : ""}`}
+                >
+                  <div>
+                    <Form.Check
+                      data-testid="todoItemInput"
+                      type="checkbox"
+                      id=""
+                      checked={todo.completed}
+                      onChange={() => updateTodo(todo)}
+                    />
                   </div>
-                )}
-              </div>
-            );
-          })}
-      </div>
+                  <div className="label">
+                    <Form.Check.Label data-testid="todoItemLabel">
+                      {todo.title}
+                    </Form.Check.Label>
+                  </div>
+                  <td className="todo_frequency">
+                    <small>{renderTodoType(todo.frequency)}</small>
+                  </td>
+                  {(renderName(todo.created_by) && renderName(todo.created_by).length > 0) &&
+                  <div className="todo_created_by">
+                    <span className="initials" title={renderName(todo.created_by)[0] + " " + renderName(todo.created_by)[1]}>
+                     {renderName(todo.created_by)[0][0] + renderName(todo.created_by)[1][0]}
+                    </span>
+                  </div>
+                  }
+                  {(renderName(todo.completed_by) && renderName(todo.completed_by).length > 0) &&
+                  <div className="todo_updated_by">
+                    <span className="initals" title={renderName(todo.completed_by)[0] + " " + renderName(todo.completed_by)[1]}>
+                      {renderName(todo.completed_by)[0][0] + renderName(todo.completed_by)[1][0]}
+                    </span>
+                  </div>
+                  }
+
+                  {todo.created_by == user.id && (
+                    <div
+                      data-testid="deleteTodoButton"
+                      className="delete"
+                      onClick={() => deleteTodo(todo)}
+                    >
+                      <LuTrash2 />
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+        </div>
+
 
       {user && user.can_edit && (
         <form

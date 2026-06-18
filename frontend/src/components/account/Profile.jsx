@@ -9,6 +9,7 @@ import { PiAtLight } from "react-icons/pi";
 import { AuthContext } from "../../context/AuthContext";
 import { ToastContext } from "../../context/ToastContext";
 import { useSelector } from "react-redux";
+import { FaCamera } from "react-icons/fa";
 
 export default function Profile({ editMode, setEditMode, roles }) {
   const { user } = useContext(AuthContext);
@@ -17,6 +18,7 @@ export default function Profile({ editMode, setEditMode, roles }) {
   const [caregiverProfile, setCaregiverProfile] = useState({});
   const [caregiverFormData, setCaregiverFormData] = useState({});
   const [userFormData, setUserFormData] = useState({});
+  const [toggleGallery, setToggleGallery] = useState(false);
 
   const getAccessLevel = () => {
     if (!caregiverProfile) return;
@@ -40,6 +42,11 @@ export default function Profile({ editMode, setEditMode, roles }) {
       }));
     }
   };
+
+  const handleFile = (e) => {
+    console.log(e.target.value);
+    
+  }
 
   const handleSubmit = async () => {
     try {
@@ -127,7 +134,33 @@ export default function Profile({ editMode, setEditMode, roles }) {
         <h1>Bonjour {user && user.first_name}</h1>
         <div className="box" id="generalInfo">
           <div className="icon">
+            {editMode.active && editMode.target === "generalInfo" && 
+              <div className="overlay" onClick={() => setToggleGallery(true)}>
+                <span><FaCamera className="camera"/></span>
+              </div>
+            }
             <FaUserCircle />
+            {toggleGallery &&
+            <div className="gallery">
+              <div className="import">
+                <FaCamera />
+                <input type="file" onChange={(e) => handleFile(e)}/>
+              </div>
+              <img src="/Assets/user_icon_lightgreen.png" alt="" />
+              <img src="/Assets/user_icon_orange.png" alt="" />
+              <img src="/Assets/user_icon_beige.png" alt="" />
+              <img src="/Assets/user_icon_yellow.png" alt="" />
+              <img src="/Assets/user_icon_yellow2.png" alt="" />
+              <img src="/Assets/user_icon_green.png" alt="" />
+              <img src="/Assets/user_icon_green2.png" alt="" />
+              <img src="/Assets/user_icon_green3.png" alt="" />
+              <img src="/Assets/user_icon_blue.png" alt="" />
+              <img src="/Assets/user_icon_purple2.png" alt="" />
+              <img src="/Assets/user_icon_purple.png" alt="" />
+              <img src="/Assets/user_icon_pink.png" alt="" />
+              <img src="/Assets/user_icon_red.png" alt="" />
+            </div>
+            }
           </div>
           <div className="user-info">
             <div className="text">

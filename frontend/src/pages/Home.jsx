@@ -29,7 +29,9 @@ export default function Home({ user, loading, caregivers, recipients }) {
             {recipients && recipients.length > 0 ? (
               <ul>
                 {recipients.map((item, index) => {
+
                   return (
+                    Object.keys(item).includes("id") && 
                     <li
                     key={`recipient_${index}`}
                       role="recipientListItem"
@@ -61,7 +63,7 @@ export default function Home({ user, loading, caregivers, recipients }) {
           <div className="caregivers box">
             {loading && <Loader overlay={true} />}
             <h3>Les autres aidants</h3>
-            {caregivers && caregivers.length > 1 ? (
+            {user && (caregivers && caregivers.length > 1) ? (
               <ul>
                 {caregivers
                   .filter((caregiver) => caregiver.user !== user.id)

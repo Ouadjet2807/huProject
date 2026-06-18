@@ -26,6 +26,7 @@ class Person(models.Model):
 class Caregiver(Person):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     access_level = models.IntegerField(default=1, validators=[MaxValueValidator(3)])
+    photo = models.ImageField(null=True, blank=True)
 
     class Meta:
         constraints=[
@@ -319,6 +320,20 @@ class Notification(models.Model):
     message = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
     object_path = models.TextField()
+
+    def read(self):
+        self.is_read = True
+        self.save()
+
+    def unread(self):
+        self.is_read = False
+        self.save()
+
+class News(models.Model):
+    is_read = models.BooleanField(default=False)
+    user = models.ForeignKey(Caregiver, on_delete=models.CASCADE, related_name='news_user')
+    timestamp = models.DateTimeField(auto_now_add=True)
+    message = models.TextField()
 
     def read(self):
         self.is_read = True

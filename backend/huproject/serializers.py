@@ -276,7 +276,7 @@ class AgendaSerializer(serializers.ModelSerializer):
 class TodoListItemSerializer(serializers.ModelSerializer):
     todo_list = serializers.PrimaryKeyRelatedField(queryset=TodoList.objects.all())
     created_by = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
-    completed_by = CustomUserSerializer(read_only=True, allow_null=True)
+    completed_by = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
 
     class Meta:
         model = TodoListItem
